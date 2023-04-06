@@ -1,7 +1,6 @@
 module SQLCompose
 
-
-export generate, RelationType, TableDefinition, lateral
+export TableDefinition, lateral
 # composition
 export query, groupby, sortby, join, with
 

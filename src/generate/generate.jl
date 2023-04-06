@@ -55,7 +55,7 @@ namedquery_methodname(rt) = Symbol("query_", name(rt))
 
 function rowstruct_expression(reltype, typename)
     fnames = field_names(reltype)
-    typestructdef = :(struct $typename <: SQLCompose.RowStruct{$(reltype.type)}
+    typestructdef = :(struct $typename <: SQLCompose.RowStruct{$(reltype.rowtype)}
         $(fnames...)
     end)
     querydef = :(

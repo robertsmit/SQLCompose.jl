@@ -1,7 +1,6 @@
-
 import Base: filter, map, sort, join
 
-Queryable = Union{TableDefinition, Query, QuerySet}
+Queryable = Union{TableDefinition,Query,QuerySet}
 
 commontable(q::Queryable) = SubqueryTableItem(q)
 
@@ -14,9 +13,10 @@ tableresults(a, b) = (tableresults(a)..., tableresults(b)...)
 
 query(from::Queryable) = SelectQuery(from)
 query(q::SelectQuery) = SelectQuery(SubqueryTableItem(q))
-query(q::SelectQuery{UnmergedResult}) = error("unmerged results")
+query(q::SelectQuery{UnmergedResult}) = error("unmerged result: $(q)")
 query(q::QuerySet) = QuerySet(query(q.query), q.connection)
-query(values::AbstractVector{<:Tuple}, fieldnames::Tuple; aliashint=:v) = SelectQuery(ValuesTableItem(values, fieldnames, aliashint))
+query(values::AbstractVector{<:Tuple}, fieldnames::Tuple; aliashint=:v) =
+    SelectQuery(ValuesTableItem(values, fieldnames, aliashint))
 query(values::AbstractVector{T}; aliashint=:v) where {T<:Tuple} =
     let fieldnames = Tuple(Symbol("elem$i") for i in 1:length(T.types))
         query(values, fieldnames; aliashint)
@@ -121,9 +121,9 @@ groupby(f, node::Queryable) = groupby(f, convert(SelectQuery, node))
 groupby(f::Function, q::SelectQuery) = with_group(q, f(tableresults(q)...))
 groupby(f::Function, q::QuerySet) = QuerySet(groupby(f, q.query), q.executor)
 groupby(q::Queryable, fields::Symbol...) =
-let f = row -> map(field -> getfield(row, field), fields)
-    groupby(f, q)
-end
+    let f = row -> map(field -> getfield(row, field), fields)
+        groupby(f, q)
+    end
 
 sort(f::Function, node::Queryable) = sort(f, convert(SelectQuery, node))
 sort(f::Function, q::SelectQuery) = with_order(q, f(tableresults(q)...))

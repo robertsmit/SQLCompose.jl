@@ -7,15 +7,15 @@ end
 ForeignKey(parentname, fields) = ForeignKey(parentname, fields, fields)
 
 struct RelationType
-    type::Type{<:RowType}
+    rowtype::Type{<:RowType}
     foreignkeys::Tuple
 end
 
-RelationType(type) = RelationType(type, ())
+RelationType(rowtype) = RelationType(rowtype, ())
 
-name(rt::RelationType) = name(rt.type)
-field_names(rt::RelationType) = field_names(rt.type)
-field_pairs(rt::RelationType) = field_pairs(rt.type)
+name(rt::RelationType) = name(rt.rowtype)
+field_names(rt::RelationType) = field_names(rt.rowtype)
+field_pairs(rt::RelationType) = field_pairs(rt.rowtype)
 
 
 function sc_relationtypes(connstr::String, schema::String="public")
@@ -31,12 +31,12 @@ sc_relationtypes(conn::LibPQ.Connection, schema::String="public") =
     [sc_relationtype(conn, row) for row in pg_relations(conn, schema)]
 
 function sc_relationtype(conn::LibPQ.Connection, rel)
-    rowtype = sc_relationmetatype(conn, rel.oid, Symbol(rel.relname))
-    foreignkeys = sc_relationforeignkeys(conn, rel.oid)
+    rowtype = sc_rowtype(conn, rel.oid, Symbol(rel.relname))
+    foreignkeys = sc_foreignkeys(conn, rel.oid)
     RelationType(rowtype, foreignkeys)
 end
 
-function sc_relationforeignkeys(conn::LibPQ.Connection, oid)
+function sc_foreignkeys(conn::LibPQ.Connection, oid)
     fkeys = pg_foreignkeys(conn, oid)
     groupedfkeys = reduce(fkeys, init=Dict()) do acc, each
         let current = get(acc, each.oid, ForeignKey(Symbol(each.parentname), (), ()))
@@ -48,7 +48,7 @@ function sc_relationforeignkeys(conn::LibPQ.Connection, oid)
     Tuple(values(groupedfkeys))
 end
 
-function sc_relationmetatype(conn::LibPQ.Connection, oid, name)
+function sc_rowtype(conn::LibPQ.Connection, oid, name)
     fields = pg_fieldtypes(conn, oid)
     names = pg_fieldnames(fields)
     mtypes = sc_metatypes(conn, fields)
@@ -75,7 +75,7 @@ function sc_metatype(conn::LibPQ.Connection, row::LibPQ.Row)
     elseif typtype == tt_domain
         sc_metatype(conn, pg_basetype(conn, row))
     elseif typtype == tt_composite
-        sc_relationmetatype(conn, row.typrelid, row.typname)
+        sc_rowtype(conn, row.typrelid, row.typname)
     elseif typtype == tt_range
         elemtype = sc_metatype(conn, pg_range_elemtype(conn, row.oid))
         RangeType{elemtype}
