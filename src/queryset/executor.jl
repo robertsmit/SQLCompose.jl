@@ -1,5 +1,3 @@
-using LibPQ, Tables
-
 abstract type AbstractQueryExecutor end
 
 execute(::AbstractQueryExecutor, ::Query) = error("please implement: execute")

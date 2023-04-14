@@ -43,3 +43,7 @@
  `antijoin(grades_2020(), grades_2021(); on=:name)` result of left where exists in right  
 
 * [ ] printing indented
+* [ ] nulls first nulls last
+* [ ] window definition name
+
+limit offset with expressions

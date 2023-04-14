@@ -1,4 +1,4 @@
-import Base: !, |, &, in
+import Base: !, |, &
 import StaticArrays: SA
 
 BooleanExpression = SQLExpression{BooleanType}
@@ -46,10 +46,3 @@ for (op, type, identity) in ((:|, Or, false), (:&, And, true))
         Base.$op(left::BooleanExpression, right) = Base.$op(left, convert(BooleanExpression, right))
     end
 end
-
-struct InExpression{T} <: BooleanExpression
-    element
-    set::T
-end
-
-in(elem::SQLExpression, coll) = InExpression(elem, coll)

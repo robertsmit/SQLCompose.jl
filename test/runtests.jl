@@ -17,6 +17,7 @@ flights = TableDefinition(:flights, :flight_id => Int4Type, :flight_no => SQLCom
 function runtests()
     @testset verbose = true "SQLCompose" begin
         @info VERSION
+        include("./samples.jl")
         include("./queryset/runtests.jl")
         include("./generate/rowstructs.jl")
         include("./core/types.jl")

@@ -1,4 +1,4 @@
-import Base: isempty, ismissing, length, sum
+import Base: isempty, ismissing, length, sum, (:)
 
 #semi join / anti join
 struct Exists <: BooleanExpression
@@ -31,7 +31,6 @@ Not(v::IsNotNull) = IsNull(v.expr)
 
 struct Operator{T<:SQLType}
     name::Symbol
-    type::T
 end
 
 struct FunctionCall{T} <: SQLExpression{T}
@@ -39,10 +38,35 @@ struct FunctionCall{T} <: SQLExpression{T}
     operands::Tuple
 end
 
-FunctionCall{T}(op::Symbol, operands...) where T <: SQLType = FunctionCall(Operator{T}(op, T()), operands...)
+FunctionCall{T}(op::Symbol, operands...) where T <: SQLType = FunctionCall(Operator{T}(op), operands...)
 
 length(expr::SQLExpression{T}) where T <: CharacterType = FunctionCall{Int8Type}(:length, (expr,))
 
 sum(expr::SQLExpression{T}) where T <: NumericType = FunctionCall{Int8Type}(:sum, (expr,))
 
+struct InExpression{T} <: BooleanExpression
+    element
+    set::T
+end
 
+Base.in(elem::SQLExpression, coll::Union{Query, AbstractVector}) = InExpression(elem, coll)
+
+
+#between
+struct BetweenRange
+    left
+    right
+end
+
+struct Between <: BooleanExpression
+    subject
+    range::BetweenRange
+end
+
+
+(:)(left::SQLExpression, right) = BetweenRange(left, right)
+(:)(right, left::SQLExpression) = BetweenRange(left, right)
+(:)(left::SQLExpression, right::SQLExpression) = BetweenRange(left, right)
+Base.in(subject, range::BetweenRange) = Between(subject, range)
+Base.in(subject::SQLExpression, range::AbstractRange) = Between(subject, BetweenRange(first(range), last(range)))
+between(subject, inclusiveLower, inclusiveUpper) = Between(subject, BetweenRange(inclusiveLower, inclusiveUpper))

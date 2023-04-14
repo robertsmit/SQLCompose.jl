@@ -79,6 +79,14 @@ writelateralplan!(plan, node::Cast, tableitem) = writelateralplan!(plan, node.ex
 writelateralplan!(plan, node::IsNull, tableitem) = writelateralplan!(plan, node.expr, tableitem)
 writelateralplan!(plan, node::IsNotNull, tableitem) = writelateralplan!(plan, node.expr, tableitem)
 writelateralplan!(plan, node::DescOrder, tableitem) = writelateralplan!(plan, node.expr, tableitem)
+writelateralplan!(plan, node::Between, tableitem) = begin
+    writelateralplan!(plan, node.subject, tableitem)
+    writelateralplan!(plan, node.range, tableitem)
+end
+writelateralplan!(plan, node::BetweenRange, tableitem) = begin
+    writelateralplan!(plan, node.left, tableitem)
+    writelateralplan!(plan, node.right, tableitem)
+end
 writelateralplan!(plan, ::SQLConstant, tableitem) = plan
 writelateralplan!(plan, ::Exists, ::FromItem) = plan
 writelateralplan!(plan, ::NotExists, ::FromItem) = plan
@@ -101,3 +109,37 @@ function writelateralplan!(plan, node::InExpression, tableitem)
 end
 
 writelateralplan!(plan, node::SelectQuery, tableitem) = nothing
+
+function writelateralplan!(plan, node::AggregateExpression, tableitem)
+    writelateralplan!(plan, node.operands, tableitem)
+    writelateralplan!(plan, node.filter, tableitem)
+    writelateralplan!(plan, node.order, tableitem)
+    plan
+end
+
+function writelateralplan!(plan, node::OrderedSetAggregateExpression, tableitem)
+    writelateralplan!(plan, node.operands, tableitem)
+    writelateralplan!(plan, node.filter, tableitem)
+    writelateralplan!(plan, node.order, tableitem)
+    plan
+end
+
+function writelateralplan!(plan, node::WindowFunctionCall, tableitem)
+    writelateralplan!(plan, node.operands, tableitem)
+    writelateralplan!(plan, node.filter, tableitem)
+    writelateralplan!(plan, node.window, tableitem)
+    plan
+end
+
+function writelateralplan!(plan, node::WindowDefinition, tableitem)
+    writelateralplan!(plan, node.order, tableitem)
+    writelateralplan!(plan, node.partition, tableitem)
+    plan
+end
+
+function writelateralplan!(plan, t::Tuple, tableitem)
+    for each in t
+        writelateralplan!(plan, each, tableitem)
+    end
+    plan
+end

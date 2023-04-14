@@ -1,5 +1,5 @@
 
-printpsql(io::IO, child::SQLNode, parent::SQLNode, env) =
+printpsql(io::IO, child, parent, env) =
     needs_parentheses(child, parent) ? printpsql_parenthesized(io, child, env) : printpsql(io, child, env)
 printpsql(io::IO, node) = printpsql(io, node, PrintEnvironment())
 
@@ -22,6 +22,8 @@ printpsql_alias(io::IO, ::Nothing) = nothing
 printpsql_fieldalias(io::IO, _, alias) = printpsql_alias(io, alias)
 printpsql_fieldalias(io::IO, field::TableItemFieldRef, alias) = Symbol(alias) == field.name || printpsql_alias(io, alias)
 
+printpsql(io, node, env) = error("please implement 'printpsql(::IO, ::Any, ::AbstractPrintEnvironment)' for $(typeof(node))")
+
 
 function printpsql(io::IO, arg::SelectQuery, parentenv)
     env = nextenv(parentenv, arg)
@@ -43,15 +45,27 @@ function printpsql(io::IO, arg::SelectWithoutFromQuery, env)
 end
 
 printpsql_filter(io, ::Nothing, env; prefix="") = nothing
-printpsql_filter(io, expr::BooleanExpression, env; prefix="") = expr === SQLConstant(true) || (print(io, prefix); printpsql(io, expr, env))
+function printpsql_filter(io, expr::BooleanExpression, env; prefix="", postfix="")
+    if expr === SQLConstant(true)
+        return
+    end
+    print(io, prefix)
+    printpsql(io, expr, env)
+    print(io, postfix)
+end
 
-printpsql_fieldlist(io, ::Nothing, env; prefix="") = nothing
-function printpsql_fieldlist(io, node::NodeList, env; prefix="")
+printpsql_fieldlist(io, ::Nothing, env; prefix="", postfix="") = nothing
+function printpsql_fieldlist(io, node::NodeList, env; prefix="", postfix="", nofix="")
+    if isempty(node) 
+        print(io, nofix)
+        return
+    end
     print(io, prefix)
     for i in eachindex(node)
         i != 1 && print(io, ", ")
         printpsql_field(io, node[i], env)
     end
+    print(io, postfix)
 end
 
 function printpsql(io::IO, arg::AbstractVector, env)
@@ -76,6 +90,15 @@ printpsql(io::IO, node::TableItemFieldRef, env) = (print(io, tablealias(env, nod
 printpsql(io::IO, node::Not, env) = printpsql_prefix(io, :NOT, node, env)
 printpsql(io::IO, node::IsNull, env) = (printpsql(io, node.expr, node, env); print(io, " IS NULL"))
 printpsql(io::IO, node::IsNotNull, env) = (printpsql(io, node.expr, node, env); print(io, " IS NOT NULL"))
+
+function printpsql(io::IO, node::Between, env)
+    printpsql(io, node.subject, node, env)
+    print(io, " BETWEEN ")
+    printpsql(io, node.range.left, node, env)
+    print(io, " AND ")
+    printpsql(io, node.range.right, node, env)
+end
+
 printpsql(io::IO, node::Cast, env) = (printpsql(io, node.expr, node, env); print(io, "::"); printpsql(io, node.type))
 printpsql(io::IO, node::DescOrder, env) = (printpsql(io, node.expr, node, env); print(io, " DESC"))
 printpsql(io::IO, node::Or, env) = printpsql_infix(io, node, :OR, env)
@@ -263,6 +286,18 @@ function printpsql_commontable(io::IO, table::RecursiveCommonTable, env)
     cte_nextenv
 end
 
+function printpsql(io::IO, node::AggregateExpression, env::AbstractPrintEnvironment)
+    print(io, node.name)
+    print(io, "(")
+    if node.distinct
+        print(io, " DISTINCT ")
+    end
+    printpsql_fieldlist(io, node.operands, env; nofix="*")
+    printpsql_fieldlist(io, node.order, env; prefix=" ORDER BY ")
+    print(io, ")")
+    printpsql_filter(io, node.filter, env; prefix="FILTER WHERE(", postfix=")")
+end
+
 function printpsql_parenthesized(io::IO, v, env)
     print(io, "(")
     printpsql(io, v, env)
@@ -274,4 +309,5 @@ needs_parentheses(child::And, parent::Or) = false
 needs_parentheses(child::TableItemFieldRef, parent::SQLNode) = false
 needs_parentheses(child::SQLConstant, parent::SQLNode) = false
 needs_parentheses(child::Cast, parent::SQLNode) = false
+needs_parentheses(child, parent) = false
 

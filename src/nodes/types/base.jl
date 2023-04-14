@@ -3,6 +3,8 @@ import UUIDs: UUID
 
 abstract type SQLType <: SQLNode end
 
+
+
 include("misc.jl");
 include("row.jl");
 include("character.jl");
