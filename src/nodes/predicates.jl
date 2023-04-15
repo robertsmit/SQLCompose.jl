@@ -1,4 +1,4 @@
-import Base: isempty, ismissing, length, sum, (:)
+import Base: isempty, ismissing, (:)
 
 #semi join / anti join
 struct Exists <: BooleanExpression
@@ -26,23 +26,6 @@ end
 ismissing(v::SQLExpression) = IsNull(v)
 Not(v::IsNull) = IsNotNull(v.expr)
 Not(v::IsNotNull) = IsNull(v.expr)
-
-#generic functions
-
-struct Operator{T<:SQLType}
-    name::Symbol
-end
-
-struct FunctionCall{T} <: SQLExpression{T}
-    operator::Operator{T}
-    operands::Tuple
-end
-
-FunctionCall{T}(op::Symbol, operands...) where T <: SQLType = FunctionCall(Operator{T}(op), operands...)
-
-length(expr::SQLExpression{T}) where T <: CharacterType = FunctionCall{Int8Type}(:length, (expr,))
-
-sum(expr::SQLExpression{T}) where T <: NumericType = FunctionCall{Int8Type}(:sum, (expr,))
 
 struct InExpression{T} <: BooleanExpression
     element

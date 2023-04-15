@@ -33,4 +33,4 @@ end
 SelectQuery(qs::QuerySet) = convert(SelectQuery, qs.query)
 convert(::Query, qs::QuerySet) = qs.query
 
-Base.show(io::IO, qs::QuerySet) = Base.show(io, qs.query)
+Base.show(io::IO, qs::QuerySet) = printpsql(io, qs.query)

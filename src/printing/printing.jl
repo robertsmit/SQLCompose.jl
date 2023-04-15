@@ -112,7 +112,7 @@ printpsql(io::IO, node::Exists, env) = (print(io, "EXISTS "); printpsql(io, node
 printpsql(io::IO, node::NotExists, env) = (print(io, "NOT EXISTS "); printpsql(io, node.query, node, env))
 
 function printpsql(io::IO, node::FunctionCall, env)
-    print(io, node.operator.name)
+    print(io, node.name)
     print(io, "(")
     printpsql_fieldlist(io, node.operands, env)
     print(io, ")")
@@ -295,7 +295,7 @@ function printpsql(io::IO, node::AggregateExpression, env::AbstractPrintEnvironm
     printpsql_fieldlist(io, node.operands, env; nofix="*")
     printpsql_fieldlist(io, node.order, env; prefix=" ORDER BY ")
     print(io, ")")
-    printpsql_filter(io, node.filter, env; prefix="FILTER WHERE(", postfix=")")
+    printpsql_filter(io, node.filter, env; prefix=" FILTER WHERE(", postfix=")")
 end
 
 function printpsql_parenthesized(io::IO, v, env)

@@ -14,9 +14,6 @@ struct AggregateExpression{T} <: SQLExpression{T}
     filter::BooleanExpression
 end
 
-AggregateExpression{T}(name::Symbol, operands::Tuple = (); order=(), filter=true, distinct=false) where T = 
-    AggregateExpression{T}(name, distinct, operands, order, filter)
-
 struct WindowDefinition
     partition::Tuple
     order::Tuple
@@ -28,13 +25,19 @@ struct WindowFunctionCall{T} <: SQLExpression{T}
     filter::BooleanExpression
     window::WindowDefinition
 end
+
+
+
 WindowFunctionCall{T}(name, operands...; filter=true, order=(), partition=()) where T =
     WindowFunctionCall{T}(name, operands, filter, WindowDefinition(partition, order))
 
 
+aggregate(name::Symbol, type, operands...;order=(), filter=true, distinct=false) = 
+    AggregateExpression{type}(name, distinct, operands, order, filter)
+
 Base.count(expr::SQLExpression; distinct=false, order=(), filter=true) =
-    AggregateExpression{Int8Type}(:count, distinct, (expr,), order, filter)
-Base.count(::AllOperand; filter=true) = AggregateExpression{Int8Type}(:count; filter)
+    aggregate(:count, Int8Type, expr; distinct, order, filter)
+Base.count(; filter=true) = aggregate(:count, Int8Type; filter)
 
 count_over(expr; filter=true, partition=(), order=()) =
     WindowFunctionCall{Int8Type}(:count, expr; filter, partition, order)

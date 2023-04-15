@@ -19,7 +19,7 @@ end,
     basequery = Bookings.query_seats() |>
                 groupby(:aircraft_code, :fare_conditions) |>
                 sort(:aircraft_code, :fare_conditions) |>
-                map(s -> (; s.aircraft_code, s.fare_conditions, num=count(All)))
+                map(s -> (; s.aircraft_code, s.fare_conditions, num=count()))
     basequery
 end,
 "SELECT s.aircraft_code, s.fare_conditions, count(*) AS num FROM seats s 
