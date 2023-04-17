@@ -6,7 +6,7 @@ export TableDefinition, lateral
 # composition
 export query, groupby, join, with
 # operators
-export between, array_agg, avg
+export between, avg
 #globals
 export All
 

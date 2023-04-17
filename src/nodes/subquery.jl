@@ -7,7 +7,7 @@ end
 
 function SubqueryTableItem(query::Query; aliashint::Symbol=:q)
     ref = TableItemRef(aliashint)
-    SubqueryTableItem(ref, unordered(query))
+    SubqueryTableItem(ref, query)
 end
 
 struct SubqueryExpression{T} <: SQLExpression{T}

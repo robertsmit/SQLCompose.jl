@@ -16,12 +16,21 @@ end,
 
 #Bigger aircraft have more seats of various travel classes:
 @testsql begin
-    basequery = Bookings.query_seats() |>
-                groupby(:aircraft_code, :fare_conditions) |>
-                sort(:aircraft_code, :fare_conditions) |>
-                map(s -> (; s.aircraft_code, s.fare_conditions, num=count()))
-    basequery
+    seats_fare_condition_nums = Bookings.query_seats() |>
+                                groupby(:aircraft_code, :fare_conditions) |>
+                                sort(:aircraft_code, :fare_conditions) |>
+                                map(s -> (; s.aircraft_code, s.fare_conditions, num=count()))
+    query(seats_fare_condition_nums) |>
+    groupby(:aircraft_code) |>
+    sort(:aircraft_code) |>
+    map(r -> (; r.aircraft_code,
+        fare_conditions=join(r.fare_conditions * "(" * convert(TextType(), r.num) * ")", ", ")))
 end,
-"SELECT s.aircraft_code, s.fare_conditions, count(*) AS num FROM seats s 
-    GROUP BY s.aircraft_code, s.fare_conditions 
-    ORDER BY s.aircraft_code, s.fare_conditions"
+"SELECT q.aircraft_code, string_agg(CONCAT(q.fare_conditions, '(', q.num::text, ')'), ', ') AS fare_conditions 
+FROM (
+        SELECT s.aircraft_code, s.fare_conditions, count(*) AS num 
+        FROM seats s 
+        GROUP BY s.aircraft_code, s.fare_conditions 
+        ORDER BY s.aircraft_code, s.fare_conditions) q 
+GROUP BY q.aircraft_code 
+ORDER BY q.aircraft_code"

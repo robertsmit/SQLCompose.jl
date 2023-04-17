@@ -42,15 +42,22 @@ Base.count(expr::SQLExpression; distinct=false, order=(), filter=true) =
     aggregate(:count, Int8Type, expr; distinct, order, filter)
 Base.count(; filter=true) = aggregate(:count, Int8Type; filter)
 
-array_agg(expr::SQLExpression{T}; distinct=false, order=(), filter=true) where {T} =
-    aggregate(:array_agg, ArrayType{T}, expr; distinct, order, filter)
 
 avg(expr::SQLExpression{<:NumericType}; distinct=false, order=(), filter=true) =
     aggregate(:avg, NumericType, expr; distinct, order, filter)
 
-Base.sum(expr::SQLExpression{<:NumericType}) = FunctionCall{NumericType}(:sum, (expr,))
-Base.maximum(expr::SQLExpression{<:NumericType}) = FunctionCall{NumericType}(:max, (expr,))
-Base.minimum(expr::SQLExpression{<:NumericType}) = FunctionCall{NumericType}(:min, (expr,))
+Base.sum(expr::SQLExpression{<:NumericType}; distinct=false, order=(), filter=true) =
+    aggregate(:sum, NumericType, expr; distinct, order, filter)
+Base.maximum(expr::SQLExpression{<:NumericType}; distinct=false, order=(), filter=true) =
+    aggregate(:max, NumericType, expr; distinct, order, filter)
+Base.minimum(expr::SQLExpression{<:NumericType}; distinct=false, order=(), filter=true) = 
+    aggregate(:min, NumericType, expr; distinct, order, filter)
+Base.minimum(expr::SQLExpression{<:NumericType}; distinct=false, order=(), filter=true) = 
+    aggregate(:min, NumericType, expr; distinct, order, filter)
+Base.join(expr::SQLExpression{<:CharacterType}, delim; distinct=false, order=(), filter=true) = 
+    aggregate(:string_agg, CharacterType, expr, delim; distinct, order, filter)
+Base.collect(expr::SQLExpression{T}; distinct=false, order=(), filter=true) where {T} =
+    aggregate(:array_agg, ArrayType{T}, expr; distinct, order, filter)
 
 count_over(expr; filter=true, partition=(), order=()) =
     WindowFunctionCall{Int8Type}(:count, expr; filter, partition, order)

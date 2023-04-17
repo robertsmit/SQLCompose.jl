@@ -42,7 +42,7 @@
             end |>
             groupby((f, fa, a) -> f.title) |>
             sort((f, fa, a) -> f.title) |>
-            map((f, fa, a) -> (; f.title, actors=array_agg(fullname(a))))
+            map((f, fa, a) -> (; f.title, actors=collect(fullname(a))))
         end,
         "SELECT f.title, array_agg(CONCAT(a.first_name, ' ', a.last_name)) AS actors FROM film f 
             INNER JOIN film_actor f2 ON f.film_id = f2.film_id 
@@ -53,7 +53,7 @@
         @info "with laterals"
         @testsql begin
             Pagila.query_film_actor() |>
-            map((fa) -> (title=Pagila.film_of(fa).title, actors=(Pagila.actor_of(fa) |> fullname |> array_agg))) |>
+            map((fa) -> (title=Pagila.film_of(fa).title, actors=(Pagila.actor_of(fa) |> fullname |> collect))) |>
             groupby(r -> r.title) |>
             sort(r -> r.title)
         end,
