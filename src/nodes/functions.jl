@@ -5,6 +5,5 @@ struct FunctionCall{T} <: SQLExpression{T}
     operands::Tuple
 end
 
-Base.length(expr::SQLExpression{T}) where T <: CharacterType = FunctionCall{Int8Type}(:length, (expr,))
-
-Base.sum(expr::SQLExpression{T}) where T <: NumericType = FunctionCall{Int8Type}(:sum, (expr,))
+Base.length(expr::SQLExpression{<:CharacterType}) = FunctionCall{Int8Type}(:length, (expr,))
+Base.round(expr::SQLExpression{<:NumericType}; digits=0) = FunctionCall{NumericType}(:round, (expr, digits))

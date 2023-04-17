@@ -25,17 +25,7 @@
         GROUP BY s.aircraft_code, s.fare_conditions 
         ORDER BY s.aircraft_code, s.fare_conditions"
 
-    # """SELECT
-    # title,
-    # ARRAY_AGG (first_name || ' ' || last_name) actors
-    # FROM
-    # film
-    # INNER JOIN film_actor USING (film_id)
-    # INNER JOIN actor USING (actor_id)
-    # GROUP BY
-    # title
-    # ORDER BY
-    # title;"""
+
 
 
     @testset "array aggregate" begin
@@ -73,4 +63,68 @@
             GROUP BY lat_film.title 
             ORDER BY lat_film.title"
     end
+
+    begin
+        #Calculate the average replacement cost of all films: 21.09
+        @testsql map(Pagila.query_film()) do f
+            round(avg(f.replacement_cost), digits=2)
+        end,
+        "SELECT round(avg(f.replacement_cost), 2) AS elem1 FROM film f"
+    end
+
+    begin
+        #get the number of drama films: 62
+        @testsql begin
+            Pagila.query_film_category() |>
+            filter(fc -> Pagila.category_of(fc).category_id == 7) |>
+            map(fc -> count())
+        end,
+        "SELECT count(*) AS elem1 FROM film_category f 
+            INNER JOIN category lat_category ON f.category_id = lat_category.category_id 
+            WHERE lat_category.category_id = 7"
+
+    end
+
+    begin
+        # the maximum replacement cost of films: 29.99
+        max_replacement_cost = map(Pagila.query_film()) do f
+            maximum(f.replacement_cost)
+        end
+        @testsql max_replacement_cost,
+        "SELECT max(f.replacement_cost) AS elem1 FROM film f"
+
+        # films that have the maximum replacement cost
+        @testsql begin
+            Pagila.query_film() |>
+            filter(f -> f.replacement_cost == max_replacement_cost) |>
+            map(f -> (; f.film_id, f.title)) |>
+            sort(r -> r.title)
+        end,
+        "SELECT f.film_id, f.title FROM film f 
+            WHERE f.replacement_cost = (SELECT max(f2.replacement_cost) AS elem1 FROM film f2) 
+            ORDER BY f.title"
+
+        # the minimum replacement cost of films
+        min_replacement_cost = map(Pagila.query_film()) do f
+            minimum(f.replacement_cost)
+        end
+        @testsql min_replacement_cost,
+        "SELECT min(f.replacement_cost) AS elem1 FROM film f"
+
+    end
+
+    begin
+        # calculate the total length of films grouped by film’s rating
+        @testsql begin
+            Pagila.query_film() |> 
+            sort(:rating) |>
+            groupby(:rating) |>
+            map(f -> (;f.rating, sum = sum(f.rental_duration)))
+
+        end,
+        "SELECT f.rating, sum(f.rental_duration) AS sum FROM film f GROUP BY f.rating ORDER BY f.rating"
+    end
+
 end
+
+
