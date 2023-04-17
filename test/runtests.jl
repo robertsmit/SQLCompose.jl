@@ -4,6 +4,7 @@ using Chain
 
 include("./testsql.jl")
 include("./data/bookings.jl")
+include("./data/pagila.jl")
 
 aircrafts = TableDefinition(:aircrafts, :aircraft_code => SQLCompose.CharType, :model => TextType, :range => SQLCompose.Int4Type; aliashint=:a)
 flights = TableDefinition(:flights, :flight_id => Int4Type, :flight_no => SQLCompose.CharType,
@@ -32,6 +33,7 @@ function runtests()
         include("./compose/operators.jl")
         include("./compose/cte.jl")
         include("./compose/lateral.jl")
+        include("./compose/aggregates.jl")
     end
     return nothing
 end

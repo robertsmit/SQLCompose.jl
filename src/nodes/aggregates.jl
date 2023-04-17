@@ -1,5 +1,5 @@
 
- struct OrderedSetAggregateExpression{T} <: SQLExpression{T}
+struct OrderedSetAggregateExpression{T} <: SQLExpression{T}
     name::Symbol
     operands::Tuple
     order::Tuple
@@ -26,18 +26,25 @@ struct WindowFunctionCall{T} <: SQLExpression{T}
     window::WindowDefinition
 end
 
+struct DefinedFunction{T<:SQLType}
+    name::Symbol
+end
 
-
-WindowFunctionCall{T}(name, operands...; filter=true, order=(), partition=()) where T =
+WindowFunctionCall{T}(name, operands...; filter=true, order=(), partition=()) where {T} =
     WindowFunctionCall{T}(name, operands, filter, WindowDefinition(partition, order))
 
 
-aggregate(name::Symbol, type, operands...;order=(), filter=true, distinct=false) = 
+aggregate(name::Symbol, type::Type{<:SQLType}, operands...; order=(), filter=true, distinct=false) =
     AggregateExpression{type}(name, distinct, operands, order, filter)
+
 
 Base.count(expr::SQLExpression; distinct=false, order=(), filter=true) =
     aggregate(:count, Int8Type, expr; distinct, order, filter)
 Base.count(; filter=true) = aggregate(:count, Int8Type; filter)
+
+array_agg(expr::SQLExpression{T}; distinct=false, order=(), filter=true) where {T} =
+    aggregate(:array_agg, ArrayType{T}, expr; distinct, order, filter)
+
 
 count_over(expr; filter=true, partition=(), order=()) =
     WindowFunctionCall{Int8Type}(:count, expr; filter, partition, order)
