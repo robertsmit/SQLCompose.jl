@@ -27,8 +27,7 @@ end,
         fare_conditions=join(r.fare_conditions * "(" * convert(TextType(), r.num) * ")", ", ")))
 end,
 "SELECT q.aircraft_code, string_agg(CONCAT(q.fare_conditions, '(', q.num::text, ')'), ', ') AS fare_conditions 
-FROM (
-        SELECT s.aircraft_code, s.fare_conditions, count(*) AS num 
+FROM (SELECT s.aircraft_code, s.fare_conditions, count(*) AS num 
         FROM seats s 
         GROUP BY s.aircraft_code, s.fare_conditions 
         ORDER BY s.aircraft_code, s.fare_conditions) q 
