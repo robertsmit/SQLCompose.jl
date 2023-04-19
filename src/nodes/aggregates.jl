@@ -52,8 +52,6 @@ Base.maximum(expr::SQLExpression{<:NumericType}; distinct=false, order=(), filte
     aggregate(:max, NumericType, expr; distinct, order, filter)
 Base.minimum(expr::SQLExpression{<:NumericType}; distinct=false, order=(), filter=true) = 
     aggregate(:min, NumericType, expr; distinct, order, filter)
-Base.minimum(expr::SQLExpression{<:NumericType}; distinct=false, order=(), filter=true) = 
-    aggregate(:min, NumericType, expr; distinct, order, filter)
 Base.join(expr::SQLExpression{<:CharacterType}, delim; distinct=false, order=(), filter=true) = 
     aggregate(:string_agg, CharacterType, expr, delim; distinct, order, filter)
 Base.collect(expr::SQLExpression{T}; distinct=false, order=(), filter=true) where {T} =

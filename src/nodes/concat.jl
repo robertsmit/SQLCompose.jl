@@ -19,4 +19,4 @@ Concat(a::SQLExpression, b::Concat) = Concat((a, b.expressions...))
 
 *(a::SQLExpression{<:CharacterType}, b::SQLExpression) = Concat(a, b)
 *(a::SQLExpression{<:CharacterType}, b) = Concat(a, convert(SQLExpression, b))
-
+Base.string(a::SQLExpression{<:CharacterType}, b, more...) = reduce(*, more; init= a * b)

@@ -33,3 +33,29 @@ FROM (SELECT s.aircraft_code, s.fare_conditions, count(*) AS num
         ORDER BY s.aircraft_code, s.fare_conditions) q 
 GROUP BY q.aircraft_code 
 ORDER BY q.aircraft_code"
+
+#Which flight segments are included into Antonina Kuznecova's ticket
+@testsql begin
+    flights_v_of(ticket_flights::Bookings.Ticket_FlightsRow) = SQLCompose.lateral(Bookings.Flights_VRow, :flight_id, ticket_flights.flight_id)
+    Bookings.query_ticket_flights() |>
+    map(tf -> (; tf, f=flights_v_of(tf))) |>
+    sort(((; f),) -> f.scheduled_departure) |>
+    filter(((; tf),) -> tf.ticket_no == "0005432661915") |>
+    map(((tf, f),) -> (
+        when=string(f.scheduled_departure; pattern="DD.MM.YYYY"),
+        departure=string(f.departure_city, " (", f.departure_airport, ")"),
+        arrival=string(f.arrival_city, " (", f.arrival_airport, ")"),
+        class=tf.fare_conditions,
+        tf.amount
+        ))
+end,
+"SELECT 
+    to_char(lat_flights_v.scheduled_departure, 'DD.MM.YYYY') AS when, 
+    CONCAT(lat_flights_v.departure_city, ' (', lat_flights_v.departure_airport, ')') AS departure, 
+    CONCAT(lat_flights_v.arrival_city, ' (', lat_flights_v.arrival_airport, ')') AS arrival, 
+    t.fare_conditions AS class, 
+    t.amount 
+FROM ticket_flights t 
+    INNER JOIN flights_v lat_flights_v ON t.flight_id = lat_flights_v.flight_id 
+WHERE t.ticket_no = '0005432661915' 
+ORDER BY lat_flights_v.scheduled_departure"
