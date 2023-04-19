@@ -51,7 +51,7 @@ MoreClauses(other::MoreClauses; group=other.group, groupfilter=other.groupfilter
 struct SelectQuery{T} <: Query
     result::T
     from::FromItem
-    filter::Union{BooleanExpression, Nothing}
+    filter::BooleanExpression
     order::Union{NodeList, Nothing}
     clauses::MoreClauses
 end
@@ -59,14 +59,15 @@ end
 result(q::SelectQuery) = q.result
 
 SelectQuery(query::SelectWithoutFromQuery) = SelectQuery(SubqueryTableItem(query))
+
 function SelectQuery(from::ValuesTableItem{T}) where {T<:Tuple}
     fieldrefs = Tuple(TableItemFieldRef(n, sqltypeclassof(t), from.ref) for (n, t) in zip(from.fieldnames, T.types))
     result = NamedTuple{from.fieldnames}(fieldrefs)
     SelectQuery(result, from)
 end
-SelectQuery(result, from::FromItem) = SelectQuery(result, from, nothing)
-SelectQuery(result, from::FromItem, filter) = SelectQuery(result, from, filter, nothing)
-SelectQuery(result, from::FromItem, filter, order) = SelectQuery(result, from, filter, order, noclauses)
+
+SelectQuery(result::T, from::FromItem, filter=true, order=nothing) where T = SelectQuery{T}(result, from, filter, order, noclauses)
+
 function SelectQuery(table::TableDefinition)
     ref = TableItemRef(table.aliashint)
     result = NamedTuple{field_names(table)}(TableItemFieldRef(name, type, ref) for (name, type) in field_pairs(table))

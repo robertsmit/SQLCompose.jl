@@ -37,7 +37,7 @@ And(left::And, right::And) = And(SA[left.elems..., right.elems...])
 for (op, type, identity) in ((:|, Or, false), (:&, And, true))
     @eval begin
         Base.$op(::Nothing, ::Nothing) = nothing
-        Base.$op(left::BooleanConstant, right::BooleanConstant) = BooleanConstant(Base.$op(left.value, right.value))
+        Base.$op(left::BooleanConstant, right::BooleanConstant) = SQLConstant(Base.$op(left.value, right.value))
         Base.$op(left::Nothing, right::BooleanExpression) = right
         Base.$op(left::BooleanConstant, right::BooleanExpression) = left.value == $(identity) ? right : left
         Base.$op(left::BooleanExpression, right::BooleanConstant) = right.value == $(identity) ? left : right
