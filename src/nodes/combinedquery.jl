@@ -21,7 +21,7 @@ combinators = (
 )
 
 needs_parentheses(child::CombinedQuery{T}, parent::CombinedQuery{T}) where T <: QueryCombinatorType = false
-needs_parentheses(child::SelectQuery, parent::CombinedQuery) = !isnothing(child.order) || !isnothing(child.clauses.range)
+needs_parentheses(child::SelectQuery, ::CombinedQuery) = isordered(child) || ispaged(child)
 
 #gen
 for (combinator, (op, sqlop)) in pairs(combinators)

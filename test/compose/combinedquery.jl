@@ -1,11 +1,3 @@
-#=
-map:
-- Julia version: 
-- Author: Rob
-- Date: 2022-04-22
-=#
-using SQLCompose
-
 
 @info "Running combined query by tests"
 @testset "combined queries" begin

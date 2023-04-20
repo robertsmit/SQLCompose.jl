@@ -33,10 +33,12 @@ function printpsql(io::IO, arg::SelectQuery, parentenv)
     printpsql_fromitem_in_environment(io, arg.from, env)
     printpsql_laterals(io, arg.from, env)
     printpsql_filter(io, arg.filter, env; prefix=" WHERE ")
-    printpsql_fieldlist(io, arg.clauses.group, env; prefix=" GROUP BY ")
-    printpsql_filter(io, arg.clauses.groupfilter, env; prefix=" HAVING ")
+    if !isempty(arg.group)
+        printpsql_fieldlist(io, arg.group, env; prefix=" GROUP BY ")
+        printpsql_filter(io, arg.groupfilter, env; prefix=" HAVING ")
+    end
     printpsql_fieldlist(io, arg.order, env; prefix=" ORDER BY ")
-    printpsql(io, arg.clauses.range, env)
+    printpsql(io, arg.range, env)
 end
 
 function printpsql(io::IO, arg::SelectWithoutFromQuery, env)
@@ -56,7 +58,7 @@ end
 
 printpsql_fieldlist(io, ::Nothing, env; prefix="", postfix="") = nothing
 function printpsql_fieldlist(io, node::NodeList, env; prefix="", postfix="", nofix="")
-    if isempty(node) 
+    if isempty(node)
         print(io, nofix)
         return
     end
@@ -85,6 +87,21 @@ printpsql(io::IO, ::Nothing, env) = nothing
 printpsql(io::IO, ::Nothing) = nothing
 
 printpsql(io::IO, node::TableItemFieldRef, env) = (print(io, tablealias(env, node.table)); print(io, "."); print(io, node.name))
+function printpsql(io::IO, node::TableRange, env) 
+    haslimit = !isnothing(node.limit)    
+    if haslimit
+        print(io, " LIMIT ")
+        print(io, node.limit)
+    end
+    hasoffset = node.offset > 0
+    if hasoffset
+        if haslimit
+            print(io, " ")
+        end
+        print(io, "OFFSET ")
+        print(io, node.offset)
+    end
+end
 
 # operators
 printpsql(io::IO, node::Not, env) = printpsql_prefix(io, :NOT, node, env)

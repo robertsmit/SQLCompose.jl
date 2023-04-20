@@ -77,7 +77,7 @@ map(f::Function) = node -> map(f, node)
 joinable(q::SelectQuery{UnmergedResult}) = error("cannot right join unmerged results")
 joinable(q::SelectQuery) = joinable(q, q.from)
 joinable(q::SelectQuery, from::JoinItem) = query(q)
-joinable(q::SelectQuery, from::TableItem) = q.clauses == noclauses ? q : query(q)
+joinable(q::SelectQuery, from::TableItem) = isgrouped(q) || ispaged(q) ? query(q) : q
 
 function join(f::Function, left::Queryable, right::Queryable; type::JoinType=InnerJoin())
     left = convert(SelectQuery, left)

@@ -20,7 +20,7 @@ struct TableRange
     limit::Union{UInt,Nothing}
 end
 
-fullrange = TableRange(0,nothing)
+fullrange() = TableRange(0, nothing)
 
 nodelist(a::NodeList) = a
 nodelist(a) = (a,)
@@ -40,20 +40,14 @@ asc(arg) = arg
 asc(arg::NodeList) = map(arc, arg)
 asc(arg::DescOrder) = arg.expr
 
-struct MoreClauses
-    group::Union{NodeList, Nothing}
-    groupfilter::Union{BooleanExpression, Nothing}
-    range::Union{TableRange, Nothing}
-end
-noclauses = MoreClauses(nothing, nothing, nothing)
-MoreClauses(other::MoreClauses; group=other.group, groupfilter=other.groupfilter, range = other.range) = MoreClauses(group, groupfilter, range)
-
 struct SelectQuery{T} <: Query
     result::T
     from::FromItem
     filter::BooleanExpression
-    order::Union{NodeList, Nothing}
-    clauses::MoreClauses
+    group::Tuple
+    groupfilter::BooleanExpression
+    order::Tuple
+    range::TableRange
 end
 
 result(q::SelectQuery) = q.result
@@ -66,7 +60,12 @@ function SelectQuery(from::ValuesTableItem{T}) where {T<:Tuple}
     SelectQuery(result, from)
 end
 
-SelectQuery(result::T, from::FromItem, filter=true, order=nothing) where T = SelectQuery{T}(result, from, filter, order, noclauses)
+SelectQuery(result::T, from::FromItem, filter=true, group=(), groupfilter=true, order=(), range=fullrange()) where {T} =
+    SelectQuery{T}(result, from, filter, group, groupfilter, order, range)
+
+isgrouped(query::SelectQuery) = !isempty(query.group)
+ispaged(query::SelectQuery) = query.range !== fullrange()
+isordered(query::SelectQuery) = !isempty(query.order)
 
 function SelectQuery(table::TableDefinition)
     ref = TableItemRef(table.aliashint)
@@ -74,15 +73,17 @@ function SelectQuery(table::TableDefinition)
     from = DefinedTableItem(ref, name(table))
     SelectQuery(result, from)
 end
-SelectQuery(other::SelectQuery; result = other.result, from = other.from, filter = other.filter, order =other.order, clauses=other.clauses) = SelectQuery(result, from, filter, order, clauses)
+SelectQuery(other::SelectQuery;
+    result=other.result, from=other.from, filter=other.filter, group=other.group, groupfilter=other.groupfilter, order=other.order, range=other.range) =
+    SelectQuery(result, from, filter, group, groupfilter, order, range)
 
-with_result(query::SelectQuery, arg) = SelectQuery(query; result = arg)
-with_from(query::SelectQuery, arg) = SelectQuery(query; from = arg)
-with_filter(query::SelectQuery, arg) = SelectQuery(query; filter = arg)
-with_order(query::SelectQuery, value) = SelectQuery(query; order = nodelist(value))
-with_group(query::SelectQuery, value) = SelectQuery(query; clauses = MoreClauses(query.clauses; group = nodelist(value)))
-with_groupfilter(query::SelectQuery, value) = SelectQuery(query; clauses = MoreClauses(query.clauses; groupfilter = value))
-with_range(query::SelectQuery, value) = SelectQuery(query; clauses = MoreClauses(query.clauses; range = value))
+with_result(query::SelectQuery, arg) = SelectQuery(query; result=arg)
+with_from(query::SelectQuery, arg) = SelectQuery(query; from=arg)
+with_filter(query::SelectQuery, arg) = SelectQuery(query; filter=arg)
+with_order(query::SelectQuery, value) = SelectQuery(query; order=nodelist(value))
+with_group(query::SelectQuery, value) = SelectQuery(query; group=nodelist(value))
+with_groupfilter(query::SelectQuery, value) = SelectQuery(query; groupfilter=value)
+with_range(query::SelectQuery, value) = SelectQuery(query; range=value)
 
 
 Base.convert(::Type{SelectQuery}, value::SelectQuery) = value

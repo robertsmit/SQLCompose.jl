@@ -36,15 +36,11 @@ function writelateralplan!(plan, node::SelectQuery)
     writelateralplan!(plan, node.from, nothing)
     let tableitem = last(node.from)
         writelateralplan!(plan, node.result, tableitem)
-        writelateralplan!(plan, node.filter, tableitem)
-        writelateralplan!(plan, node.clauses, tableitem)
+        writelateralplan!(plan, node.filter, tableitem)            
+        writelateralplan!(plan, node.group, tableitem)
+        writelateralplan!(plan, node.groupfilter, tableitem)
         writelateralplan!(plan, node.order, tableitem)
     end
-end
-
-function writelateralplan!(plan, node::MoreClauses, tableitem)
-    writelateralplan!(plan, node.group, tableitem)
-    writelateralplan!(plan, node.groupfilter, tableitem)
 end
 
 function writelateralplan!(plan, node::JoinItem, tableitem)
