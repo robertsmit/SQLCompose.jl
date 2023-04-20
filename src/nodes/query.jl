@@ -24,10 +24,6 @@ fullrange() = TableRange(0, nothing)
 
 nodelist(a::NodeList) = a
 nodelist(a) = (a,)
-nodelist(a::Nothing, b) = nodelist(b)
-nodelist(a::Nothing, b::Nothing) = nothing
-nodelist(a, b::Nothing) = nodelist(a)
-nodelist(a, b) = (nodelist(a)..., nodelist(b)...)
 
 struct DescOrder <: SQLNode
     expr::SQLExpression
@@ -42,7 +38,7 @@ asc(arg::DescOrder) = arg.expr
 
 struct SelectQuery{T} <: Query
     result::T
-    from::FromItem
+    from::Union{FromItem,FunctionCall}
     filter::BooleanExpression
     group::Tuple
     groupfilter::BooleanExpression
@@ -60,7 +56,7 @@ function SelectQuery(from::ValuesTableItem{T}) where {T<:Tuple}
     SelectQuery(result, from)
 end
 
-SelectQuery(result::T, from::FromItem, filter=true, group=(), groupfilter=true, order=(), range=fullrange()) where {T} =
+SelectQuery(result::T, from, filter=true, group=(), groupfilter=true, order=(), range=fullrange()) where {T} =
     SelectQuery{T}(result, from, filter, group, groupfilter, order, range)
 
 isgrouped(query::SelectQuery) = !isempty(query.group)
@@ -73,6 +69,7 @@ function SelectQuery(table::TableDefinition)
     from = DefinedTableItem(ref, name(table))
     SelectQuery(result, from)
 end
+
 SelectQuery(other::SelectQuery;
     result=other.result, from=other.from, filter=other.filter, group=other.group, groupfilter=other.groupfilter, order=other.order, range=other.range) =
     SelectQuery(result, from, filter, group, groupfilter, order, range)

@@ -202,11 +202,10 @@ function printpsql_fromitem(io::IO, node::JoinItem, env)
 end
 
 printpsql_join(io::IO, node::Join) = printpsql_join(io, node.type)
-printpsql_join(io::IO, node::InnerJoin) = print(io, " INNER JOIN ")
-printpsql_join(io::IO, node::LeftJoin) = print(io, " LEFT JOIN ")
-printpsql_join(io::IO, node::RightJoin) = print(io, " RIGHT JOIN ")
-printpsql_join(io::IO, node::FullJoin) = print(io, " FULL JOIN ")
-printpsql_join(io::IO, node::CrossJoin) = print(io, " CROSS JOIN ")
+printpsql_join(io::IO, ::InnerJoin) = print(io, " INNER JOIN ")
+printpsql_join(io::IO, ::LeftJoin) = print(io, " LEFT JOIN ")
+printpsql_join(io::IO, ::RightJoin) = print(io, " RIGHT JOIN ")
+printpsql_join(io::IO, ::FullJoin) = print(io, " FULL JOIN ")
 
 
 

@@ -23,4 +23,14 @@
     nested = map(query(query(1))) do x; x + 1; end
     @testsql nested  "SELECT q.elem1 + 1 AS elem1 FROM (SELECT 1 AS elem1) q"
     @testsql query(nested) "SELECT q.elem1 FROM (SELECT q.elem1 + 1 AS elem1 FROM (SELECT 1 AS elem1) q) q"
+
 end
+
+@testset "set returning functions" begin
+
+    type = RowType{:get_top_customers, (:customer_id, :total_revenue), Tuple{Int4Type, SQLCompose.NumericType}}
+    call = SQLCompose.FunctionCall{type}(:get_top_customers, ())
+
+    # @testsql query(SQLCompose.FunctionCall{RowType{(:customer_id, :total_revenue,)}()}(:get_top_customers, ())) ""
+end
+

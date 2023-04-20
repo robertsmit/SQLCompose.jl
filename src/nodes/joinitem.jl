@@ -14,9 +14,13 @@ struct InnerJoin <: JoinType end
 struct LeftJoin <: JoinType end
 struct RightJoin <: JoinType end
 struct FullJoin <: JoinType end
-struct CrossJoin <: JoinType end
 
 struct EquiJoin <: Join
+    type::JoinType
+    condition::BooleanExpression
+end
+
+struct LateralJoin <: Join
     type::JoinType
     condition::BooleanExpression
 end

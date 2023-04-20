@@ -79,6 +79,7 @@ joinable(q::SelectQuery) = joinable(q, q.from)
 joinable(q::SelectQuery, from::JoinItem) = query(q)
 joinable(q::SelectQuery, from::TableItem) = isgrouped(q) || ispaged(q) ? query(q) : q
 
+
 function join(f::Function, left::Queryable, right::Queryable; type::JoinType=InnerJoin())
     left = convert(SelectQuery, left)
     right = joinable(convert(SelectQuery, right))
@@ -86,7 +87,7 @@ function join(f::Function, left::Queryable, right::Queryable; type::JoinType=Inn
     condition = convert(SQLExpression, f(results...))
     joinvalue = EquiJoin(type, condition)
     joinitem = JoinItem(left.from, right.from, joinvalue)
-    filter = isnothing(left.filter) ? right.filter : isnothing(right.filter) ? left.filter : left.filter & right.filter
+    filter = left.filter & right.filter
     SelectQuery(left; filter, from=joinitem, result=UnmergedResult(results))
 end
 
@@ -124,6 +125,21 @@ end
 
 join(f::Function, right::Queryable) = (left::Queryable) -> join(f, left, right)
 join(right::Queryable, field::Symbol, morefields::Symbol...) = (left::Queryable) -> join(left, right, field, morefields...)
+
+function lateral_join(right::Function, left::Queryable; condition=(args...) -> true, type::JoinType=InnerJoin())
+    left = convert(SelectQuery, left)
+    right = query(right(tableresults(left)))
+    results = tableresults(left, right)
+    condition = convert(SQLExpression, f(results...))
+    joinvalue = EquiJoin(type, condition)
+    joinitem = JoinItem(left.from, right.from, joinvalue)
+    filter = left.filter & right.filter
+    SelectQuery(left; filter, from=joinitem, result=UnmergedResult(results))
+end
+
+function lateral_join(right::Function, left::QuerySet; condition=(args...) -> true, type::JoinType=InnerJoin())
+    QuerySet(lateral_join(right, left.query; condition, type), left.executor)
+end
 
 groupby(f, node::Queryable) = groupby(f, convert(SelectQuery, node))
 groupby(f::Function, q::SelectQuery) = with_group(q, f(tableresults(q)...))
