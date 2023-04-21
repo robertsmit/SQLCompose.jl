@@ -166,7 +166,7 @@ function printpsql_fromitem(io::IO, node::SetReturningFunctionTableItem, env::Ta
             valindex != 1 && print(io, ", ")
             print(io, val)
         end
-        print(io, " )")
+        print(io, ")")
     end
 end
 

@@ -6,7 +6,7 @@ abstract type SQLType <: SQLNode end
 
 
 include("misc.jl");
-include("row.jl");
+include("structured.jl");
 include("character.jl");
 include("numeric.jl");
 include("range.jl");

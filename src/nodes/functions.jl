@@ -23,3 +23,6 @@ SetReturningFunctionCall{T}(name::Symbol) where T = SetReturningFunctionCall{T}(
 Base.length(expr::SQLExpression{<:CharacterType}) = FunctionCall{Int8Type}(:length, expr)
 Base.round(expr::SQLExpression{<:NumericType}; digits=0) = FunctionCall{NumericType}(:round, (expr, digits))
 Base.string(expr::SQLExpression; pattern::String) = FunctionCall{TextType}(:to_char, (expr, pattern))
+
+unnest(expr::SQLExpression{ArrayType{T}}) where T = SetReturningFunctionCall{T}(:unnest, (expr,))
+unnest(expr) = unnest(convert(SQLExpression, expr))

@@ -1,7 +1,8 @@
 
 
 sqltypeclassof(x::T) where {T} = sqltypeclassof(T)
-sqltypeclassof(x::DataType) = error("SQL type class could not be for: ", x)
+sqltypeclassof(x::DataType) = error("SQL type class not implemented for: ", x)
+sqltypeclassof(::Type{Vector{T}}) where T = ArrayType{sqltypeclassof(T)}
 sqltypeclassof(::Type{Bool}) = BooleanType
 sqltypeclassof(::Type{Int8}) = Int2Type
 sqltypeclassof(::Type{Int16}) = Int2Type

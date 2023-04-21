@@ -1,5 +1,8 @@
+abstract type StructuredType <: SQLType end
 
-struct RowType{name,fieldnames,T<:Tuple} <: SQLType
+struct RecordType <: StructuredType end
+
+struct RowType{name,fieldnames,T<:Tuple} <: StructuredType
     types::T
 end
 
