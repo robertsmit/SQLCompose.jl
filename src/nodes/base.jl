@@ -22,6 +22,7 @@ end
 
 NodeList = Union{Tuple,NamedTuple}
 
+include("sqltypeclassof.jl");
 include("nodecompositionstyle.jl")
 include("boolean.jl")
 include("functions.jl")
@@ -33,7 +34,6 @@ include("result.jl")
 include("subquery.jl")
 include("combinedquery.jl")
 include("cte.jl")
-include("sqltypeclassof.jl")
 include("convert.jl")
 include("predicates.jl")
 include("comparing.jl")

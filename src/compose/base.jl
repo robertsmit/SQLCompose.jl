@@ -1,4 +1,4 @@
-import Base: filter, map, sort, join
+import Base: filter, map, sort, join, getindex
 
 Queryable = Union{TableDefinition,Query,QuerySet, SetReturningFunctionCall}
 
@@ -75,10 +75,10 @@ end
 
 map(f::Function) = node -> map(f, node)
 
-joinable(q::SelectQuery{UnmergedResult}) = error("cannot right join unmerged results")
+joinable(::SelectQuery{UnmergedResult}) = error("cannot right join unmerged results")
 joinable(q::SelectQuery) = joinable(q, q.from)
-joinable(q::SelectQuery, from::JoinItem) = query(q)
-joinable(q::SelectQuery, from::TableItem) = isgrouped(q) || ispaged(q) ? query(q) : q
+joinable(q::SelectQuery, ::JoinItem) = query(q)
+joinable(q::SelectQuery, ::TableItem) = isgrouped(q) || ispaged(q) ? query(q) : q
 
 
 function join(f::Function, left::Queryable, right::Queryable; type::JoinType=InnerJoin())
@@ -127,20 +127,22 @@ end
 join(f::Function, right::Queryable) = (left::Queryable) -> join(f, left, right)
 join(right::Queryable, field::Symbol, morefields::Symbol...) = (left::Queryable) -> join(left, right, field, morefields...)
 
-function lateral_join(right::Function, left::Queryable; condition=(args...) -> true, type::JoinType=InnerJoin())
+function lateral_join(rightf::Function, left::Queryable; on=(args...) -> true, type::JoinType=InnerJoin())
     left = convert(SelectQuery, left)
-    right = query(right(tableresults(left)))
+    right = rightf(tableresults(left)...)
+    right = query(right)
     results = tableresults(left, right)
-    condition = convert(SQLExpression, f(results...))
-    joinvalue = EquiJoin(type, condition)
+    condition = convert(SQLExpression, on(results...))
+    joinvalue = LateralJoin(type, condition)
     joinitem = JoinItem(left.from, right.from, joinvalue)
-    filter = left.filter & right.filter
-    SelectQuery(left; filter, from=joinitem, result=UnmergedResult(results))
+    SelectQuery(left; from=joinitem, result=UnmergedResult(results))
 end
 
-function lateral_join(right::Function, left::QuerySet; condition=(args...) -> true, type::JoinType=InnerJoin())
-    QuerySet(lateral_join(right, left.query; condition, type), left.executor)
+function lateral_join(right::Function, left::QuerySet; kwargs...)
+    QuerySet(lateral_join(right, left.query; kwargs...), left.executor)
 end
+
+lateral_join(rightf::Function; kwargs...) = (left) -> lateral_join(rightf, left; kwargs...)
 
 groupby(f, node::Queryable) = groupby(f, convert(SelectQuery, node))
 groupby(f::Function, q::SelectQuery) = with_group(q, f(tableresults(q)...))
@@ -188,3 +190,13 @@ function iterate(it::Function, base::Queryable; unique=false)
 end
 
 iterate(it::Function, base::QuerySet; unique=false) = QuerySet(iterate(it, base.query; unique), base.executor)
+
+#range
+getindex(q::Queryable, arg) = getindex(convert(SelectQuery, q), arg) 
+getindex(q::Queryable, ::Colon) = q
+getindex(q::SelectQuery, ::Colon) = q
+getindex(q::SelectQuery, i::Int) = getindex(q, TableRange(i - 1, 1))
+getindex(q::SelectQuery;offset=0, limit=nothing) = getindex(q, TableRange(offset, limit))
+getindex(q::SelectQuery, range::UnitRange) = getindex(q, TableRange(range.start - 1, range.stop - range.start + 1))
+getindex(q::SelectQuery, range::TableRange) = with_range(q, range)
+

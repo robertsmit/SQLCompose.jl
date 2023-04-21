@@ -103,6 +103,14 @@ emps = TableDefinition(:employments, :id => Int8Type, :first_name => TextType, :
         @testsql selfjoin "SELECT * FROM t INNER JOIN t t2 ON (t.c1 = t2.c1) AND (t.c2 = t2.c2)"
         @testsql map((t1, t2) -> t1.c1, selfjoin) "SELECT t.c1 FROM t INNER JOIN t t2 ON (t.c1 = t2.c1) AND (t.c2 = t2.c2)"
     end
+
+
+    @testset "lateral join" begin
+        @testsql lateral_join(query([(1,)])) do f
+            unnest([f.elem1 + 1, f.elem1 + 2])
+        end,
+        "SELECT * FROM (VALUES (1)) AS v (elem1) INNER JOIN LATERAL unnest(ARRAY[v.elem1 + 1, v.elem1 + 2]) u (val) ON true"
+    end
 end
 
 

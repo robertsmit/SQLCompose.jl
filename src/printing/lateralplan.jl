@@ -49,8 +49,10 @@ function writelateralplan!(plan, node::JoinItem, tableitem)
     writelateralplan!(plan, node.right, nothing)
 end
 
-writelateralplan!(plan, node::EquiJoin, tableitem) = writelateralplan!(plan, node.condition, tableitem)
+writelateralplan!(plan, node::Join, tableitem) = writelateralplan!(plan, node.condition, tableitem)
 writelateralplan!(plan, ::TableItem, tableitem) = plan
+
+
 
 writelateralplan!(plan, node::Not, tableitem) = writelateralplan!(plan, node.expr, tableitem)
 function writelateralplan!(plan, node::And, tableitem)

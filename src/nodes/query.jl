@@ -16,8 +16,8 @@ result(q::SelectWithoutFromQuery) = q.result
 with_result(::SelectWithoutFromQuery, arg) = SelectWithoutFromQuery(arg)
 
 struct TableRange
-    offset::UInt
-    limit::Union{UInt,Nothing}
+    offset::Int
+    limit::Union{Int,Nothing}
 end
 
 fullrange() = TableRange(0, nothing)
@@ -112,4 +112,4 @@ end
 Base.convert(::Type{SelectQuery}, value::SelectQuery) = value
 Base.convert(::Type{SelectQuery}, value) = SelectQuery(value)
 Base.convert(::Type{Query}, value::Query) = value
-Base.convert(::Type{Query}, value) = SelectQuery(value)
+Base.convert(::Type{Query}, value) = with_range(q, TableRange(value.start, value.start - value.stop))

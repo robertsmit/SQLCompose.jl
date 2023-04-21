@@ -87,8 +87,8 @@ printpsql(io::IO, ::Nothing, env) = nothing
 printpsql(io::IO, ::Nothing) = nothing
 
 printpsql(io::IO, node::TableItemFieldRef, env) = (print(io, tablealias(env, node.table)); print(io, "."); print(io, node.name))
-function printpsql(io::IO, node::TableRange, env) 
-    haslimit = !isnothing(node.limit)    
+function printpsql(io::IO, node::TableRange, env)
+    haslimit = !isnothing(node.limit)
     if haslimit
         print(io, " LIMIT ")
         print(io, node.limit)
@@ -215,6 +215,10 @@ function printpsql_fromitem(io::IO, node::JoinItem, env)
     printpsql_laterals(io, node.right, env)
 end
 
+function printpsql_join(io::IO, node::LateralJoin)
+    printpsql_join(io, node.type)
+    print(io, "LATERAL ")
+end
 printpsql_join(io::IO, node::Join) = printpsql_join(io, node.type)
 printpsql_join(io::IO, ::InnerJoin) = print(io, " INNER JOIN ")
 printpsql_join(io::IO, ::LeftJoin) = print(io, " LEFT JOIN ")
