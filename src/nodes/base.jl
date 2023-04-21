@@ -24,8 +24,8 @@ NodeList = Union{Tuple,NamedTuple}
 
 include("nodecompositionstyle.jl")
 include("boolean.jl")
-include("tableitem.jl")
 include("functions.jl")
+include("tableitem.jl")
 include("lateral.jl")
 include("joinitem.jl")
 include("query.jl")

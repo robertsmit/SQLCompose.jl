@@ -34,6 +34,7 @@ function runtests()
         include("./compose/cte.jl")
         include("./compose/lateral.jl")
         include("./compose/aggregates.jl")
+        include("./compose/srf.jl")
     end
     return nothing
 end

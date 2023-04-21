@@ -50,6 +50,12 @@ struct DefinedTableItem <: TableItem
     name::Symbol
 end
 
+struct SetReturningFunctionTableItem{T} <: TableItem
+    ref::TableItemRef    
+    fieldnames::Tuple
+    f::SetReturningFunctionCall{T}
+end
+
 struct RefTableItem <: TableItem
     ref::TableItemRef
 end
@@ -65,4 +71,4 @@ function ValuesTableItem(values::AbstractVector{T}, fieldnames::Tuple, aliashint
     @assert length(T.types) == length(fieldnames)
     ref = TableItemRef(aliashint)
     ValuesTableItem(ref, fieldnames, values)
-end
+ end 

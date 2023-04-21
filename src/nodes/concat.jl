@@ -1,9 +1,3 @@
-#=
-concat:
-- Julia version: 
-- Author: Rob
-- Date: 2022-05-03
-=#
 import Base: *
 
 struct Concat <: SQLExpression{TextType}

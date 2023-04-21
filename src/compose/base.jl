@@ -1,6 +1,6 @@
 import Base: filter, map, sort, join
 
-Queryable = Union{TableDefinition,Query,QuerySet}
+Queryable = Union{TableDefinition,Query,QuerySet, SetReturningFunctionCall}
 
 commontable(q::Queryable) = SubqueryTableItem(q)
 
@@ -12,6 +12,7 @@ tableresults(arg::UnmergedResult) = arg.results
 tableresults(a, b) = (tableresults(a)..., tableresults(b)...)
 
 query(from::Queryable) = SelectQuery(from)
+query(f::SetReturningFunctionCall, fnames, ftypes) = SelectQuery(f, fnames, ftypes)
 query(q::SelectQuery) = SelectQuery(SubqueryTableItem(q))
 query(q::SelectQuery{UnmergedResult}) = error("unmerged result: $(q)")
 query(q::QuerySet) = QuerySet(query(q.query), q.connection)

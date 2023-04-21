@@ -26,11 +26,5 @@
 
 end
 
-@testset "set returning functions" begin
 
-    type = RowType{:get_top_customers, (:customer_id, :total_revenue), Tuple{Int4Type, SQLCompose.NumericType}}
-    call = SQLCompose.FunctionCall{type}(:get_top_customers, ())
-
-    # @testsql query(SQLCompose.FunctionCall{RowType{(:customer_id, :total_revenue,)}()}(:get_top_customers, ())) ""
-end
 

@@ -156,6 +156,20 @@ function printpsql_fromitem(io::IO, node::DefinedTableItem, env::TableItemPrintE
     alias !== tablename && print(io, " $alias")
 end
 
+function printpsql_fromitem(io::IO, node::SetReturningFunctionTableItem, env::TableItemPrintEnvironment)
+    printpsql(io, node.f, env.parent)
+    alias = env.alias
+    print(io, " $alias")
+    if !isempty(node.fieldnames)
+        print(io, " (")
+        for (valindex, val) in enumerate(node.fieldnames)
+            valindex != 1 && print(io, ", ")
+            print(io, val)
+        end
+        print(io, " )")
+    end
+end
+
 function printpsql_fromitem(io::IO, node::RefTableItem, env::TableItemPrintEnvironment)
     print(io, tablealias(env, node))
 end
