@@ -1,27 +1,24 @@
-#=
-Numeric:
-- Julia version: 
-- Author: Rob
-- Date: 2022-05-03
-=#
 NumericExpression = SQLExpression{<:NumericType}
 
 abstract type NumericOperation{T<:NumericType} <: SQLExpression{T} end
+
 precedence(::NumericOperation) = 0
-needs_parentheses(child::NumericOperation, parent::NumericOperation) = let p = precedence(parent), c = precedence(child)
-    p == 0 || c == 0 || p < c
-end
+
+needs_parentheses(child::NumericOperation, parent::NumericOperation) =
+    let p = precedence(parent), c = precedence(child)
+        p == 0 || c == 0 || p < c
+    end
 
 operators = (
-    NumericAddition = (operator = :+, sqloperator = "+", type = NumericType, precedence = 3),
-    NumericSubtraction = (operator = :-, sqloperator = "-", type = NumericType, precedence = 3),
-    NumericMultiplication = (operator = :*, sqloperator = "*", type = NumericType, precedence = 2),
-    NumericIntegerDivision = (operator = :÷, sqloperator = "/", type = IntegerType, precedence = 2),
-    NumericRemainder = (operator = :%, sqloperator = "%", type = IntegerType, precedence = 2),
-    NumericExponentiation = (operator = :^, sqloperator = "^", type = NumericType, precedence = 1),
+    NumericAddition=(operator=:+, sqloperator="+", type=NumericType, precedence=3),
+    NumericSubtraction=(operator=:-, sqloperator="-", type=NumericType, precedence=3),
+    NumericMultiplication=(operator=:*, sqloperator="*", type=NumericType, precedence=2),
+    NumericIntegerDivision=(operator=:÷, sqloperator="/", type=IntegerType, precedence=2),
+    NumericRemainder=(operator=:%, sqloperator="%", type=IntegerType, precedence=2),
+    NumericExponentiation=(operator=:^, sqloperator="^", type=NumericType, precedence=1),
 )
 
-#gen structs
+#gen
 for (typename, (op, sqloperator, type, prec)) in pairs(operators)
     @eval begin
         struct $typename <: NumericOperation{$type}

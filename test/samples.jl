@@ -78,3 +78,17 @@ end,
                 INNER JOIN actor lat_actor ON f2.actor_id = lat_actor.actor_id 
                 WHERE f2.film_id = f.film_id 
                 LIMIT 3) q ON true"
+
+
+                
+
+#                 SELECT c.customer_id, c.first_name, c.last_name, r.total_revenue
+# FROM customer c
+#  JOIN LATERAL (
+#   SELECT customer_id, SUM(amount) AS total_revenue
+#   FROM payment
+#   WHERE customer_id = c.customer_id
+#   GROUP BY customer_id
+# ) AS r ON r.total_revenue > 100 -- Example condition
+# ORDER BY r.total_revenue desc
+# LIMIT 10;

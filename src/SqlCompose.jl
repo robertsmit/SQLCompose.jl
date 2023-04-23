@@ -1,5 +1,6 @@
 module SQLCompose
 using LibPQ, Tables, StaticArrays
+import UUIDs: UUID
 import Base: ImmutableDict
 
 export TableDefinition, lateral
@@ -10,6 +11,9 @@ export InnerJoin, LeftJoin, RightJoin, FullJoin
 export between, avg, unnest
 #globals
 export All
+#types
+export Int8Type, Int4Type, Int2Type, Float8Type, Float4Type,
+    UUIDType, TextType, EnumType, BooleanType
 
 
 include("./util.jl")

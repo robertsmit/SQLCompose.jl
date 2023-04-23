@@ -1,11 +1,3 @@
-#=
-numberic:
-- Julia version: 
-- Author: Rob
-- Date: 2022-04-18
-=#
-export Int8Type, Int4Type, Int2Type, Float8Type, Float4Type
-
 abstract type NumericType <: SQLType end
 
 abstract type IntegerType <: NumericType end

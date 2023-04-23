@@ -2,7 +2,6 @@
 struct SubqueryTableItem <: TableItem
     ref::TableItemRef
     query::Query
-
 end
 
 function SubqueryTableItem(query::Query; aliashint::Symbol=:q)
