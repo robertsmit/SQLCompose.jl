@@ -11,6 +11,7 @@ struct NotExists <: BooleanExpression
 end
 
 isempty(arg::SelectQuery) = NotExists(arg)
+
 Not(arg::NotExists) = Exists(arg.query)
 Not(arg::Exists) = NotExists(arg.query)
 
@@ -32,8 +33,6 @@ struct InExpression{T} <: BooleanExpression
     set::T
 end
 
-Base.in(elem::SQLExpression, coll::Union{Query, AbstractVector}) = InExpression(elem, coll)
-
 
 #between
 struct BetweenRange
@@ -50,6 +49,7 @@ end
 (:)(left::SQLExpression, right) = BetweenRange(left, right)
 (:)(right, left::SQLExpression) = BetweenRange(left, right)
 (:)(left::SQLExpression, right::SQLExpression) = BetweenRange(left, right)
+Base.in(elem::SQLExpression, coll::Union{Query, AbstractVector}) = InExpression(elem, coll)
 Base.in(subject, range::BetweenRange) = Between(subject, range)
 Base.in(subject::SQLExpression, range::AbstractRange) = Between(subject, BetweenRange(first(range), last(range)))
 between(subject, inclusiveLower, inclusiveUpper) = Between(subject, BetweenRange(inclusiveLower, inclusiveUpper))
