@@ -235,8 +235,9 @@ end
 
 printpsql_referred_joins(_, ::NullPrintEnvironment) = nothing
 function printpsql_referred_joins(io, env::ReferredTableEnvironment)
-    printpsql_referred_join(io, env)
     printpsql_referred_joins(io, next_referred(env))
+    printpsql_referred_join(io, env)
+    
 end
 
 function printpsql_referred_join(io::IO, env::ReferredTableEnvironment)

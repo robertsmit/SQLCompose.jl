@@ -29,23 +29,26 @@ end
 
 chop_postfix(from, postfix) = chop(from; tail=length(postfix))
 
-function lateralfieldname(fieldname::String, postfixmappings)
+function referencefieldname(fieldname::String, postfixmappings)
     postfixindex = findfirst((each) -> endswith(fieldname, first(each)), postfixmappings)
     if isnothing(postfixindex)
         return fieldname
     end
     (postfix, mapper) = postfixmappings[postfixindex]
     mapper(fieldname, postfix)
-
 end
 
-function referred_methodname(key::ForeignKey, postfixmappings)
-    let ref = key.parentfields == key.childfields ? key.parentname :
-              let fieldnames = map(each -> lateralfieldname(string(each), postfixmappings), key.childfields)
+function ref_methodname(key::ForeignKey, postfixmappings; defaultname=key.parentname)
+    let ref = key.parentfields == key.childfields ? defaultname :
+              let fieldnames = map(each -> referencefieldname(string(each), postfixmappings), key.childfields)
             join(fieldnames, "_")
         end
         Symbol(ref, "_of")
     end
+end
+
+function backref_methodname(childname::Symbol, key::ForeignKey, postfixmappings)
+    Symbol("all_", ref_methodname(key, postfixmappings; defaultname=childname))
 end
 
 tabledefinition_methodname(rt) = Symbol(name(rt), "_table")
@@ -65,7 +68,7 @@ function rowstruct_expression(reltype, typename)
     )
     querysetdef = :(SQLCompose.query(::Type{$typename}, executor::SQLCompose.AbstractQueryExecutor) = SQLCompose.QuerySet(query($typename), executor))
 
-    tabledef =  :($(tabledefinition_methodname(reltype))() = SQLCompose.table($typename))
+    tabledef = :($(tabledefinition_methodname(reltype))() = SQLCompose.table($typename))
 
     namedquerydef = :($(namedquery_methodname(reltype))() = query($typename))
     namedquerysetdef = :($(namedquery_methodname(reltype))(executor::SQLCompose.AbstractQueryExecutor) = query($typename, executor))
@@ -106,37 +109,41 @@ function queries_expression(types;
     rowstruct_typename=tablename -> Symbol(tablename |> string |> titlecase, "Row"),
     referencefieldname_postfixmappings=("_id" => chop_postfix,))
 
-    referred_methodexpression(key::ForeignKey, childname, methodname) =
+    ref_methodexpression(key::ForeignKey, childname, methodname) =
         let childtypename = rowstruct_typename(childname)
             parenttypename = rowstruct_typename(key.parentname)
             childfield_exprs = map(childkey -> :($childname.$(childkey)), key.childfields)
             :($methodname($childname::$childtypename) = SQLCompose.reference($parenttypename, $(key.parentfields), ($(childfield_exprs...),)))
         end
 
-    # referring_methodexpression(key::ForeignKey, childname, methodname) =
-    # let childtypename = rowstruct_typename(childname)
-    #     parenttypename = rowstruct_typename(key.parentname)
-    #     childfield_exprs = map(childkey -> :($childname.$(childkey)), key.childfields)
-    #     :($methodname($(key.parentname)::$parenttypename) = SQLCompose.reference($childtypename, $(key.parentfields), ($(childfield_exprs...),)))
-    # end
+    backref_methodexpression(key::ForeignKey, childname, methodname) =
+        let childtypename = rowstruct_typename(childname)
+            parenttypename = rowstruct_typename(key.parentname)
+            parentfield_exprs = map(parentkey -> :($(key.parentname).$(parentkey)), key.parentfields)
+            :($methodname($(key.parentname)::$parenttypename) = SQLCompose.reference($childtypename, $(key.childfields), ($(parentfield_exprs...),)))
+        end
 
     rowstruct_typenames = (rowstruct_typename(name(t)) for t in types)
     rowstruct_exprs = (rowstruct_expression(each...) for each in zip(types, rowstruct_typenames))
 
     allforeignkeys = ((key=fk, childname=name(type))
                       for type in types for fk in type.foreignkeys)
-    referred_methodnames = (referred_methodname(key, referencefieldname_postfixmappings) for (key,) in allforeignkeys)    
-    referred_methodexprs = (referred_methodexpression(each.key, each.childname, methodname)
-                           for (each, methodname) in zip(allforeignkeys, referred_methodnames))
+    ref_methodnames = (ref_methodname(key, referencefieldname_postfixmappings) for (key,) in allforeignkeys)
+    backref_methodnames = (backref_methodname(childname, key, referencefieldname_postfixmappings) for (key, childname) in allforeignkeys)
+    ref_methodexprs = (ref_methodexpression(each.key, each.childname, methodname)
+                       for (each, methodname) in zip(allforeignkeys, ref_methodnames))
+    backref_methodexprs = (backref_methodexpression(each.key, each.childname, methodname)
+                           for (each, methodname) in zip(allforeignkeys, backref_methodnames))
 
     #exports
     tabledefintions_methodnames = map(tabledefinition_methodname, types)
     namedquery_methodnames = map(namedquery_methodname, types)
-    exports = withexports ? (rowstruct_typenames, referred_methodnames, tabledefintions_methodnames, namedquery_methodnames) : ()
+    exports = withexports ? (rowstruct_typenames, ref_methodnames, backref_methodnames, tabledefintions_methodnames, namedquery_methodnames) : ()
 
     quote
         $(map(n -> :(export $(n...)), exports)...)
-        $(rowstruct_exprs...)    
-        $(referred_methodexprs...)
+        $(rowstruct_exprs...)
+        $(ref_methodexprs...)
+        $(backref_methodexprs...)
     end
 end

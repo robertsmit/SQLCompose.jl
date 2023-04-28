@@ -20,6 +20,7 @@ function write_referredtable_location_plan!(plan::ReferredTableLocationPlan, nod
     if haslocation(plan, node)
         return plan
     end
+    
     plan.locations = referredtablelocations(plan.locations, node, tableitem)
     write_referredtable_location_plan!(plan, node.foreignkeys, tableitem)
 end

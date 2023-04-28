@@ -1,18 +1,22 @@
 
-struct OrderedSetAggregateExpression{T} <: SQLExpression{T}
+abstract type AbstractAggregateExpression{T} <: SQLExpression{T} end
+
+struct OrderedSetAggregateExpression{T} <: AbstractAggregateExpression{T}
     name::Symbol
     operands::Tuple
     order::Tuple
     filter::BooleanExpression
 end
 
-struct AggregateExpression{T} <: SQLExpression{T}
+struct AggregateExpression{T} <: AbstractAggregateExpression{T}
     name::Symbol
     distinct::Bool
     operands::Tuple
     order::Tuple
     filter::BooleanExpression
 end
+
+
 
 struct WindowDefinition
     partition::Tuple

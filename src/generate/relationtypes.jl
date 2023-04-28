@@ -9,9 +9,10 @@ ForeignKey(parentname, fields) = ForeignKey(parentname, fields, fields)
 struct RelationType
     rowtype::Type{<:RowType}
     foreignkeys::Tuple
+    primarykey::Tuple
 end
 
-RelationType(rowtype) = RelationType(rowtype, ())
+RelationType(rowtype) = RelationType(rowtype, (), ())
 
 name(rt::RelationType) = name(rt.rowtype)
 field_names(rt::RelationType) = field_names(rt.rowtype)
@@ -32,8 +33,14 @@ sc_relationtypes(conn::LibPQ.Connection, schema::String="public") =
 
 function sc_relationtype(conn::LibPQ.Connection, rel)
     rowtype = sc_rowtype(conn, rel.oid, Symbol(rel.relname))
+    primarykey = sc_primarkykey(conn, rel.oid)
     foreignkeys = sc_foreignkeys(conn, rel.oid)
-    RelationType(rowtype, foreignkeys)
+    RelationType(rowtype, foreignkeys, primarykey)
+end
+
+function sc_primarkykey(conn::LibPQ.Connection, oid)
+    attnames = map(each -> each.attname, pg_primarykey(conn, oid))
+    return Tuple(Symbol(n) for n in attnames)
 end
 
 function sc_foreignkeys(conn::LibPQ.Connection, oid)

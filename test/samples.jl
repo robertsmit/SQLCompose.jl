@@ -80,7 +80,70 @@ end,
                 LIMIT 3) q ON true"
 
 
-                
+
+
+"""
+In this example, we use a LATERAL join to join the customer table 
+    with a subquery that selects the rental_id, inventory_id, 
+    and rental_duration for each film rental associated with the customer_id from the outer query. 
+    We then calculate the rental cost by multiplying the rental_duration and rental_rate for each film.
+"""
+@testsql Pagila.query_customer() |>
+         join_lateral(c -> Pagila.query_rental() |>
+                           filter(r -> r.customer_id == c.customer_id) |>
+                           map(r -> (; r.rental_id, r.inventory_id))) |>
+         join_lateral((c, r) -> Pagila.query_film() |>
+                                filter(f -> Pagila.all_inventory_of(f).inventory_id == r.inventory_id) |>
+                                map(f -> (; f.title, f.rental_rate, f.rental_duration))) |>
+         map((c, r, f) -> (; c.customer_id, f.title, f.rental_rate, rental_cost=f.rental_duration * f.rental_rate)),
+"SELECT c.customer_id, q2.title, q2.rental_rate, q2.rental_duration * q2.rental_rate AS rental_cost 
+    FROM customer c 
+    INNER JOIN LATERAL (SELECT r.rental_id, r.inventory_id 
+                        FROM rental r 
+                        WHERE r.customer_id = c.customer_id) q 
+        ON true 
+    INNER JOIN LATERAL (SELECT f.title, f.rental_rate, f.rental_duration 
+                        FROM film f
+                        INNER JOIN inventory ref_inventory 
+                        ON f.film_id = ref_inventory.film_id 
+                        WHERE ref_inventory.inventory_id = q.inventory_id) q2 
+        ON true"
+
+
+
+begin
+    """Define pagila film list"""
+    all_actor_of(f::Pagila.FilmRow) = f |> Pagila.all_film_actor_of |> Pagila.actor_of
+    all_category_of(f::Pagila.FilmRow) = f |> Pagila.all_film_category_of |> Pagila.category_of
+    actor_name(actor) = actor.first_name * " " * actor.last_name
+    @testsql
+    Pagila.query_film() |>
+    map(f -> (film=f, category=all_category_of(f), actor=all_actor_of(f))) |>
+    map(((; film, actor, category),) ->
+        (fid=film.film_id, film.title, film.description,
+            category=category.name, price=film.rental_rate, film.length, film.rating,
+            actors=join(actor_name(actor), ", ")
+        )) |>
+    groupby(r -> Tuple(v for (k, v) in pairs(r) if k != :actors)),
+    """
+        SELECT f.film_id                                                                AS fid,
+        f.title,
+        f.description,
+        ref_category.name                                                        AS category,
+        f.rental_rate                                                            AS price,
+        f.length,
+        f.rating,
+        string_agg(CONCAT(ref_actor.first_name, ' ', ref_actor.last_name), ', ') AS actors
+    FROM film f
+            INNER JOIN film_actor ref_film_actor ON f.film_id = ref_film_actor.film_id
+            INNER JOIN actor ref_actor ON ref_film_actor.actor_id = ref_actor.actor_id
+            INNER JOIN film_category ref_film_category ON f.film_id = ref_film_category.film_id
+            INNER JOIN category ref_category ON ref_film_category.category_id = ref_category.category_id
+    GROUP BY f.film_id, f.title, f.description, ref_category.name, f.rental_rate, f.length, f.rating
+    """
+
+end
+
 
 #                 SELECT c.customer_id, c.first_name, c.last_name, r.total_revenue
 # FROM customer c
