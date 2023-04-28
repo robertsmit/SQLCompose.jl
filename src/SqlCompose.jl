@@ -5,7 +5,7 @@ import Base: ImmutableDict
 
 export TableDefinition, reference
 # composition
-export query, groupby, join, with, lateral_join
+export query, groupby, join, with, join_lateral
 export InnerJoin, LeftJoin, RightJoin, FullJoin
 # operators
 export between, avg, unnest

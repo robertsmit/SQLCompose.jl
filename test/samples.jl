@@ -63,7 +63,7 @@ ORDER BY ref_flights_v.scheduled_departure"
 #Retrieve the film title along with the first name and last name of up to 3 actors associated with each film
 @testsql begin
     Pagila.query_film() |>
-    lateral_join(f -> begin
+    join_lateral(f -> begin
             Pagila.query_film_actor() |>
             filter(fa -> fa.film_id == f.film_id) |>
             map(fa -> (; Pagila.actor_of(fa).first_name, Pagila.actor_of(fa).last_name)) |>

@@ -19,3 +19,11 @@
         INNER JOIN salary ref_salary ON p.id = ref_salary.person_id"
 end
 
+
+"""
+In this example, we use a LATERAL join to join the customer table 
+    with a subquery that selects the rental_id, inventory_id, 
+    and rental_duration for each film rental associated with the customer_id from the outer query. 
+    We then calculate the rental cost by multiplying the rental_duration and rental_rate for each film.
+"""
+# @testsql query_customer()

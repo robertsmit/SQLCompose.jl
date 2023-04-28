@@ -106,7 +106,7 @@ emps = TableDefinition(:employments, :id => Int8Type, :first_name => TextType, :
 
 
     @testset "lateral join" begin
-        @testsql lateral_join(query([(1,)])) do f
+        @testsql join_lateral(query([(1,)])) do f
             unnest([f.elem1 + 1, f.elem1 + 2])
         end,
         "SELECT * FROM (VALUES (1)) AS v (elem1) INNER JOIN LATERAL unnest(ARRAY[v.elem1 + 1, v.elem1 + 2]) u (val) ON true"

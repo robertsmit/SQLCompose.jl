@@ -127,7 +127,7 @@ end
 join(f::Function, right::Queryable) = (left::Queryable) -> join(f, left, right)
 join(right::Queryable, field::Symbol, morefields::Symbol...) = (left::Queryable) -> join(left, right, field, morefields...)
 
-function lateral_join(rightf::Function, left::Queryable; on=(args...) -> true, type::JoinType=InnerJoin())
+function join_lateral(rightf::Function, left::Queryable; on=(args...) -> true, type::JoinType=InnerJoin())
     left = convert(SelectQuery, left)
     right = rightf(tableresults(left)...)
     right = query(right)
@@ -138,11 +138,11 @@ function lateral_join(rightf::Function, left::Queryable; on=(args...) -> true, t
     SelectQuery(left; from=joinitem, result=UnmergedResult(results))
 end
 
-function lateral_join(right::Function, left::QuerySet; kwargs...)
-    QuerySet(lateral_join(right, left.query; kwargs...), left.executor)
+function join_lateral(right::Function, left::QuerySet; kwargs...)
+    QuerySet(join_lateral(right, left.query; kwargs...), left.executor)
 end
 
-lateral_join(rightf::Function; kwargs...) = (left) -> lateral_join(rightf, left; kwargs...)
+join_lateral(rightf::Function; kwargs...) = (left) -> join_lateral(rightf, left; kwargs...)
 
 groupby(f, node::Queryable) = groupby(f, convert(SelectQuery, node))
 groupby(f::Function, q::SelectQuery) = with_group(q, f(tableresults(q)...))
