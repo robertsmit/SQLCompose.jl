@@ -144,7 +144,6 @@ begin
 
 end
 
-
 #                 SELECT c.customer_id, c.first_name, c.last_name, r.total_revenue
 # FROM customer c
 #  JOIN LATERAL (
