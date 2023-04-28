@@ -239,14 +239,14 @@ function printpsql_laterals(io, env::LateralPrintEnvironment)
 end
 
 function printpsql_lateral(io::IO, env::LateralPrintEnvironment)
-    let lateral = env.key
-        print(io, lateral.isnullable ? " LEFT OUTER JOIN " : " INNER JOIN ")
-        print(io, lateral.tablename)
-        alias = tablealias(env, lateral)
+    let reference = env.key
+        print(io, reference.isnullable ? " LEFT OUTER JOIN " : " INNER JOIN ")
+        print(io, reference.tablename)
+        alias = tablealias(env, reference)
         print(io, " ")
         print(io, alias)
         print(io, " ON ")
-        for (i, (foreign, prim)) in enumerate(zip(lateral.foreignkeys, lateral.primarykeys))
+        for (i, (foreign, prim)) in enumerate(zip(reference.foreignkeys, reference.primarykeys))
             if i > 1
                 print(io, " AND ")
             end

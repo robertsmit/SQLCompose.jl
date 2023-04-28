@@ -36,7 +36,7 @@ ORDER BY q.aircraft_code"
 
 #Which flight segments are included into Antonina Kuznecova's ticket
 @testsql begin
-    flights_v_of(ticket_flights::Bookings.Ticket_FlightsRow) = SQLCompose.lateral(Bookings.Flights_VRow, :flight_id, ticket_flights.flight_id)
+    flights_v_of(ticket_flights::Bookings.Ticket_FlightsRow) = SQLCompose.reference(Bookings.Flights_VRow, :flight_id, ticket_flights.flight_id)
     Bookings.query_ticket_flights() |>
     map(tf -> (; tf, f=flights_v_of(tf))) |>
     sort(((; f),) -> f.scheduled_departure) |>

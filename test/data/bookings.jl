@@ -874,35 +874,35 @@ begin
     #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:133 =#
     ticket_flights_of(boarding_passes::Boarding_PassesRow) = begin
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:113 =#
-            SQLCompose.lateral(Ticket_FlightsRow, (:ticket_no, :flight_id), (boarding_passes.ticket_no, boarding_passes.flight_id))
+            SQLCompose.reference(Ticket_FlightsRow, (:ticket_no, :flight_id), (boarding_passes.ticket_no, boarding_passes.flight_id))
         end
     arrival_airport_of(flights::FlightsRow) = begin
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:113 =#
-            SQLCompose.lateral(Airports_DataRow, (:airport_code,), (flights.arrival_airport,))
+            SQLCompose.reference(Airports_DataRow, (:airport_code,), (flights.arrival_airport,))
         end
     departure_airport_of(flights::FlightsRow) = begin
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:113 =#
-            SQLCompose.lateral(Airports_DataRow, (:airport_code,), (flights.departure_airport,))
+            SQLCompose.reference(Airports_DataRow, (:airport_code,), (flights.departure_airport,))
         end
     aircrafts_data_of(flights::FlightsRow) = begin
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:113 =#
-            SQLCompose.lateral(Aircrafts_DataRow, (:aircraft_code,), (flights.aircraft_code,))
+            SQLCompose.reference(Aircrafts_DataRow, (:aircraft_code,), (flights.aircraft_code,))
         end
     aircrafts_data_of(seats::SeatsRow) = begin
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:113 =#
-            SQLCompose.lateral(Aircrafts_DataRow, (:aircraft_code,), (seats.aircraft_code,))
+            SQLCompose.reference(Aircrafts_DataRow, (:aircraft_code,), (seats.aircraft_code,))
         end
     flights_of(ticket_flights::Ticket_FlightsRow) = begin
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:113 =#
-            SQLCompose.lateral(FlightsRow, (:flight_id,), (ticket_flights.flight_id,))
+            SQLCompose.reference(FlightsRow, (:flight_id,), (ticket_flights.flight_id,))
         end
     tickets_of(ticket_flights::Ticket_FlightsRow) = begin
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:113 =#
-            SQLCompose.lateral(TicketsRow, (:ticket_no,), (ticket_flights.ticket_no,))
+            SQLCompose.reference(TicketsRow, (:ticket_no,), (ticket_flights.ticket_no,))
         end
     bookings_of(tickets::TicketsRow) = begin
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:113 =#
-            SQLCompose.lateral(BookingsRow, (:book_ref,), (tickets.book_ref,))
+            SQLCompose.reference(BookingsRow, (:book_ref,), (tickets.book_ref,))
         end
 end
 end

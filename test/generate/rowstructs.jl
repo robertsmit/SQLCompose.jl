@@ -1,7 +1,7 @@
 @info "Running RowStruct tests"
 
 using SQLCompose.Generate
-using SQLCompose: lateral, table, RowType
+using SQLCompose: reference, table, RowType
 using Test: @testset, @test
 
 @eval $(queries_expression((
@@ -13,7 +13,7 @@ using Test: @testset, @test
 
 fullname(p::Person) = p.firstname * " " * p.surname
 
-salaries_of(p::Person) = lateral(Salary, (:person_id,), (p.person_id,))
+salaries_of(p::Person) = reference(Salary, (:person_id,), (p.person_id,))
 
 @testset "Row Struct: generate" begin
    @test SQLCompose.name(table(Person)) == :person

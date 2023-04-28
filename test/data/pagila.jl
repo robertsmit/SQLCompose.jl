@@ -1998,91 +1998,91 @@ begin
     #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:133 =#
     city_of(address::AddressRow) = begin
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:113 =#
-            SQLCompose.lateral(CityRow, (:city_id,), (address.city_id,))
+            SQLCompose.reference(CityRow, (:city_id,), (address.city_id,))
         end
     country_of(city::CityRow) = begin
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:113 =#
-            SQLCompose.lateral(CountryRow, (:country_id,), (city.country_id,))
+            SQLCompose.reference(CountryRow, (:country_id,), (city.country_id,))
         end
     store_of(customer::CustomerRow) = begin
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:113 =#
-            SQLCompose.lateral(StoreRow, (:store_id,), (customer.store_id,))
+            SQLCompose.reference(StoreRow, (:store_id,), (customer.store_id,))
         end
     address_of(customer::CustomerRow) = begin
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:113 =#
-            SQLCompose.lateral(AddressRow, (:address_id,), (customer.address_id,))
+            SQLCompose.reference(AddressRow, (:address_id,), (customer.address_id,))
         end
     language_of(film::FilmRow) = begin
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:113 =#
-            SQLCompose.lateral(LanguageRow, (:language_id,), (film.language_id,))
+            SQLCompose.reference(LanguageRow, (:language_id,), (film.language_id,))
         end
     original_language_of(film::FilmRow) = begin
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:113 =#
-            SQLCompose.lateral(LanguageRow, (:language_id,), (film.original_language_id,))
+            SQLCompose.reference(LanguageRow, (:language_id,), (film.original_language_id,))
         end
     actor_of(film_actor::Film_ActorRow) = begin
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:113 =#
-            SQLCompose.lateral(ActorRow, (:actor_id,), (film_actor.actor_id,))
+            SQLCompose.reference(ActorRow, (:actor_id,), (film_actor.actor_id,))
         end
     film_of(film_actor::Film_ActorRow) = begin
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:113 =#
-            SQLCompose.lateral(FilmRow, (:film_id,), (film_actor.film_id,))
+            SQLCompose.reference(FilmRow, (:film_id,), (film_actor.film_id,))
         end
     actor_of(film_actor_extension::Film_Actor_ExtensionRow) = begin
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:113 =#
-            SQLCompose.lateral(ActorRow, (:actor_id,), (film_actor_extension.actor_id,))
+            SQLCompose.reference(ActorRow, (:actor_id,), (film_actor_extension.actor_id,))
         end
     actor_film_of(film_actor_extension2::Film_Actor_Extension2Row) = begin
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:113 =#
-            SQLCompose.lateral(Film_ActorRow, (:film_id, :actor_id), (film_actor_extension2.actor_id, film_actor_extension2.film_id))
+            SQLCompose.reference(Film_ActorRow, (:film_id, :actor_id), (film_actor_extension2.actor_id, film_actor_extension2.film_id))
         end
     actor_of(film_actor_extension2::Film_Actor_Extension2Row) = begin
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:113 =#
-            SQLCompose.lateral(ActorRow, (:actor_id,), (film_actor_extension2.actor_id,))
+            SQLCompose.reference(ActorRow, (:actor_id,), (film_actor_extension2.actor_id,))
         end
     film_of(film_actor_extension2::Film_Actor_Extension2Row) = begin
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:113 =#
-            SQLCompose.lateral(ActorRow, (:actor_id,), (film_actor_extension2.film_id,))
+            SQLCompose.reference(ActorRow, (:actor_id,), (film_actor_extension2.film_id,))
         end
     category_of(film_category::Film_CategoryRow) = begin
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:113 =#
-            SQLCompose.lateral(CategoryRow, (:category_id,), (film_category.category_id,))
+            SQLCompose.reference(CategoryRow, (:category_id,), (film_category.category_id,))
         end
     film_of(film_category::Film_CategoryRow) = begin
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:113 =#
-            SQLCompose.lateral(FilmRow, (:film_id,), (film_category.film_id,))
+            SQLCompose.reference(FilmRow, (:film_id,), (film_category.film_id,))
         end
     film_of(inventory::InventoryRow) = begin
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:113 =#
-            SQLCompose.lateral(FilmRow, (:film_id,), (inventory.film_id,))
+            SQLCompose.reference(FilmRow, (:film_id,), (inventory.film_id,))
         end
     store_of(inventory::InventoryRow) = begin
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:113 =#
-            SQLCompose.lateral(StoreRow, (:store_id,), (inventory.store_id,))
+            SQLCompose.reference(StoreRow, (:store_id,), (inventory.store_id,))
         end
     customer_of(rental::RentalRow) = begin
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:113 =#
-            SQLCompose.lateral(CustomerRow, (:customer_id,), (rental.customer_id,))
+            SQLCompose.reference(CustomerRow, (:customer_id,), (rental.customer_id,))
         end
     inventory_of(rental::RentalRow) = begin
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:113 =#
-            SQLCompose.lateral(InventoryRow, (:inventory_id,), (rental.inventory_id,))
+            SQLCompose.reference(InventoryRow, (:inventory_id,), (rental.inventory_id,))
         end
     staff_of(rental::RentalRow) = begin
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:113 =#
-            SQLCompose.lateral(StaffRow, (:staff_id,), (rental.staff_id,))
+            SQLCompose.reference(StaffRow, (:staff_id,), (rental.staff_id,))
         end
     address_of(staff::StaffRow) = begin
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:113 =#
-            SQLCompose.lateral(AddressRow, (:address_id,), (staff.address_id,))
+            SQLCompose.reference(AddressRow, (:address_id,), (staff.address_id,))
         end
     store_of(staff::StaffRow) = begin
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:113 =#
-            SQLCompose.lateral(StoreRow, (:store_id,), (staff.store_id,))
+            SQLCompose.reference(StoreRow, (:store_id,), (staff.store_id,))
         end
     address_of(store::StoreRow) = begin
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:113 =#
-            SQLCompose.lateral(AddressRow, (:address_id,), (store.address_id,))
+            SQLCompose.reference(AddressRow, (:address_id,), (store.address_id,))
         end
 end
 end

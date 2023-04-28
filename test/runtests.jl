@@ -32,7 +32,7 @@ function runtests()
         include("./compose/sort.jl")
         include("./compose/operators.jl")
         include("./compose/cte.jl")
-        include("./compose/lateral.jl")
+        include("./compose/reference.jl")
         include("./compose/aggregates.jl")
         include("./compose/srf.jl")
     end

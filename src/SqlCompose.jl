@@ -3,7 +3,7 @@ using LibPQ, Tables, StaticArrays
 import UUIDs: UUID
 import Base: ImmutableDict
 
-export TableDefinition, lateral
+export TableDefinition, reference
 # composition
 export query, groupby, join, with, lateral_join
 export InnerJoin, LeftJoin, RightJoin, FullJoin

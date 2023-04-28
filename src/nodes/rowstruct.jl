@@ -47,14 +47,14 @@ function writelateralplan!(plan, node::T, tableitem) where {T<:RowStruct}
     end
 end
 
-function lateral(to::Type{<:RowStruct}, primarykeys::Tuple, foreignkeys, isnullable=false)
+function reference(to::Type{<:RowStruct}, primarykeys::Tuple, foreignkeys, isnullable=false)
     let tab = table(to)
         ref = LateralTableItemRef(name(tab), primarykeys, foreignkeys, isnullable)
         to((TableItemFieldRef(fname, ftype, ref) for (fname, ftype) in field_pairs(tab))...)
     end
 end
 
-lateral(to::Type{<:RowStruct}, primarykey, foreignkey, isnullable=false) = lateral(to, (primarykey,), (foreignkey,), isnullable)
+reference(to::Type{<:RowStruct}, primarykey, foreignkey, isnullable=false) = reference(to, (primarykey,), (foreignkey,), isnullable)
 
 function Base.show(io::IO, node::RowStruct)
     print(io, "(")

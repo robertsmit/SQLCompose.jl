@@ -32,9 +32,9 @@ unwind_lateral(env::TableItemPrintEnvironment, table::Symbol) = env.key === tabl
 unwind_lateral(env::LateralPrintEnvironment, table::Symbol) = env.location == table ? env : unwind_lateral(env.parent, table)
 next_unwind_lateral(env::LateralPrintEnvironment) = unwind_lateral(env.parent, env.location)
 
-haslateral(env::NullPrintEnvironment, lateral::LateralTableItemRef) = false
-haslateral(env::LateralPrintEnvironment, lateral::LateralTableItemRef) = env.key == lateral ? true : haslateral(env.parent, lateral)
-haslateral(env::TableItemPrintEnvironment, lateral::LateralTableItemRef) = haslateral(env.parent, lateral)
+haslateral(env::NullPrintEnvironment, reference::LateralTableItemRef) = false
+haslateral(env::LateralPrintEnvironment, reference::LateralTableItemRef) = env.key == reference ? true : haslateral(env.parent, reference)
+haslateral(env::TableItemPrintEnvironment, reference::LateralTableItemRef) = haslateral(env.parent, reference)
 
 tablealias(::NullPrintEnvironment, ref) = error("should not occur")
 tablealias(env::AbstractPrintEnvironment, table::TableItem) = tablealias(env, table.ref)
@@ -92,7 +92,7 @@ function nextenv_laterals(env, table::Symbol, locs::LateralLocationsDict)
     end
 end
 
-function nextenv(env, lateral::LateralTableItemRef, location::Symbol)
-    aliasactual = getaliasactual(env, aliashint(lateral))
-    LateralPrintEnvironment(lateral, location, aliasactual, env)
+function nextenv(env, reference::LateralTableItemRef, location::Symbol)
+    aliasactual = getaliasactual(env, aliashint(reference))
+    LateralPrintEnvironment(reference, location, aliasactual, env)
 end

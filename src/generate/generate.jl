@@ -110,7 +110,7 @@ function queries_expression(types;
         let childtypename = rowstruct_typename(childname)
             parenttypename = rowstruct_typename(key.parentname)
             childfield_exprs = map(childkey -> :($childname.$(childkey)), key.childfields)
-            :($methodname($childname::$childtypename) = SQLCompose.lateral($parenttypename, $(key.parentfields), ($(childfield_exprs...),)))
+            :($methodname($childname::$childtypename) = SQLCompose.reference($parenttypename, $(key.parentfields), ($(childfield_exprs...),)))
         end
 
     rowstruct_typenames = (rowstruct_typename(name(t)) for t in types)
