@@ -12,6 +12,8 @@ is such easier to built complex queries.
 
 Also retrieving the data of the queried julia structure is supported.
 
+See samples.jl in the test directory.
+
 
 https://postgrespro.com/community/demodb
 
