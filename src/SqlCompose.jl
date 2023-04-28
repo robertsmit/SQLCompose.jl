@@ -13,7 +13,7 @@ export between, avg, unnest
 export All
 #types
 export Int8Type, Int4Type, Int2Type, Float8Type, Float4Type,
-    UUIDType, TextType, EnumType, BooleanType
+    UUIDType, TextType, EnumType, BooleanType, RowType, CharType, CharacterType
 
 
 include("./util.jl")

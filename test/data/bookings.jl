@@ -12,7 +12,7 @@ begin
     #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:132 =#
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct AircraftsRow <: SQLCompose.RowStruct{SQLCompose.RowType{:aircrafts, (:aircraft_code, :model, :range), Tuple{SQLCompose.CharType, SQLCompose.TextType, SQLCompose.Int4Type}}}
+        struct AircraftsRow <: SQLCompose.RowStruct{RowType{:aircrafts, (:aircraft_code, :model, :range), Tuple{SQLCompose.CharType, TextType, Int4Type}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             aircraft_code
             model
@@ -74,7 +74,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct Aircrafts_DataRow <: SQLCompose.RowStruct{SQLCompose.RowType{:aircrafts_data, (:aircraft_code, :model, :range), Tuple{SQLCompose.CharType, SQLCompose.JSONType, SQLCompose.Int4Type}}}
+        struct Aircrafts_DataRow <: SQLCompose.RowStruct{RowType{:aircrafts_data, (:aircraft_code, :model, :range), Tuple{SQLCompose.CharType, SQLCompose.JSONType, Int4Type}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             aircraft_code
             model
@@ -136,7 +136,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct AirportsRow <: SQLCompose.RowStruct{SQLCompose.RowType{:airports, (:airport_code, :airport_name, :city, :coordinates, :timezone), Tuple{SQLCompose.CharType, SQLCompose.TextType, SQLCompose.TextType, SQLCompose.UnknownType, SQLCompose.TextType}}}
+        struct AirportsRow <: SQLCompose.RowStruct{RowType{:airports, (:airport_code, :airport_name, :city, :coordinates, :timezone), Tuple{SQLCompose.CharType, TextType, TextType, SQLCompose.UnknownType, TextType}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             airport_code
             airport_name
@@ -204,7 +204,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct Airports_DataRow <: SQLCompose.RowStruct{SQLCompose.RowType{:airports_data, (:airport_code, :airport_name, :city, :coordinates, :timezone), Tuple{SQLCompose.CharType, SQLCompose.JSONType, SQLCompose.JSONType, SQLCompose.UnknownType, SQLCompose.TextType}}}
+        struct Airports_DataRow <: SQLCompose.RowStruct{RowType{:airports_data, (:airport_code, :airport_name, :city, :coordinates, :timezone), Tuple{SQLCompose.CharType, SQLCompose.JSONType, SQLCompose.JSONType, SQLCompose.UnknownType, TextType}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             airport_code
             airport_name
@@ -272,7 +272,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct Boarding_PassesRow <: SQLCompose.RowStruct{SQLCompose.RowType{:boarding_passes, (:ticket_no, :flight_id, :boarding_no, :seat_no), Tuple{SQLCompose.CharType, SQLCompose.Int4Type, SQLCompose.Int4Type, SQLCompose.VarCharType}}}
+        struct Boarding_PassesRow <: SQLCompose.RowStruct{RowType{:boarding_passes, (:ticket_no, :flight_id, :boarding_no, :seat_no), Tuple{SQLCompose.CharType, Int4Type, Int4Type, SQLCompose.VarCharType}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             ticket_no
             flight_id
@@ -337,7 +337,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct BookingsRow <: SQLCompose.RowStruct{SQLCompose.RowType{:bookings, (:book_ref, :book_date, :total_amount), Tuple{SQLCompose.CharType, SQLCompose.TimestampType, SQLCompose.DecimalType}}}
+        struct BookingsRow <: SQLCompose.RowStruct{RowType{:bookings, (:book_ref, :book_date, :total_amount), Tuple{SQLCompose.CharType, SQLCompose.TimestampType, SQLCompose.DecimalType}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             book_ref
             book_date
@@ -399,7 +399,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct FlightsRow <: SQLCompose.RowStruct{SQLCompose.RowType{:flights, (:flight_id, :flight_no, :scheduled_departure, :scheduled_arrival, :departure_airport, :arrival_airport, :status, :aircraft_code, :actual_departure, :actual_arrival), Tuple{SQLCompose.Int4Type, SQLCompose.CharType, SQLCompose.TimestampType, SQLCompose.TimestampType, SQLCompose.CharType, SQLCompose.CharType, SQLCompose.VarCharType, SQLCompose.CharType, SQLCompose.TimestampType, SQLCompose.TimestampType}}}
+        struct FlightsRow <: SQLCompose.RowStruct{RowType{:flights, (:flight_id, :flight_no, :scheduled_departure, :scheduled_arrival, :departure_airport, :arrival_airport, :status, :aircraft_code, :actual_departure, :actual_arrival), Tuple{Int4Type, SQLCompose.CharType, SQLCompose.TimestampType, SQLCompose.TimestampType, SQLCompose.CharType, SQLCompose.CharType, SQLCompose.VarCharType, SQLCompose.CharType, SQLCompose.TimestampType, SQLCompose.TimestampType}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             flight_id
             flight_no
@@ -482,7 +482,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct Flights_VRow <: SQLCompose.RowStruct{SQLCompose.RowType{:flights_v, (:flight_id, :flight_no, :scheduled_departure, :scheduled_departure_local, :scheduled_arrival, :scheduled_arrival_local, :scheduled_duration, :departure_airport, :departure_airport_name, :departure_city, :arrival_airport, :arrival_airport_name, :arrival_city, :status, :aircraft_code, :actual_departure, :actual_departure_local, :actual_arrival, :actual_arrival_local, :actual_duration), Tuple{SQLCompose.Int4Type, SQLCompose.CharType, SQLCompose.TimestampType, SQLCompose.TimestampType, SQLCompose.TimestampType, SQLCompose.TimestampType, SQLCompose.IntervalType, SQLCompose.CharType, SQLCompose.TextType, SQLCompose.TextType, SQLCompose.CharType, SQLCompose.TextType, SQLCompose.TextType, SQLCompose.VarCharType, SQLCompose.CharType, SQLCompose.TimestampType, SQLCompose.TimestampType, SQLCompose.TimestampType, SQLCompose.TimestampType, SQLCompose.IntervalType}}}
+        struct Flights_VRow <: SQLCompose.RowStruct{RowType{:flights_v, (:flight_id, :flight_no, :scheduled_departure, :scheduled_departure_local, :scheduled_arrival, :scheduled_arrival_local, :scheduled_duration, :departure_airport, :departure_airport_name, :departure_city, :arrival_airport, :arrival_airport_name, :arrival_city, :status, :aircraft_code, :actual_departure, :actual_departure_local, :actual_arrival, :actual_arrival_local, :actual_duration), Tuple{Int4Type, SQLCompose.CharType, SQLCompose.TimestampType, SQLCompose.TimestampType, SQLCompose.TimestampType, SQLCompose.TimestampType, SQLCompose.IntervalType, SQLCompose.CharType, TextType, TextType, SQLCompose.CharType, TextType, TextType, SQLCompose.VarCharType, SQLCompose.CharType, SQLCompose.TimestampType, SQLCompose.TimestampType, SQLCompose.TimestampType, SQLCompose.TimestampType, SQLCompose.IntervalType}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             flight_id
             flight_no
@@ -595,7 +595,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct RoutesRow <: SQLCompose.RowStruct{SQLCompose.RowType{:routes, (:flight_no, :departure_airport, :departure_airport_name, :departure_city, :arrival_airport, :arrival_airport_name, :arrival_city, :aircraft_code, :duration, :days_of_week), Tuple{SQLCompose.CharType, SQLCompose.CharType, SQLCompose.TextType, SQLCompose.TextType, SQLCompose.CharType, SQLCompose.TextType, SQLCompose.TextType, SQLCompose.CharType, SQLCompose.IntervalType, SQLCompose.ArrayType{SQLCompose.Int4Type}}}}
+        struct RoutesRow <: SQLCompose.RowStruct{RowType{:routes, (:flight_no, :departure_airport, :departure_airport_name, :departure_city, :arrival_airport, :arrival_airport_name, :arrival_city, :aircraft_code, :duration, :days_of_week), Tuple{SQLCompose.CharType, SQLCompose.CharType, TextType, TextType, SQLCompose.CharType, TextType, TextType, SQLCompose.CharType, SQLCompose.IntervalType, SQLCompose.ArrayType{Int4Type}}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             flight_no
             departure_airport
@@ -678,7 +678,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct SeatsRow <: SQLCompose.RowStruct{SQLCompose.RowType{:seats, (:aircraft_code, :seat_no, :fare_conditions), Tuple{SQLCompose.CharType, SQLCompose.VarCharType, SQLCompose.VarCharType}}}
+        struct SeatsRow <: SQLCompose.RowStruct{RowType{:seats, (:aircraft_code, :seat_no, :fare_conditions), Tuple{SQLCompose.CharType, SQLCompose.VarCharType, SQLCompose.VarCharType}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             aircraft_code
             seat_no
@@ -740,7 +740,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct Ticket_FlightsRow <: SQLCompose.RowStruct{SQLCompose.RowType{:ticket_flights, (:ticket_no, :flight_id, :fare_conditions, :amount), Tuple{SQLCompose.CharType, SQLCompose.Int4Type, SQLCompose.VarCharType, SQLCompose.DecimalType}}}
+        struct Ticket_FlightsRow <: SQLCompose.RowStruct{RowType{:ticket_flights, (:ticket_no, :flight_id, :fare_conditions, :amount), Tuple{SQLCompose.CharType, Int4Type, SQLCompose.VarCharType, SQLCompose.DecimalType}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             ticket_no
             flight_id
@@ -805,7 +805,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct TicketsRow <: SQLCompose.RowStruct{SQLCompose.RowType{:tickets, (:ticket_no, :book_ref, :passenger_id, :passenger_name, :contact_data), Tuple{SQLCompose.CharType, SQLCompose.CharType, SQLCompose.VarCharType, SQLCompose.TextType, SQLCompose.JSONType}}}
+        struct TicketsRow <: SQLCompose.RowStruct{RowType{:tickets, (:ticket_no, :book_ref, :passenger_id, :passenger_name, :contact_data), Tuple{SQLCompose.CharType, SQLCompose.CharType, SQLCompose.VarCharType, TextType, SQLCompose.JSONType}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             ticket_no
             book_ref

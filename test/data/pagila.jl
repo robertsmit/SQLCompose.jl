@@ -12,7 +12,7 @@ begin
     #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:132 =#
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct ActorRow <: SQLCompose.RowStruct{SQLCompose.RowType{:actor, (:actor_id, :first_name, :last_name, :last_update, :column_name, :column_name2, :column_name3, :column_name5, :column_name6, :column_name7, :column_name9, :column_name10, :column_name11, :column_name12, :column_name13, :column_name15, :squares, :squaresone, :whooss, :dwhooss, :ddwhooss, :ddddwhooss, :aap, :maki), Tuple{SQLCompose.Int4Type, SQLCompose.TextType, SQLCompose.TextType, SQLCompose.TimestampType, SQLCompose.DecimalType, SQLCompose.Int8Type, SQLCompose.Float4Type, SQLCompose.Float8Type, SQLCompose.CharType, SQLCompose.VarCharType, SQLCompose.VarCharType, SQLCompose.TimeType, SQLCompose.IntervalType, SQLCompose.IntervalType, SQLCompose.TimestampType, SQLCompose.IntervalType, SQLCompose.ArrayType{SQLCompose.Int4Type}, SQLCompose.ArrayType{SQLCompose.Int4Type}, SQLCompose.ArrayType{SQLCompose.IntervalType}, SQLCompose.ArrayType{SQLCompose.IntervalType}, SQLCompose.ArrayType{SQLCompose.IntervalType}, SQLCompose.ArrayType{SQLCompose.VarCharType}, SQLCompose.RowType{:inventory_item, (:name, :supplier_id, :price), Tuple{SQLCompose.TextType, SQLCompose.Int4Type, SQLCompose.DecimalType}}, SQLCompose.ArrayType{SQLCompose.RowType{:inventory_item, (:name, :supplier_id, :price), Tuple{SQLCompose.TextType, SQLCompose.Int4Type, SQLCompose.DecimalType}}}}}}
+        struct ActorRow <: SQLCompose.RowStruct{RowType{:actor, (:actor_id, :first_name, :last_name, :last_update, :column_name, :column_name2, :column_name3, :column_name5, :column_name6, :column_name7, :column_name9, :column_name10, :column_name11, :column_name12, :column_name13, :column_name15, :squares, :squaresone, :whooss, :dwhooss, :ddwhooss, :ddddwhooss, :aap, :maki), Tuple{Int4Type, TextType, TextType, SQLCompose.TimestampType, SQLCompose.DecimalType, Int8Type, Float4Type, Float8Type, SQLCompose.CharType, SQLCompose.VarCharType, SQLCompose.VarCharType, SQLCompose.TimeType, SQLCompose.IntervalType, SQLCompose.IntervalType, SQLCompose.TimestampType, SQLCompose.IntervalType, SQLCompose.ArrayType{Int4Type}, SQLCompose.ArrayType{Int4Type}, SQLCompose.ArrayType{SQLCompose.IntervalType}, SQLCompose.ArrayType{SQLCompose.IntervalType}, SQLCompose.ArrayType{SQLCompose.IntervalType}, SQLCompose.ArrayType{SQLCompose.VarCharType}, RowType{:inventory_item, (:name, :supplier_id, :price), Tuple{TextType, Int4Type, SQLCompose.DecimalType}}, SQLCompose.ArrayType{RowType{:inventory_item, (:name, :supplier_id, :price), Tuple{TextType, Int4Type, SQLCompose.DecimalType}}}}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             actor_id
             first_name
@@ -137,7 +137,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct Actor_InfoRow <: SQLCompose.RowStruct{SQLCompose.RowType{:actor_info, (:actor_id, :first_name, :last_name, :film_info), Tuple{SQLCompose.Int4Type, SQLCompose.TextType, SQLCompose.TextType, SQLCompose.TextType}}}
+        struct Actor_InfoRow <: SQLCompose.RowStruct{RowType{:actor_info, (:actor_id, :first_name, :last_name, :film_info), Tuple{Int4Type, TextType, TextType, TextType}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             actor_id
             first_name
@@ -202,7 +202,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct AddressRow <: SQLCompose.RowStruct{SQLCompose.RowType{:address, (:address_id, :address, :address2, :district, :city_id, :postal_code, :phone, :last_update), Tuple{SQLCompose.Int4Type, SQLCompose.TextType, SQLCompose.TextType, SQLCompose.TextType, SQLCompose.Int4Type, SQLCompose.TextType, SQLCompose.TextType, SQLCompose.TimestampType}}}
+        struct AddressRow <: SQLCompose.RowStruct{RowType{:address, (:address_id, :address, :address2, :district, :city_id, :postal_code, :phone, :last_update), Tuple{Int4Type, TextType, TextType, TextType, Int4Type, TextType, TextType, SQLCompose.TimestampType}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             address_id
             address
@@ -279,7 +279,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct CategoryRow <: SQLCompose.RowStruct{SQLCompose.RowType{:category, (:category_id, :name, :last_update), Tuple{SQLCompose.Int4Type, SQLCompose.TextType, SQLCompose.TimestampType}}}
+        struct CategoryRow <: SQLCompose.RowStruct{RowType{:category, (:category_id, :name, :last_update), Tuple{Int4Type, TextType, SQLCompose.TimestampType}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             category_id
             name
@@ -341,7 +341,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct CityRow <: SQLCompose.RowStruct{SQLCompose.RowType{:city, (:city_id, :city, :country_id, :last_update), Tuple{SQLCompose.Int4Type, SQLCompose.TextType, SQLCompose.Int4Type, SQLCompose.TimestampType}}}
+        struct CityRow <: SQLCompose.RowStruct{RowType{:city, (:city_id, :city, :country_id, :last_update), Tuple{Int4Type, TextType, Int4Type, SQLCompose.TimestampType}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             city_id
             city
@@ -406,7 +406,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct CountryRow <: SQLCompose.RowStruct{SQLCompose.RowType{:country, (:country_id, :country, :last_update), Tuple{SQLCompose.Int4Type, SQLCompose.TextType, SQLCompose.TimestampType}}}
+        struct CountryRow <: SQLCompose.RowStruct{RowType{:country, (:country_id, :country, :last_update), Tuple{Int4Type, TextType, SQLCompose.TimestampType}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             country_id
             country
@@ -468,7 +468,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct CustomerRow <: SQLCompose.RowStruct{SQLCompose.RowType{:customer, (:customer_id, :store_id, :first_name, :last_name, :email, :address_id, :activebool, :create_date, :last_update, :active), Tuple{SQLCompose.Int4Type, SQLCompose.Int4Type, SQLCompose.TextType, SQLCompose.TextType, SQLCompose.TextType, SQLCompose.Int4Type, SQLCompose.BooleanType, SQLCompose.DateType, SQLCompose.TimestampType, SQLCompose.Int4Type}}}
+        struct CustomerRow <: SQLCompose.RowStruct{RowType{:customer, (:customer_id, :store_id, :first_name, :last_name, :email, :address_id, :activebool, :create_date, :last_update, :active), Tuple{Int4Type, Int4Type, TextType, TextType, TextType, Int4Type, BooleanType, SQLCompose.DateType, SQLCompose.TimestampType, Int4Type}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             customer_id
             store_id
@@ -551,7 +551,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct Customer_ListRow <: SQLCompose.RowStruct{SQLCompose.RowType{:customer_list, (:id, :name, :address, Symbol("zip code"), :phone, :city, :country, :notes, :sid), Tuple{SQLCompose.Int4Type, SQLCompose.TextType, SQLCompose.TextType, SQLCompose.TextType, SQLCompose.TextType, SQLCompose.TextType, SQLCompose.TextType, SQLCompose.TextType, SQLCompose.Int4Type}}}
+        struct Customer_ListRow <: SQLCompose.RowStruct{RowType{:customer_list, (:id, :name, :address, Symbol("zip code"), :phone, :city, :country, :notes, :sid), Tuple{Int4Type, TextType, TextType, TextType, TextType, TextType, TextType, TextType, Int4Type}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             id
             name
@@ -631,7 +631,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct FilmRow <: SQLCompose.RowStruct{SQLCompose.RowType{:film, (:film_id, :title, :description, :release_year, :language_id, :original_language_id, :rental_duration, :rental_rate, :length, :replacement_cost, :rating, :last_update, :special_features, :fulltext), Tuple{SQLCompose.Int4Type, SQLCompose.TextType, SQLCompose.TextType, SQLCompose.Int4Type, SQLCompose.Int4Type, SQLCompose.Int4Type, SQLCompose.Int2Type, SQLCompose.DecimalType, SQLCompose.Int2Type, SQLCompose.DecimalType, SQLCompose.EnumType, SQLCompose.TimestampType, SQLCompose.ArrayType{SQLCompose.TextType}, SQLCompose.UnknownType}}}
+        struct FilmRow <: SQLCompose.RowStruct{RowType{:film, (:film_id, :title, :description, :release_year, :language_id, :original_language_id, :rental_duration, :rental_rate, :length, :replacement_cost, :rating, :last_update, :special_features, :fulltext), Tuple{Int4Type, TextType, TextType, Int4Type, Int4Type, Int4Type, Int2Type, SQLCompose.DecimalType, Int2Type, SQLCompose.DecimalType, EnumType, SQLCompose.TimestampType, SQLCompose.ArrayType{TextType}, SQLCompose.UnknownType}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             film_id
             title
@@ -726,7 +726,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct Film_ActorRow <: SQLCompose.RowStruct{SQLCompose.RowType{:film_actor, (:actor_id, :film_id, :last_update), Tuple{SQLCompose.Int4Type, SQLCompose.Int4Type, SQLCompose.TimestampType}}}
+        struct Film_ActorRow <: SQLCompose.RowStruct{RowType{:film_actor, (:actor_id, :film_id, :last_update), Tuple{Int4Type, Int4Type, SQLCompose.TimestampType}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             actor_id
             film_id
@@ -788,7 +788,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct Film_Actor_ExtensionRow <: SQLCompose.RowStruct{SQLCompose.RowType{:film_actor_extension, (:actor_id, :film_id), Tuple{SQLCompose.Int4Type, SQLCompose.Int4Type}}}
+        struct Film_Actor_ExtensionRow <: SQLCompose.RowStruct{RowType{:film_actor_extension, (:actor_id, :film_id), Tuple{Int4Type, Int4Type}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             actor_id
             film_id
@@ -847,7 +847,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct Film_Actor_Extension2Row <: SQLCompose.RowStruct{SQLCompose.RowType{:film_actor_extension2, (:actor_id, :film_id), Tuple{SQLCompose.Int4Type, SQLCompose.Int4Type}}}
+        struct Film_Actor_Extension2Row <: SQLCompose.RowStruct{RowType{:film_actor_extension2, (:actor_id, :film_id), Tuple{Int4Type, Int4Type}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             actor_id
             film_id
@@ -906,7 +906,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct Film_CategoryRow <: SQLCompose.RowStruct{SQLCompose.RowType{:film_category, (:film_id, :category_id, :last_update), Tuple{SQLCompose.Int4Type, SQLCompose.Int4Type, SQLCompose.TimestampType}}}
+        struct Film_CategoryRow <: SQLCompose.RowStruct{RowType{:film_category, (:film_id, :category_id, :last_update), Tuple{Int4Type, Int4Type, SQLCompose.TimestampType}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             film_id
             category_id
@@ -968,7 +968,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct Film_ListRow <: SQLCompose.RowStruct{SQLCompose.RowType{:film_list, (:fid, :title, :description, :category, :price, :length, :rating, :actors), Tuple{SQLCompose.Int4Type, SQLCompose.TextType, SQLCompose.TextType, SQLCompose.TextType, SQLCompose.DecimalType, SQLCompose.Int2Type, SQLCompose.EnumType, SQLCompose.TextType}}}
+        struct Film_ListRow <: SQLCompose.RowStruct{RowType{:film_list, (:fid, :title, :description, :category, :price, :length, :rating, :actors), Tuple{Int4Type, TextType, TextType, TextType, SQLCompose.DecimalType, Int2Type, EnumType, TextType}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             fid
             title
@@ -1045,7 +1045,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct InventoryRow <: SQLCompose.RowStruct{SQLCompose.RowType{:inventory, (:inventory_id, :film_id, :store_id, :last_update), Tuple{SQLCompose.Int4Type, SQLCompose.Int4Type, SQLCompose.Int4Type, SQLCompose.TimestampType}}}
+        struct InventoryRow <: SQLCompose.RowStruct{RowType{:inventory, (:inventory_id, :film_id, :store_id, :last_update), Tuple{Int4Type, Int4Type, Int4Type, SQLCompose.TimestampType}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             inventory_id
             film_id
@@ -1110,7 +1110,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct Inventory_ItemRow <: SQLCompose.RowStruct{SQLCompose.RowType{:inventory_item, (:name, :supplier_id, :price), Tuple{SQLCompose.TextType, SQLCompose.Int4Type, SQLCompose.DecimalType}}}
+        struct Inventory_ItemRow <: SQLCompose.RowStruct{RowType{:inventory_item, (:name, :supplier_id, :price), Tuple{TextType, Int4Type, SQLCompose.DecimalType}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             name
             supplier_id
@@ -1172,7 +1172,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct Inventory_Item2Row <: SQLCompose.RowStruct{SQLCompose.RowType{:inventory_item2, (:name, :supplier_ids, :prices), Tuple{SQLCompose.TextType, SQLCompose.ArrayType{SQLCompose.Int4Type}, SQLCompose.ArrayType{SQLCompose.DecimalType}}}}
+        struct Inventory_Item2Row <: SQLCompose.RowStruct{RowType{:inventory_item2, (:name, :supplier_ids, :prices), Tuple{TextType, SQLCompose.ArrayType{Int4Type}, SQLCompose.ArrayType{SQLCompose.DecimalType}}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             name
             supplier_ids
@@ -1234,7 +1234,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct Inventory_Item3Row <: SQLCompose.RowStruct{SQLCompose.RowType{:inventory_item3, (:name, :supplier_ids, :prices, :dt, :item), Tuple{SQLCompose.TextType, SQLCompose.ArrayType{SQLCompose.Int4Type}, SQLCompose.ArrayType{SQLCompose.DecimalType}, SQLCompose.TimestampType, SQLCompose.RowType{:inventory_item, (:name, :supplier_id, :price), Tuple{SQLCompose.TextType, SQLCompose.Int4Type, SQLCompose.DecimalType}}}}}
+        struct Inventory_Item3Row <: SQLCompose.RowStruct{RowType{:inventory_item3, (:name, :supplier_ids, :prices, :dt, :item), Tuple{TextType, SQLCompose.ArrayType{Int4Type}, SQLCompose.ArrayType{SQLCompose.DecimalType}, SQLCompose.TimestampType, RowType{:inventory_item, (:name, :supplier_id, :price), Tuple{TextType, Int4Type, SQLCompose.DecimalType}}}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             name
             supplier_ids
@@ -1302,7 +1302,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct Inventory_Item4Row <: SQLCompose.RowStruct{SQLCompose.RowType{:inventory_item4, (:name, :supplier_ids, :prices), Tuple{SQLCompose.TextType, SQLCompose.ArrayType{SQLCompose.Int4Type}, SQLCompose.ArrayType{SQLCompose.DecimalType}}}}
+        struct Inventory_Item4Row <: SQLCompose.RowStruct{RowType{:inventory_item4, (:name, :supplier_ids, :prices), Tuple{TextType, SQLCompose.ArrayType{Int4Type}, SQLCompose.ArrayType{SQLCompose.DecimalType}}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             name
             supplier_ids
@@ -1364,7 +1364,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct LanguageRow <: SQLCompose.RowStruct{SQLCompose.RowType{:language, (:language_id, :name, :last_update), Tuple{SQLCompose.Int4Type, SQLCompose.CharType, SQLCompose.TimestampType}}}
+        struct LanguageRow <: SQLCompose.RowStruct{RowType{:language, (:language_id, :name, :last_update), Tuple{Int4Type, SQLCompose.CharType, SQLCompose.TimestampType}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             language_id
             name
@@ -1426,7 +1426,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct Nicer_But_Slower_Film_ListRow <: SQLCompose.RowStruct{SQLCompose.RowType{:nicer_but_slower_film_list, (:fid, :title, :description, :category, :price, :length, :rating, :actors), Tuple{SQLCompose.Int4Type, SQLCompose.TextType, SQLCompose.TextType, SQLCompose.TextType, SQLCompose.DecimalType, SQLCompose.Int2Type, SQLCompose.EnumType, SQLCompose.TextType}}}
+        struct Nicer_But_Slower_Film_ListRow <: SQLCompose.RowStruct{RowType{:nicer_but_slower_film_list, (:fid, :title, :description, :category, :price, :length, :rating, :actors), Tuple{Int4Type, TextType, TextType, TextType, SQLCompose.DecimalType, Int2Type, EnumType, TextType}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             fid
             title
@@ -1503,7 +1503,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct PaymentRow <: SQLCompose.RowStruct{SQLCompose.RowType{:payment, (:payment_id, :customer_id, :staff_id, :rental_id, :amount, :payment_date), Tuple{SQLCompose.Int4Type, SQLCompose.Int4Type, SQLCompose.Int4Type, SQLCompose.Int4Type, SQLCompose.DecimalType, SQLCompose.TimestampType}}}
+        struct PaymentRow <: SQLCompose.RowStruct{RowType{:payment, (:payment_id, :customer_id, :staff_id, :rental_id, :amount, :payment_date), Tuple{Int4Type, Int4Type, Int4Type, Int4Type, SQLCompose.DecimalType, SQLCompose.TimestampType}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             payment_id
             customer_id
@@ -1574,7 +1574,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct RentalRow <: SQLCompose.RowStruct{SQLCompose.RowType{:rental, (:rental_id, :rental_date, :inventory_id, :customer_id, :return_date, :staff_id, :last_update), Tuple{SQLCompose.Int4Type, SQLCompose.TimestampType, SQLCompose.Int4Type, SQLCompose.Int4Type, SQLCompose.TimestampType, SQLCompose.Int4Type, SQLCompose.TimestampType}}}
+        struct RentalRow <: SQLCompose.RowStruct{RowType{:rental, (:rental_id, :rental_date, :inventory_id, :customer_id, :return_date, :staff_id, :last_update), Tuple{Int4Type, SQLCompose.TimestampType, Int4Type, Int4Type, SQLCompose.TimestampType, Int4Type, SQLCompose.TimestampType}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             rental_id
             rental_date
@@ -1648,7 +1648,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct Sales_By_Film_CategoryRow <: SQLCompose.RowStruct{SQLCompose.RowType{:sales_by_film_category, (:category, :total_sales), Tuple{SQLCompose.TextType, SQLCompose.DecimalType}}}
+        struct Sales_By_Film_CategoryRow <: SQLCompose.RowStruct{RowType{:sales_by_film_category, (:category, :total_sales), Tuple{TextType, SQLCompose.DecimalType}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             category
             total_sales
@@ -1707,7 +1707,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct Sales_By_StoreRow <: SQLCompose.RowStruct{SQLCompose.RowType{:sales_by_store, (:store, :manager, :total_sales), Tuple{SQLCompose.TextType, SQLCompose.TextType, SQLCompose.DecimalType}}}
+        struct Sales_By_StoreRow <: SQLCompose.RowStruct{RowType{:sales_by_store, (:store, :manager, :total_sales), Tuple{TextType, TextType, SQLCompose.DecimalType}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             store
             manager
@@ -1769,7 +1769,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct StaffRow <: SQLCompose.RowStruct{SQLCompose.RowType{:staff, (:staff_id, :first_name, :last_name, :address_id, :email, :store_id, :active, :username, :password, :last_update, :picture), Tuple{SQLCompose.Int4Type, SQLCompose.TextType, SQLCompose.TextType, SQLCompose.Int4Type, SQLCompose.TextType, SQLCompose.Int4Type, SQLCompose.BooleanType, SQLCompose.TextType, SQLCompose.TextType, SQLCompose.TimestampType, SQLCompose.BlobType}}}
+        struct StaffRow <: SQLCompose.RowStruct{RowType{:staff, (:staff_id, :first_name, :last_name, :address_id, :email, :store_id, :active, :username, :password, :last_update, :picture), Tuple{Int4Type, TextType, TextType, Int4Type, TextType, Int4Type, BooleanType, TextType, TextType, SQLCompose.TimestampType, SQLCompose.BlobType}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             staff_id
             first_name
@@ -1855,7 +1855,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct Staff_ListRow <: SQLCompose.RowStruct{SQLCompose.RowType{:staff_list, (:id, :name, :address, Symbol("zip code"), :phone, :city, :country, :sid), Tuple{SQLCompose.Int4Type, SQLCompose.TextType, SQLCompose.TextType, SQLCompose.TextType, SQLCompose.TextType, SQLCompose.TextType, SQLCompose.TextType, SQLCompose.Int4Type}}}
+        struct Staff_ListRow <: SQLCompose.RowStruct{RowType{:staff_list, (:id, :name, :address, Symbol("zip code"), :phone, :city, :country, :sid), Tuple{Int4Type, TextType, TextType, TextType, TextType, TextType, TextType, Int4Type}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             id
             name
@@ -1932,7 +1932,7 @@ begin
     end
     begin
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:92 =#
-        struct StoreRow <: SQLCompose.RowStruct{SQLCompose.RowType{:store, (:store_id, :manager_staff_id, :address_id, :last_update), Tuple{SQLCompose.Int4Type, SQLCompose.Int4Type, SQLCompose.Int4Type, SQLCompose.TimestampType}}}
+        struct StoreRow <: SQLCompose.RowStruct{RowType{:store, (:store_id, :manager_staff_id, :address_id, :last_update), Tuple{Int4Type, Int4Type, Int4Type, SQLCompose.TimestampType}}}
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:59 =#
             store_id
             manager_staff_id
