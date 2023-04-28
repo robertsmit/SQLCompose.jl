@@ -39,7 +39,7 @@ function lateralfieldname(fieldname::String, postfixmappings)
 
 end
 
-function lateral_methodname(key::ForeignKey, postfixmappings)
+function reference_methodname(key::ForeignKey, postfixmappings)
     let ref = key.parentfields == key.childfields ? key.parentname :
               let fieldnames = map(each -> lateralfieldname(string(each), postfixmappings), key.childfields)
             join(fieldnames, "_")
@@ -104,9 +104,9 @@ end
 function queries_expression(types;
     withexports=true,
     rowstruct_typename=tablename -> Symbol(tablename |> string |> titlecase, "Row"),
-    lateralfieldname_postfixmappings=("_id" => chop_postfix,))
+    referencefieldname_postfixmappings=("_id" => chop_postfix,))
 
-    lateral_methodexpression(key::ForeignKey, childname, methodname) =
+    refference_methodexpression(key::ForeignKey, childname, methodname) =
         let childtypename = rowstruct_typename(childname)
             parenttypename = rowstruct_typename(key.parentname)
             childfield_exprs = map(childkey -> :($childname.$(childkey)), key.childfields)
@@ -118,18 +118,18 @@ function queries_expression(types;
 
     allforeignkeys = ((key=fk, childname=name(type))
                       for type in types for fk in type.foreignkeys)
-    lateral_methodnames = (lateral_methodname(key, lateralfieldname_postfixmappings) for (key,) in allforeignkeys)
-    lateral_methodexprs = (lateral_methodexpression(each.key, each.childname, methodname)
-                           for (each, methodname) in zip(allforeignkeys, lateral_methodnames))
+    refference_methodnames = (reference_methodname(key, referencefieldname_postfixmappings) for (key,) in allforeignkeys)
+    reference_methodexprs = (refference_methodexpression(each.key, each.childname, methodname)
+                           for (each, methodname) in zip(allforeignkeys, refference_methodnames))
 
     #exports
     tabledefintions_methodnames = map(tabledefinition_methodname, types)
     namedquery_methodnames = map(namedquery_methodname, types)
-    exports = withexports ? (rowstruct_typenames, lateral_methodnames, tabledefintions_methodnames, namedquery_methodnames) : ()
+    exports = withexports ? (rowstruct_typenames, refference_methodnames, tabledefintions_methodnames, namedquery_methodnames) : ()
 
     quote
         $(map(n -> :(export $(n...)), exports)...)
         $(rowstruct_exprs...)    
-        $(lateral_methodexprs...)
+        $(reference_methodexprs...)
     end
 end
