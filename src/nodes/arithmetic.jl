@@ -32,9 +32,9 @@ for (typename, (op, sqloperator, type, prec)) in pairs(operators)
         Base.$op(left::NumericExpression, right) = Base.$op(left, convert(SQLExpression, right))
 
         printpsql(io::IO, node::$typename, env) = printpsql_infix(io, node, $(Meta.quot(sqloperator)), env)
-        function writelateralplan!(plan, node::$typename, tableitem)
-            writelateralplan!(plan, node.left, tableitem)
-            writelateralplan!(plan, node.right, tableitem)
+        function write_referredtable_location_plan!(plan, node::$typename, tableitem)
+            write_referredtable_location_plan!(plan, node.left, tableitem)
+            write_referredtable_location_plan!(plan, node.right, tableitem)
         end
     end
 end

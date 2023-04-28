@@ -1,143 +1,145 @@
-LateralLocationsDict = ImmutableDict{LateralTableItemRef,Symbol}
-LateralLocations = Union{LateralLocationsDict,Nothing}
-
-haslocation(::Nothing, lat::LateralTableItemRef) = false
-haslocation(d::LateralLocationsDict, lat::LateralTableItemRef) = haskey(d, lat)
-
-laterallocations(::Nothing, ref::LateralTableItemRef, tableitem) = ImmutableDict(ref => key(tableitem))
-laterallocations(d::LateralLocationsDict, ref::LateralTableItemRef, tableitem) = ImmutableDict(d, ref => key(tableitem))
-
-mutable struct LateralPlan
-    locations::LateralLocations
+ReferredTableLocationDict = ImmutableDict{ReferredTableItemRef,Symbol}
+ReferredTableLocations = Union{ReferredTableLocationDict,Nothing}
+mutable struct ReferredTableLocationPlan
+    locations::ReferredTableLocations
     env
 end
 
-LateralPlan(env) = LateralPlan(nothing, env)
+ReferredTableLocationPlan(env) = ReferredTableLocationPlan(nothing, env)
 
-function writelateralplan!(plan::LateralPlan, node::LateralTableItemRef, tableitem)
-    if haslocation(plan.locations, node) || haslateral(plan.env, node)
+referredtablelocations(::Nothing, ref::ReferredTableItemRef, tableitem) = ImmutableDict(ref => key(tableitem))
+referredtablelocations(d::ReferredTableLocationDict, ref::ReferredTableItemRef, tableitem) = ImmutableDict(d, ref => key(tableitem))
+
+haslocation(::Nothing, ref::ReferredTableItemRef) = false
+haslocation(d::ReferredTableLocationDict, ref::ReferredTableItemRef) = haskey(d, ref)
+haslocation(plan::ReferredTableLocationPlan, ref::ReferredTableItemRef) =  haslocation(plan.locations, ref) || hasreferred(plan.env, ref)
+
+
+
+function write_referredtable_location_plan!(plan::ReferredTableLocationPlan, node::ReferredTableItemRef, tableitem)    
+    if haslocation(plan, node)
         return plan
     end
-    plan.locations = laterallocations(plan.locations, node, tableitem)
-    writelateralplan!(plan, node.foreignkeys, tableitem)
+    plan.locations = referredtablelocations(plan.locations, node, tableitem)
+    write_referredtable_location_plan!(plan, node.foreignkeys, tableitem)
 end
 
-writelateralplan!(plan, ::Any, tableitem) = plan
+write_referredtable_location_plan!(plan, ::Any, tableitem) = plan
 
-function writelateralplan!(plan, node::NodeList, tableitem)
+function write_referredtable_location_plan!(plan, node::NodeList, tableitem)
     for each in node
-        writelateralplan!(plan, each, tableitem)
+        write_referredtable_location_plan!(plan, each, tableitem)
     end
     plan
 end
-writelateralplan!(plan, node::SQLNode, tableitem) = error("please implement: writelateralplan! for $(typeof(node))")
+write_referredtable_location_plan!(plan, node::SQLNode, tableitem) = error("please implement: write_referredtable_location_plan! for $(typeof(node))")
 
-function writelateralplan!(plan, node::SelectQuery)
-    writelateralplan!(plan, node.from, nothing)
+function write_referredtable_location_plan!(plan, node::SelectQuery)
+    write_referredtable_location_plan!(plan, node.from, nothing)
     let tableitem = last(node.from)
-        writelateralplan!(plan, node.result, tableitem)
-        writelateralplan!(plan, node.filter, tableitem)            
-        writelateralplan!(plan, node.group, tableitem)
-        writelateralplan!(plan, node.groupfilter, tableitem)
-        writelateralplan!(plan, node.order, tableitem)
+        write_referredtable_location_plan!(plan, node.result, tableitem)
+        write_referredtable_location_plan!(plan, node.filter, tableitem)            
+        write_referredtable_location_plan!(plan, node.group, tableitem)
+        write_referredtable_location_plan!(plan, node.groupfilter, tableitem)
+        write_referredtable_location_plan!(plan, node.order, tableitem)
     end
 end
 
-function writelateralplan!(plan, node::JoinItem, tableitem)
-    writelateralplan!(plan, node.left, nothing)
-    writelateralplan!(plan, node.join, last(node.left))
-    writelateralplan!(plan, node.right, nothing)
+function write_referredtable_location_plan!(plan, node::JoinItem, tableitem)
+    write_referredtable_location_plan!(plan, node.left, nothing)
+    write_referredtable_location_plan!(plan, node.join, last(node.left))
+    write_referredtable_location_plan!(plan, node.right, nothing)
 end
 
-writelateralplan!(plan, node::Join, tableitem) = writelateralplan!(plan, node.condition, tableitem)
-writelateralplan!(plan, ::TableItem, tableitem) = plan
+write_referredtable_location_plan!(plan, node::Join, tableitem) = write_referredtable_location_plan!(plan, node.condition, tableitem)
+write_referredtable_location_plan!(plan, ::TableItem, tableitem) = plan
 
 
 
-writelateralplan!(plan, node::Not, tableitem) = writelateralplan!(plan, node.expr, tableitem)
-function writelateralplan!(plan, node::And, tableitem)
+write_referredtable_location_plan!(plan, node::Not, tableitem) = write_referredtable_location_plan!(plan, node.expr, tableitem)
+function write_referredtable_location_plan!(plan, node::And, tableitem)
     for each in node.elems
-        writelateralplan!(plan, each, tableitem)
+        write_referredtable_location_plan!(plan, each, tableitem)
     end
     plan
 end
-function writelateralplan!(plan, node::Or, tableitem)
-    writelateralplan!(plan, node.left, tableitem)
-    writelateralplan!(plan, node.right, tableitem)
+function write_referredtable_location_plan!(plan, node::Or, tableitem)
+    write_referredtable_location_plan!(plan, node.left, tableitem)
+    write_referredtable_location_plan!(plan, node.right, tableitem)
 end
 
-function writelateralplan!(plan, node::Concat, tableitem)
+function write_referredtable_location_plan!(plan, node::Concat, tableitem)
     for each in node.expressions
-        writelateralplan!(plan, each, tableitem)
+        write_referredtable_location_plan!(plan, each, tableitem)
     end
     plan
 end
 
-writelateralplan!(plan, node::Cast, tableitem) = writelateralplan!(plan, node.expr, tableitem)
-writelateralplan!(plan, node::IsNull, tableitem) = writelateralplan!(plan, node.expr, tableitem)
-writelateralplan!(plan, node::IsNotNull, tableitem) = writelateralplan!(plan, node.expr, tableitem)
-writelateralplan!(plan, node::DescOrder, tableitem) = writelateralplan!(plan, node.expr, tableitem)
-writelateralplan!(plan, node::Between, tableitem) = begin
-    writelateralplan!(plan, node.subject, tableitem)
-    writelateralplan!(plan, node.range, tableitem)
+write_referredtable_location_plan!(plan, node::Cast, tableitem) = write_referredtable_location_plan!(plan, node.expr, tableitem)
+write_referredtable_location_plan!(plan, node::IsNull, tableitem) = write_referredtable_location_plan!(plan, node.expr, tableitem)
+write_referredtable_location_plan!(plan, node::IsNotNull, tableitem) = write_referredtable_location_plan!(plan, node.expr, tableitem)
+write_referredtable_location_plan!(plan, node::DescOrder, tableitem) = write_referredtable_location_plan!(plan, node.expr, tableitem)
+write_referredtable_location_plan!(plan, node::Between, tableitem) = begin
+    write_referredtable_location_plan!(plan, node.subject, tableitem)
+    write_referredtable_location_plan!(plan, node.range, tableitem)
 end
-writelateralplan!(plan, node::BetweenRange, tableitem) = begin
-    writelateralplan!(plan, node.left, tableitem)
-    writelateralplan!(plan, node.right, tableitem)
+write_referredtable_location_plan!(plan, node::BetweenRange, tableitem) = begin
+    write_referredtable_location_plan!(plan, node.left, tableitem)
+    write_referredtable_location_plan!(plan, node.right, tableitem)
 end
-writelateralplan!(plan, ::SQLConstant, tableitem) = plan
-writelateralplan!(plan, ::Exists, ::FromItem) = plan
-writelateralplan!(plan, ::NotExists, ::FromItem) = plan
-function writelateralplan!(plan, node::FunctionCall, tableitem)
+write_referredtable_location_plan!(plan, ::SQLConstant, tableitem) = plan
+write_referredtable_location_plan!(plan, ::Exists, ::FromItem) = plan
+write_referredtable_location_plan!(plan, ::NotExists, ::FromItem) = plan
+function write_referredtable_location_plan!(plan, node::FunctionCall, tableitem)
     for each in node.operands
-        writelateralplan!(plan, each, tableitem)
+        write_referredtable_location_plan!(plan, each, tableitem)
     end
     plan
 end
 
-writelateralplan!(plan, ::KeyedTableItemRef, ::FromItem) = plan
+write_referredtable_location_plan!(plan, ::KeyedTableItemRef, ::FromItem) = plan
 
-writelateralplan!(plan, node::TableItemFieldRef, tableitem::FromItem) = writelateralplan!(plan, node.table, tableitem)
-writelateralplan!(plan, ::SelectWithoutFromQuery, ::FromItem) = plan
-writelateralplan!(plan, node::SubqueryExpression, ::FromItem) = plan
+write_referredtable_location_plan!(plan, node::TableItemFieldRef, tableitem::FromItem) = write_referredtable_location_plan!(plan, node.table, tableitem)
+write_referredtable_location_plan!(plan, ::SelectWithoutFromQuery, ::FromItem) = plan
+write_referredtable_location_plan!(plan, node::SubqueryExpression, ::FromItem) = plan
 
-function writelateralplan!(plan, node::InExpression, tableitem)
-    writelateralplan!(plan, node.element, tableitem)
-    writelateralplan!(plan, node.set, tableitem)
+function write_referredtable_location_plan!(plan, node::InExpression, tableitem)
+    write_referredtable_location_plan!(plan, node.element, tableitem)
+    write_referredtable_location_plan!(plan, node.set, tableitem)
 end
 
-writelateralplan!(plan, node::SelectQuery, tableitem) = nothing
+write_referredtable_location_plan!(plan, node::SelectQuery, tableitem) = nothing
 
-function writelateralplan!(plan, node::AggregateExpression, tableitem)
-    writelateralplan!(plan, node.operands, tableitem)
-    writelateralplan!(plan, node.filter, tableitem)
-    writelateralplan!(plan, node.order, tableitem)
+function write_referredtable_location_plan!(plan, node::AggregateExpression, tableitem)
+    write_referredtable_location_plan!(plan, node.operands, tableitem)
+    write_referredtable_location_plan!(plan, node.filter, tableitem)
+    write_referredtable_location_plan!(plan, node.order, tableitem)
     plan
 end
 
-function writelateralplan!(plan, node::OrderedSetAggregateExpression, tableitem)
-    writelateralplan!(plan, node.operands, tableitem)
-    writelateralplan!(plan, node.filter, tableitem)
-    writelateralplan!(plan, node.order, tableitem)
+function write_referredtable_location_plan!(plan, node::OrderedSetAggregateExpression, tableitem)
+    write_referredtable_location_plan!(plan, node.operands, tableitem)
+    write_referredtable_location_plan!(plan, node.filter, tableitem)
+    write_referredtable_location_plan!(plan, node.order, tableitem)
     plan
 end
 
-function writelateralplan!(plan, node::WindowFunctionCall, tableitem)
-    writelateralplan!(plan, node.operands, tableitem)
-    writelateralplan!(plan, node.filter, tableitem)
-    writelateralplan!(plan, node.window, tableitem)
+function write_referredtable_location_plan!(plan, node::WindowFunctionCall, tableitem)
+    write_referredtable_location_plan!(plan, node.operands, tableitem)
+    write_referredtable_location_plan!(plan, node.filter, tableitem)
+    write_referredtable_location_plan!(plan, node.window, tableitem)
     plan
 end
 
-function writelateralplan!(plan, node::WindowDefinition, tableitem)
-    writelateralplan!(plan, node.order, tableitem)
-    writelateralplan!(plan, node.partition, tableitem)
+function write_referredtable_location_plan!(plan, node::WindowDefinition, tableitem)
+    write_referredtable_location_plan!(plan, node.order, tableitem)
+    write_referredtable_location_plan!(plan, node.partition, tableitem)
     plan
 end
 
-function writelateralplan!(plan, t::Tuple, tableitem)
+function write_referredtable_location_plan!(plan, t::Tuple, tableitem)
     for each in t
-        writelateralplan!(plan, each, tableitem)
+        write_referredtable_location_plan!(plan, each, tableitem)
     end
     plan
 end

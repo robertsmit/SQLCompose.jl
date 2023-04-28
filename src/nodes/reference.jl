@@ -1,16 +1,16 @@
-struct LateralTableItemRef <: TableItemRef
+struct ReferredTableItemRef <: TableItemRef
     tablename::Symbol
     primarykeys
     foreignkeys
     isnullable::Bool
 end
 
-function aliashint(ref::LateralTableItemRef)
-    Symbol("lat_", ref.tablename)
+function aliashint(ref::ReferredTableItemRef)
+    Symbol("ref_", ref.tablename)
 end
 
 function reference(table::TableDefinition, primarykeys::Tuple, foreignkeys, isnullable=false)
-    ref = LateralTableItemRef(name(table), primarykeys, foreignkeys, isnullable)
+    ref = ReferredTableItemRef(name(table), primarykeys, foreignkeys, isnullable)
     NamedTuple{field_names(table)}(TableItemFieldRef(name, type, ref) for (name, type) in field_pairs(table))
 end
 

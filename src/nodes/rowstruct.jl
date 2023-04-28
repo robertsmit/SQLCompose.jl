@@ -41,15 +41,15 @@ function mapfields(f::Function, result::T, alias) where {T<:RowStruct}
     T((mapfields(f, getfield(result, fname), nextalias(alias, fname)) for fname in field_names(T))...)
 end
 
-function writelateralplan!(plan, node::T, tableitem) where {T<:RowStruct}
+function write_referredtable_location_plan!(plan, node::T, tableitem) where {T<:RowStruct}
     for fname in field_names(T)
-        writelateralplan!(plan, getfield(node, fname), tableitem)
+        write_referredtable_location_plan!(plan, getfield(node, fname), tableitem)
     end
 end
 
 function reference(to::Type{<:RowStruct}, primarykeys::Tuple, foreignkeys, isnullable=false)
     let tab = table(to)
-        ref = LateralTableItemRef(name(tab), primarykeys, foreignkeys, isnullable)
+        ref = ReferredTableItemRef(name(tab), primarykeys, foreignkeys, isnullable)
         to((TableItemFieldRef(fname, ftype, ref) for (fname, ftype) in field_pairs(tab))...)
     end
 end

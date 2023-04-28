@@ -31,7 +31,7 @@ function printpsql(io::IO, arg::SelectQuery, parentenv)
     printpsql_result(io, arg.result, env)
     print(io, " FROM ")
     printpsql_fromitem_in_environment(io, arg.from, env)
-    printpsql_laterals(io, arg.from, env)
+    printpsql_referred_joins(io, arg.from, env)
     printpsql_filter(io, arg.filter, env; prefix=" WHERE ")
     if !isempty(arg.group)
         printpsql_fieldlist(io, arg.group, env; prefix=" GROUP BY ")
@@ -149,14 +149,14 @@ function printpsql_fromitem(io::IO, node::SubqueryTableItem, env)
     print(io, ") $alias")
 end
 
-function printpsql_fromitem(io::IO, node::DefinedTableItem, env::TableItemPrintEnvironment)
+function printpsql_fromitem(io::IO, node::DefinedTableItem, env::TablePrintEnvironment)
     tablename = node.name
     print(io, tablename)
     alias = env.alias
     alias !== tablename && print(io, " $alias")
 end
 
-function printpsql_fromitem(io::IO, node::SetReturningFunctionTableItem, env::TableItemPrintEnvironment)
+function printpsql_fromitem(io::IO, node::SetReturningFunctionTableItem, env::TablePrintEnvironment)
     printpsql(io, node.f, env.parent)
     alias = env.alias
     print(io, " $alias")
@@ -170,11 +170,11 @@ function printpsql_fromitem(io::IO, node::SetReturningFunctionTableItem, env::Ta
     end
 end
 
-function printpsql_fromitem(io::IO, node::RefTableItem, env::TableItemPrintEnvironment)
+function printpsql_fromitem(io::IO, node::RefTableItem, env::TablePrintEnvironment)
     print(io, tablealias(env, node))
 end
 
-function printpsql_fromitem(io::IO, node::ValuesTableItem, env::TableItemPrintEnvironment)
+function printpsql_fromitem(io::IO, node::ValuesTableItem, env::TablePrintEnvironment)
     print(io, "(VALUES ")
     for (rowindex, row) in enumerate(node.values)
         rowindex != 1 && print(io, ", ")
@@ -207,12 +207,12 @@ printpsql_fromitem_in_environment(io::IO, node::TableItem, env) =
 
 function printpsql_fromitem(io::IO, node::JoinItem, env)
     printpsql_fromitem_in_environment(io, node.left, env)
-    printpsql_laterals(io, node.left, env)
+    printpsql_referred_joins(io, node.left, env)
     printpsql_join(io, node.join)
     right_env = printpsql_fromitem_in_environment(io, node.right, env)
     print(io, " ON ")
     printpsql(io, node.join.condition, right_env)
-    printpsql_laterals(io, node.right, env)
+    printpsql_referred_joins(io, node.right, env)
 end
 
 function printpsql_join(io::IO, node::LateralJoin)
@@ -227,26 +227,27 @@ printpsql_join(io::IO, ::FullJoin) = print(io, " FULL JOIN ")
 
 
 
-printpsql_laterals(io, ::JoinItem, env) = nothing
-function printpsql_laterals(io, table::TableItem, env)
-    printpsql_laterals(io, unwind_lateral(env, table))
+printpsql_referred_joins(io, ::JoinItem, env) = nothing
+
+function printpsql_referred_joins(io, referringtable::TableItem, env)
+    printpsql_referred_joins(io, unwind_referred(env, referringtable))
 end
 
-printpsql_laterals(_, ::NullPrintEnvironment) = nothing
-function printpsql_laterals(io, env::LateralPrintEnvironment)
-    printpsql_lateral(io, env)
-    printpsql_laterals(io, next_unwind_lateral(env))
+printpsql_referred_joins(_, ::NullPrintEnvironment) = nothing
+function printpsql_referred_joins(io, env::ReferredTableEnvironment)
+    printpsql_referred_join(io, env)
+    printpsql_referred_joins(io, next_referred(env))
 end
 
-function printpsql_lateral(io::IO, env::LateralPrintEnvironment)
-    let reference = env.key
-        print(io, reference.isnullable ? " LEFT OUTER JOIN " : " INNER JOIN ")
-        print(io, reference.tablename)
-        alias = tablealias(env, reference)
+function printpsql_referred_join(io::IO, env::ReferredTableEnvironment)
+    let referred = env.key
+        print(io, referred.isnullable ? " LEFT OUTER JOIN " : " INNER JOIN ")
+        print(io, referred.tablename)
+        alias = tablealias(env, referred)
         print(io, " ")
         print(io, alias)
         print(io, " ON ")
-        for (i, (foreign, prim)) in enumerate(zip(reference.foreignkeys, reference.primarykeys))
+        for (i, (foreign, prim)) in enumerate(zip(referred.foreignkeys, referred.primarykeys))
             if i > 1
                 print(io, " AND ")
             end

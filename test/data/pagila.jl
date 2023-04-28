@@ -106,33 +106,33 @@ begin
             ActorRow(SQLCompose.mapfields(f, result.actor_id, SQLCompose.nextalias(alias, :actor_id)), SQLCompose.mapfields(f, result.first_name, SQLCompose.nextalias(alias, :first_name)), SQLCompose.mapfields(f, result.last_name, SQLCompose.nextalias(alias, :last_name)), SQLCompose.mapfields(f, result.last_update, SQLCompose.nextalias(alias, :last_update)), SQLCompose.mapfields(f, result.column_name, SQLCompose.nextalias(alias, :column_name)), SQLCompose.mapfields(f, result.column_name2, SQLCompose.nextalias(alias, :column_name2)), SQLCompose.mapfields(f, result.column_name3, SQLCompose.nextalias(alias, :column_name3)), SQLCompose.mapfields(f, result.column_name5, SQLCompose.nextalias(alias, :column_name5)), SQLCompose.mapfields(f, result.column_name6, SQLCompose.nextalias(alias, :column_name6)), SQLCompose.mapfields(f, result.column_name7, SQLCompose.nextalias(alias, :column_name7)), SQLCompose.mapfields(f, result.column_name9, SQLCompose.nextalias(alias, :column_name9)), SQLCompose.mapfields(f, result.column_name10, SQLCompose.nextalias(alias, :column_name10)), SQLCompose.mapfields(f, result.column_name11, SQLCompose.nextalias(alias, :column_name11)), SQLCompose.mapfields(f, result.column_name12, SQLCompose.nextalias(alias, :column_name12)), SQLCompose.mapfields(f, result.column_name13, SQLCompose.nextalias(alias, :column_name13)), SQLCompose.mapfields(f, result.column_name15, SQLCompose.nextalias(alias, :column_name15)), SQLCompose.mapfields(f, result.squares, SQLCompose.nextalias(alias, :squares)), SQLCompose.mapfields(f, result.squaresone, SQLCompose.nextalias(alias, :squaresone)), SQLCompose.mapfields(f, result.whooss, SQLCompose.nextalias(alias, :whooss)), SQLCompose.mapfields(f, result.dwhooss, SQLCompose.nextalias(alias, :dwhooss)), SQLCompose.mapfields(f, result.ddwhooss, SQLCompose.nextalias(alias, :ddwhooss)), SQLCompose.mapfields(f, result.ddddwhooss, SQLCompose.nextalias(alias, :ddddwhooss)), SQLCompose.mapfields(f, result.aap, SQLCompose.nextalias(alias, :aap)), SQLCompose.mapfields(f, result.maki, SQLCompose.nextalias(alias, :maki)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::ActorRow, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::ActorRow, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.actor_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.first_name, tableitem)
-            SQLCompose.writelateralplan!(plan, node.last_name, tableitem)
-            SQLCompose.writelateralplan!(plan, node.last_update, tableitem)
-            SQLCompose.writelateralplan!(plan, node.column_name, tableitem)
-            SQLCompose.writelateralplan!(plan, node.column_name2, tableitem)
-            SQLCompose.writelateralplan!(plan, node.column_name3, tableitem)
-            SQLCompose.writelateralplan!(plan, node.column_name5, tableitem)
-            SQLCompose.writelateralplan!(plan, node.column_name6, tableitem)
-            SQLCompose.writelateralplan!(plan, node.column_name7, tableitem)
-            SQLCompose.writelateralplan!(plan, node.column_name9, tableitem)
-            SQLCompose.writelateralplan!(plan, node.column_name10, tableitem)
-            SQLCompose.writelateralplan!(plan, node.column_name11, tableitem)
-            SQLCompose.writelateralplan!(plan, node.column_name12, tableitem)
-            SQLCompose.writelateralplan!(plan, node.column_name13, tableitem)
-            SQLCompose.writelateralplan!(plan, node.column_name15, tableitem)
-            SQLCompose.writelateralplan!(plan, node.squares, tableitem)
-            SQLCompose.writelateralplan!(plan, node.squaresone, tableitem)
-            SQLCompose.writelateralplan!(plan, node.whooss, tableitem)
-            SQLCompose.writelateralplan!(plan, node.dwhooss, tableitem)
-            SQLCompose.writelateralplan!(plan, node.ddwhooss, tableitem)
-            SQLCompose.writelateralplan!(plan, node.ddddwhooss, tableitem)
-            SQLCompose.writelateralplan!(plan, node.aap, tableitem)
-            SQLCompose.writelateralplan!(plan, node.maki, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.actor_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.first_name, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.last_name, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.last_update, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.column_name, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.column_name2, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.column_name3, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.column_name5, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.column_name6, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.column_name7, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.column_name9, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.column_name10, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.column_name11, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.column_name12, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.column_name13, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.column_name15, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.squares, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.squaresone, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.whooss, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.dwhooss, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.ddwhooss, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.ddddwhooss, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.aap, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.maki, tableitem)
         end
     end
     begin
@@ -191,13 +191,13 @@ begin
             Actor_InfoRow(SQLCompose.mapfields(f, result.actor_id, SQLCompose.nextalias(alias, :actor_id)), SQLCompose.mapfields(f, result.first_name, SQLCompose.nextalias(alias, :first_name)), SQLCompose.mapfields(f, result.last_name, SQLCompose.nextalias(alias, :last_name)), SQLCompose.mapfields(f, result.film_info, SQLCompose.nextalias(alias, :film_info)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::Actor_InfoRow, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::Actor_InfoRow, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.actor_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.first_name, tableitem)
-            SQLCompose.writelateralplan!(plan, node.last_name, tableitem)
-            SQLCompose.writelateralplan!(plan, node.film_info, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.actor_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.first_name, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.last_name, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.film_info, tableitem)
         end
     end
     begin
@@ -264,17 +264,17 @@ begin
             AddressRow(SQLCompose.mapfields(f, result.address_id, SQLCompose.nextalias(alias, :address_id)), SQLCompose.mapfields(f, result.address, SQLCompose.nextalias(alias, :address)), SQLCompose.mapfields(f, result.address2, SQLCompose.nextalias(alias, :address2)), SQLCompose.mapfields(f, result.district, SQLCompose.nextalias(alias, :district)), SQLCompose.mapfields(f, result.city_id, SQLCompose.nextalias(alias, :city_id)), SQLCompose.mapfields(f, result.postal_code, SQLCompose.nextalias(alias, :postal_code)), SQLCompose.mapfields(f, result.phone, SQLCompose.nextalias(alias, :phone)), SQLCompose.mapfields(f, result.last_update, SQLCompose.nextalias(alias, :last_update)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::AddressRow, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::AddressRow, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.address_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.address, tableitem)
-            SQLCompose.writelateralplan!(plan, node.address2, tableitem)
-            SQLCompose.writelateralplan!(plan, node.district, tableitem)
-            SQLCompose.writelateralplan!(plan, node.city_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.postal_code, tableitem)
-            SQLCompose.writelateralplan!(plan, node.phone, tableitem)
-            SQLCompose.writelateralplan!(plan, node.last_update, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.address_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.address, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.address2, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.district, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.city_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.postal_code, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.phone, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.last_update, tableitem)
         end
     end
     begin
@@ -331,12 +331,12 @@ begin
             CategoryRow(SQLCompose.mapfields(f, result.category_id, SQLCompose.nextalias(alias, :category_id)), SQLCompose.mapfields(f, result.name, SQLCompose.nextalias(alias, :name)), SQLCompose.mapfields(f, result.last_update, SQLCompose.nextalias(alias, :last_update)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::CategoryRow, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::CategoryRow, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.category_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.name, tableitem)
-            SQLCompose.writelateralplan!(plan, node.last_update, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.category_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.name, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.last_update, tableitem)
         end
     end
     begin
@@ -395,13 +395,13 @@ begin
             CityRow(SQLCompose.mapfields(f, result.city_id, SQLCompose.nextalias(alias, :city_id)), SQLCompose.mapfields(f, result.city, SQLCompose.nextalias(alias, :city)), SQLCompose.mapfields(f, result.country_id, SQLCompose.nextalias(alias, :country_id)), SQLCompose.mapfields(f, result.last_update, SQLCompose.nextalias(alias, :last_update)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::CityRow, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::CityRow, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.city_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.city, tableitem)
-            SQLCompose.writelateralplan!(plan, node.country_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.last_update, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.city_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.city, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.country_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.last_update, tableitem)
         end
     end
     begin
@@ -458,12 +458,12 @@ begin
             CountryRow(SQLCompose.mapfields(f, result.country_id, SQLCompose.nextalias(alias, :country_id)), SQLCompose.mapfields(f, result.country, SQLCompose.nextalias(alias, :country)), SQLCompose.mapfields(f, result.last_update, SQLCompose.nextalias(alias, :last_update)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::CountryRow, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::CountryRow, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.country_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.country, tableitem)
-            SQLCompose.writelateralplan!(plan, node.last_update, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.country_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.country, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.last_update, tableitem)
         end
     end
     begin
@@ -534,19 +534,19 @@ begin
             CustomerRow(SQLCompose.mapfields(f, result.customer_id, SQLCompose.nextalias(alias, :customer_id)), SQLCompose.mapfields(f, result.store_id, SQLCompose.nextalias(alias, :store_id)), SQLCompose.mapfields(f, result.first_name, SQLCompose.nextalias(alias, :first_name)), SQLCompose.mapfields(f, result.last_name, SQLCompose.nextalias(alias, :last_name)), SQLCompose.mapfields(f, result.email, SQLCompose.nextalias(alias, :email)), SQLCompose.mapfields(f, result.address_id, SQLCompose.nextalias(alias, :address_id)), SQLCompose.mapfields(f, result.activebool, SQLCompose.nextalias(alias, :activebool)), SQLCompose.mapfields(f, result.create_date, SQLCompose.nextalias(alias, :create_date)), SQLCompose.mapfields(f, result.last_update, SQLCompose.nextalias(alias, :last_update)), SQLCompose.mapfields(f, result.active, SQLCompose.nextalias(alias, :active)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::CustomerRow, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::CustomerRow, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.customer_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.store_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.first_name, tableitem)
-            SQLCompose.writelateralplan!(plan, node.last_name, tableitem)
-            SQLCompose.writelateralplan!(plan, node.email, tableitem)
-            SQLCompose.writelateralplan!(plan, node.address_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.activebool, tableitem)
-            SQLCompose.writelateralplan!(plan, node.create_date, tableitem)
-            SQLCompose.writelateralplan!(plan, node.last_update, tableitem)
-            SQLCompose.writelateralplan!(plan, node.active, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.customer_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.store_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.first_name, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.last_name, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.email, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.address_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.activebool, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.create_date, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.last_update, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.active, tableitem)
         end
     end
     begin
@@ -615,18 +615,18 @@ begin
             Customer_ListRow(SQLCompose.mapfields(f, result.id, SQLCompose.nextalias(alias, :id)), SQLCompose.mapfields(f, result.name, SQLCompose.nextalias(alias, :name)), SQLCompose.mapfields(f, result.address, SQLCompose.nextalias(alias, :address)), SQLCompose.mapfields(f, result.var"zip code", SQLCompose.nextalias(alias, Symbol("zip code"))), SQLCompose.mapfields(f, result.phone, SQLCompose.nextalias(alias, :phone)), SQLCompose.mapfields(f, result.city, SQLCompose.nextalias(alias, :city)), SQLCompose.mapfields(f, result.country, SQLCompose.nextalias(alias, :country)), SQLCompose.mapfields(f, result.notes, SQLCompose.nextalias(alias, :notes)), SQLCompose.mapfields(f, result.sid, SQLCompose.nextalias(alias, :sid)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::Customer_ListRow, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::Customer_ListRow, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.name, tableitem)
-            SQLCompose.writelateralplan!(plan, node.address, tableitem)
-            SQLCompose.writelateralplan!(plan, node.var"zip code", tableitem)
-            SQLCompose.writelateralplan!(plan, node.phone, tableitem)
-            SQLCompose.writelateralplan!(plan, node.city, tableitem)
-            SQLCompose.writelateralplan!(plan, node.country, tableitem)
-            SQLCompose.writelateralplan!(plan, node.notes, tableitem)
-            SQLCompose.writelateralplan!(plan, node.sid, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.name, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.address, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.var"zip code", tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.phone, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.city, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.country, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.notes, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.sid, tableitem)
         end
     end
     begin
@@ -705,23 +705,23 @@ begin
             FilmRow(SQLCompose.mapfields(f, result.film_id, SQLCompose.nextalias(alias, :film_id)), SQLCompose.mapfields(f, result.title, SQLCompose.nextalias(alias, :title)), SQLCompose.mapfields(f, result.description, SQLCompose.nextalias(alias, :description)), SQLCompose.mapfields(f, result.release_year, SQLCompose.nextalias(alias, :release_year)), SQLCompose.mapfields(f, result.language_id, SQLCompose.nextalias(alias, :language_id)), SQLCompose.mapfields(f, result.original_language_id, SQLCompose.nextalias(alias, :original_language_id)), SQLCompose.mapfields(f, result.rental_duration, SQLCompose.nextalias(alias, :rental_duration)), SQLCompose.mapfields(f, result.rental_rate, SQLCompose.nextalias(alias, :rental_rate)), SQLCompose.mapfields(f, result.length, SQLCompose.nextalias(alias, :length)), SQLCompose.mapfields(f, result.replacement_cost, SQLCompose.nextalias(alias, :replacement_cost)), SQLCompose.mapfields(f, result.rating, SQLCompose.nextalias(alias, :rating)), SQLCompose.mapfields(f, result.last_update, SQLCompose.nextalias(alias, :last_update)), SQLCompose.mapfields(f, result.special_features, SQLCompose.nextalias(alias, :special_features)), SQLCompose.mapfields(f, result.fulltext, SQLCompose.nextalias(alias, :fulltext)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::FilmRow, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::FilmRow, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.film_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.title, tableitem)
-            SQLCompose.writelateralplan!(plan, node.description, tableitem)
-            SQLCompose.writelateralplan!(plan, node.release_year, tableitem)
-            SQLCompose.writelateralplan!(plan, node.language_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.original_language_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.rental_duration, tableitem)
-            SQLCompose.writelateralplan!(plan, node.rental_rate, tableitem)
-            SQLCompose.writelateralplan!(plan, node.length, tableitem)
-            SQLCompose.writelateralplan!(plan, node.replacement_cost, tableitem)
-            SQLCompose.writelateralplan!(plan, node.rating, tableitem)
-            SQLCompose.writelateralplan!(plan, node.last_update, tableitem)
-            SQLCompose.writelateralplan!(plan, node.special_features, tableitem)
-            SQLCompose.writelateralplan!(plan, node.fulltext, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.film_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.title, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.description, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.release_year, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.language_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.original_language_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.rental_duration, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.rental_rate, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.length, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.replacement_cost, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.rating, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.last_update, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.special_features, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.fulltext, tableitem)
         end
     end
     begin
@@ -778,12 +778,12 @@ begin
             Film_ActorRow(SQLCompose.mapfields(f, result.actor_id, SQLCompose.nextalias(alias, :actor_id)), SQLCompose.mapfields(f, result.film_id, SQLCompose.nextalias(alias, :film_id)), SQLCompose.mapfields(f, result.last_update, SQLCompose.nextalias(alias, :last_update)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::Film_ActorRow, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::Film_ActorRow, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.actor_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.film_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.last_update, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.actor_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.film_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.last_update, tableitem)
         end
     end
     begin
@@ -838,11 +838,11 @@ begin
             Film_Actor_ExtensionRow(SQLCompose.mapfields(f, result.actor_id, SQLCompose.nextalias(alias, :actor_id)), SQLCompose.mapfields(f, result.film_id, SQLCompose.nextalias(alias, :film_id)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::Film_Actor_ExtensionRow, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::Film_Actor_ExtensionRow, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.actor_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.film_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.actor_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.film_id, tableitem)
         end
     end
     begin
@@ -897,11 +897,11 @@ begin
             Film_Actor_Extension2Row(SQLCompose.mapfields(f, result.actor_id, SQLCompose.nextalias(alias, :actor_id)), SQLCompose.mapfields(f, result.film_id, SQLCompose.nextalias(alias, :film_id)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::Film_Actor_Extension2Row, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::Film_Actor_Extension2Row, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.actor_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.film_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.actor_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.film_id, tableitem)
         end
     end
     begin
@@ -958,12 +958,12 @@ begin
             Film_CategoryRow(SQLCompose.mapfields(f, result.film_id, SQLCompose.nextalias(alias, :film_id)), SQLCompose.mapfields(f, result.category_id, SQLCompose.nextalias(alias, :category_id)), SQLCompose.mapfields(f, result.last_update, SQLCompose.nextalias(alias, :last_update)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::Film_CategoryRow, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::Film_CategoryRow, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.film_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.category_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.last_update, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.film_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.category_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.last_update, tableitem)
         end
     end
     begin
@@ -1030,17 +1030,17 @@ begin
             Film_ListRow(SQLCompose.mapfields(f, result.fid, SQLCompose.nextalias(alias, :fid)), SQLCompose.mapfields(f, result.title, SQLCompose.nextalias(alias, :title)), SQLCompose.mapfields(f, result.description, SQLCompose.nextalias(alias, :description)), SQLCompose.mapfields(f, result.category, SQLCompose.nextalias(alias, :category)), SQLCompose.mapfields(f, result.price, SQLCompose.nextalias(alias, :price)), SQLCompose.mapfields(f, result.length, SQLCompose.nextalias(alias, :length)), SQLCompose.mapfields(f, result.rating, SQLCompose.nextalias(alias, :rating)), SQLCompose.mapfields(f, result.actors, SQLCompose.nextalias(alias, :actors)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::Film_ListRow, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::Film_ListRow, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.fid, tableitem)
-            SQLCompose.writelateralplan!(plan, node.title, tableitem)
-            SQLCompose.writelateralplan!(plan, node.description, tableitem)
-            SQLCompose.writelateralplan!(plan, node.category, tableitem)
-            SQLCompose.writelateralplan!(plan, node.price, tableitem)
-            SQLCompose.writelateralplan!(plan, node.length, tableitem)
-            SQLCompose.writelateralplan!(plan, node.rating, tableitem)
-            SQLCompose.writelateralplan!(plan, node.actors, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.fid, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.title, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.description, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.category, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.price, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.length, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.rating, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.actors, tableitem)
         end
     end
     begin
@@ -1099,13 +1099,13 @@ begin
             InventoryRow(SQLCompose.mapfields(f, result.inventory_id, SQLCompose.nextalias(alias, :inventory_id)), SQLCompose.mapfields(f, result.film_id, SQLCompose.nextalias(alias, :film_id)), SQLCompose.mapfields(f, result.store_id, SQLCompose.nextalias(alias, :store_id)), SQLCompose.mapfields(f, result.last_update, SQLCompose.nextalias(alias, :last_update)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::InventoryRow, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::InventoryRow, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.inventory_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.film_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.store_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.last_update, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.inventory_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.film_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.store_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.last_update, tableitem)
         end
     end
     begin
@@ -1162,12 +1162,12 @@ begin
             Inventory_ItemRow(SQLCompose.mapfields(f, result.name, SQLCompose.nextalias(alias, :name)), SQLCompose.mapfields(f, result.supplier_id, SQLCompose.nextalias(alias, :supplier_id)), SQLCompose.mapfields(f, result.price, SQLCompose.nextalias(alias, :price)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::Inventory_ItemRow, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::Inventory_ItemRow, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.name, tableitem)
-            SQLCompose.writelateralplan!(plan, node.supplier_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.price, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.name, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.supplier_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.price, tableitem)
         end
     end
     begin
@@ -1224,12 +1224,12 @@ begin
             Inventory_Item2Row(SQLCompose.mapfields(f, result.name, SQLCompose.nextalias(alias, :name)), SQLCompose.mapfields(f, result.supplier_ids, SQLCompose.nextalias(alias, :supplier_ids)), SQLCompose.mapfields(f, result.prices, SQLCompose.nextalias(alias, :prices)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::Inventory_Item2Row, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::Inventory_Item2Row, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.name, tableitem)
-            SQLCompose.writelateralplan!(plan, node.supplier_ids, tableitem)
-            SQLCompose.writelateralplan!(plan, node.prices, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.name, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.supplier_ids, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.prices, tableitem)
         end
     end
     begin
@@ -1290,14 +1290,14 @@ begin
             Inventory_Item3Row(SQLCompose.mapfields(f, result.name, SQLCompose.nextalias(alias, :name)), SQLCompose.mapfields(f, result.supplier_ids, SQLCompose.nextalias(alias, :supplier_ids)), SQLCompose.mapfields(f, result.prices, SQLCompose.nextalias(alias, :prices)), SQLCompose.mapfields(f, result.dt, SQLCompose.nextalias(alias, :dt)), SQLCompose.mapfields(f, result.item, SQLCompose.nextalias(alias, :item)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::Inventory_Item3Row, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::Inventory_Item3Row, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.name, tableitem)
-            SQLCompose.writelateralplan!(plan, node.supplier_ids, tableitem)
-            SQLCompose.writelateralplan!(plan, node.prices, tableitem)
-            SQLCompose.writelateralplan!(plan, node.dt, tableitem)
-            SQLCompose.writelateralplan!(plan, node.item, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.name, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.supplier_ids, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.prices, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.dt, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.item, tableitem)
         end
     end
     begin
@@ -1354,12 +1354,12 @@ begin
             Inventory_Item4Row(SQLCompose.mapfields(f, result.name, SQLCompose.nextalias(alias, :name)), SQLCompose.mapfields(f, result.supplier_ids, SQLCompose.nextalias(alias, :supplier_ids)), SQLCompose.mapfields(f, result.prices, SQLCompose.nextalias(alias, :prices)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::Inventory_Item4Row, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::Inventory_Item4Row, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.name, tableitem)
-            SQLCompose.writelateralplan!(plan, node.supplier_ids, tableitem)
-            SQLCompose.writelateralplan!(plan, node.prices, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.name, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.supplier_ids, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.prices, tableitem)
         end
     end
     begin
@@ -1416,12 +1416,12 @@ begin
             LanguageRow(SQLCompose.mapfields(f, result.language_id, SQLCompose.nextalias(alias, :language_id)), SQLCompose.mapfields(f, result.name, SQLCompose.nextalias(alias, :name)), SQLCompose.mapfields(f, result.last_update, SQLCompose.nextalias(alias, :last_update)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::LanguageRow, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::LanguageRow, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.language_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.name, tableitem)
-            SQLCompose.writelateralplan!(plan, node.last_update, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.language_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.name, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.last_update, tableitem)
         end
     end
     begin
@@ -1488,17 +1488,17 @@ begin
             Nicer_But_Slower_Film_ListRow(SQLCompose.mapfields(f, result.fid, SQLCompose.nextalias(alias, :fid)), SQLCompose.mapfields(f, result.title, SQLCompose.nextalias(alias, :title)), SQLCompose.mapfields(f, result.description, SQLCompose.nextalias(alias, :description)), SQLCompose.mapfields(f, result.category, SQLCompose.nextalias(alias, :category)), SQLCompose.mapfields(f, result.price, SQLCompose.nextalias(alias, :price)), SQLCompose.mapfields(f, result.length, SQLCompose.nextalias(alias, :length)), SQLCompose.mapfields(f, result.rating, SQLCompose.nextalias(alias, :rating)), SQLCompose.mapfields(f, result.actors, SQLCompose.nextalias(alias, :actors)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::Nicer_But_Slower_Film_ListRow, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::Nicer_But_Slower_Film_ListRow, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.fid, tableitem)
-            SQLCompose.writelateralplan!(plan, node.title, tableitem)
-            SQLCompose.writelateralplan!(plan, node.description, tableitem)
-            SQLCompose.writelateralplan!(plan, node.category, tableitem)
-            SQLCompose.writelateralplan!(plan, node.price, tableitem)
-            SQLCompose.writelateralplan!(plan, node.length, tableitem)
-            SQLCompose.writelateralplan!(plan, node.rating, tableitem)
-            SQLCompose.writelateralplan!(plan, node.actors, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.fid, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.title, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.description, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.category, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.price, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.length, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.rating, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.actors, tableitem)
         end
     end
     begin
@@ -1561,15 +1561,15 @@ begin
             PaymentRow(SQLCompose.mapfields(f, result.payment_id, SQLCompose.nextalias(alias, :payment_id)), SQLCompose.mapfields(f, result.customer_id, SQLCompose.nextalias(alias, :customer_id)), SQLCompose.mapfields(f, result.staff_id, SQLCompose.nextalias(alias, :staff_id)), SQLCompose.mapfields(f, result.rental_id, SQLCompose.nextalias(alias, :rental_id)), SQLCompose.mapfields(f, result.amount, SQLCompose.nextalias(alias, :amount)), SQLCompose.mapfields(f, result.payment_date, SQLCompose.nextalias(alias, :payment_date)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::PaymentRow, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::PaymentRow, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.payment_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.customer_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.staff_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.rental_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.amount, tableitem)
-            SQLCompose.writelateralplan!(plan, node.payment_date, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.payment_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.customer_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.staff_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.rental_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.amount, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.payment_date, tableitem)
         end
     end
     begin
@@ -1634,16 +1634,16 @@ begin
             RentalRow(SQLCompose.mapfields(f, result.rental_id, SQLCompose.nextalias(alias, :rental_id)), SQLCompose.mapfields(f, result.rental_date, SQLCompose.nextalias(alias, :rental_date)), SQLCompose.mapfields(f, result.inventory_id, SQLCompose.nextalias(alias, :inventory_id)), SQLCompose.mapfields(f, result.customer_id, SQLCompose.nextalias(alias, :customer_id)), SQLCompose.mapfields(f, result.return_date, SQLCompose.nextalias(alias, :return_date)), SQLCompose.mapfields(f, result.staff_id, SQLCompose.nextalias(alias, :staff_id)), SQLCompose.mapfields(f, result.last_update, SQLCompose.nextalias(alias, :last_update)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::RentalRow, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::RentalRow, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.rental_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.rental_date, tableitem)
-            SQLCompose.writelateralplan!(plan, node.inventory_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.customer_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.return_date, tableitem)
-            SQLCompose.writelateralplan!(plan, node.staff_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.last_update, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.rental_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.rental_date, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.inventory_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.customer_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.return_date, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.staff_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.last_update, tableitem)
         end
     end
     begin
@@ -1698,11 +1698,11 @@ begin
             Sales_By_Film_CategoryRow(SQLCompose.mapfields(f, result.category, SQLCompose.nextalias(alias, :category)), SQLCompose.mapfields(f, result.total_sales, SQLCompose.nextalias(alias, :total_sales)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::Sales_By_Film_CategoryRow, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::Sales_By_Film_CategoryRow, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.category, tableitem)
-            SQLCompose.writelateralplan!(plan, node.total_sales, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.category, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.total_sales, tableitem)
         end
     end
     begin
@@ -1759,12 +1759,12 @@ begin
             Sales_By_StoreRow(SQLCompose.mapfields(f, result.store, SQLCompose.nextalias(alias, :store)), SQLCompose.mapfields(f, result.manager, SQLCompose.nextalias(alias, :manager)), SQLCompose.mapfields(f, result.total_sales, SQLCompose.nextalias(alias, :total_sales)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::Sales_By_StoreRow, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::Sales_By_StoreRow, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.store, tableitem)
-            SQLCompose.writelateralplan!(plan, node.manager, tableitem)
-            SQLCompose.writelateralplan!(plan, node.total_sales, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.store, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.manager, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.total_sales, tableitem)
         end
     end
     begin
@@ -1837,20 +1837,20 @@ begin
             StaffRow(SQLCompose.mapfields(f, result.staff_id, SQLCompose.nextalias(alias, :staff_id)), SQLCompose.mapfields(f, result.first_name, SQLCompose.nextalias(alias, :first_name)), SQLCompose.mapfields(f, result.last_name, SQLCompose.nextalias(alias, :last_name)), SQLCompose.mapfields(f, result.address_id, SQLCompose.nextalias(alias, :address_id)), SQLCompose.mapfields(f, result.email, SQLCompose.nextalias(alias, :email)), SQLCompose.mapfields(f, result.store_id, SQLCompose.nextalias(alias, :store_id)), SQLCompose.mapfields(f, result.active, SQLCompose.nextalias(alias, :active)), SQLCompose.mapfields(f, result.username, SQLCompose.nextalias(alias, :username)), SQLCompose.mapfields(f, result.password, SQLCompose.nextalias(alias, :password)), SQLCompose.mapfields(f, result.last_update, SQLCompose.nextalias(alias, :last_update)), SQLCompose.mapfields(f, result.picture, SQLCompose.nextalias(alias, :picture)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::StaffRow, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::StaffRow, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.staff_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.first_name, tableitem)
-            SQLCompose.writelateralplan!(plan, node.last_name, tableitem)
-            SQLCompose.writelateralplan!(plan, node.address_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.email, tableitem)
-            SQLCompose.writelateralplan!(plan, node.store_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.active, tableitem)
-            SQLCompose.writelateralplan!(plan, node.username, tableitem)
-            SQLCompose.writelateralplan!(plan, node.password, tableitem)
-            SQLCompose.writelateralplan!(plan, node.last_update, tableitem)
-            SQLCompose.writelateralplan!(plan, node.picture, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.staff_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.first_name, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.last_name, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.address_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.email, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.store_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.active, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.username, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.password, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.last_update, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.picture, tableitem)
         end
     end
     begin
@@ -1917,17 +1917,17 @@ begin
             Staff_ListRow(SQLCompose.mapfields(f, result.id, SQLCompose.nextalias(alias, :id)), SQLCompose.mapfields(f, result.name, SQLCompose.nextalias(alias, :name)), SQLCompose.mapfields(f, result.address, SQLCompose.nextalias(alias, :address)), SQLCompose.mapfields(f, result.var"zip code", SQLCompose.nextalias(alias, Symbol("zip code"))), SQLCompose.mapfields(f, result.phone, SQLCompose.nextalias(alias, :phone)), SQLCompose.mapfields(f, result.city, SQLCompose.nextalias(alias, :city)), SQLCompose.mapfields(f, result.country, SQLCompose.nextalias(alias, :country)), SQLCompose.mapfields(f, result.sid, SQLCompose.nextalias(alias, :sid)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::Staff_ListRow, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::Staff_ListRow, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.name, tableitem)
-            SQLCompose.writelateralplan!(plan, node.address, tableitem)
-            SQLCompose.writelateralplan!(plan, node.var"zip code", tableitem)
-            SQLCompose.writelateralplan!(plan, node.phone, tableitem)
-            SQLCompose.writelateralplan!(plan, node.city, tableitem)
-            SQLCompose.writelateralplan!(plan, node.country, tableitem)
-            SQLCompose.writelateralplan!(plan, node.sid, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.name, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.address, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.var"zip code", tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.phone, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.city, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.country, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.sid, tableitem)
         end
     end
     begin
@@ -1986,13 +1986,13 @@ begin
             StoreRow(SQLCompose.mapfields(f, result.store_id, SQLCompose.nextalias(alias, :store_id)), SQLCompose.mapfields(f, result.manager_staff_id, SQLCompose.nextalias(alias, :manager_staff_id)), SQLCompose.mapfields(f, result.address_id, SQLCompose.nextalias(alias, :address_id)), SQLCompose.mapfields(f, result.last_update, SQLCompose.nextalias(alias, :last_update)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::StoreRow, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::StoreRow, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.store_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.manager_staff_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.address_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.last_update, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.store_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.manager_staff_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.address_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.last_update, tableitem)
         end
     end
     #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:133 =#

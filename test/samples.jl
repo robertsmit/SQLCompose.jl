@@ -50,15 +50,15 @@ ORDER BY q.aircraft_code"
     ))
 end,
 "SELECT 
-    to_char(lat_flights_v.scheduled_departure, 'DD.MM.YYYY') AS when, 
-    CONCAT(lat_flights_v.departure_city, ' (', lat_flights_v.departure_airport, ')') AS departure, 
-    CONCAT(lat_flights_v.arrival_city, ' (', lat_flights_v.arrival_airport, ')') AS arrival, 
+    to_char(ref_flights_v.scheduled_departure, 'DD.MM.YYYY') AS when, 
+    CONCAT(ref_flights_v.departure_city, ' (', ref_flights_v.departure_airport, ')') AS departure, 
+    CONCAT(ref_flights_v.arrival_city, ' (', ref_flights_v.arrival_airport, ')') AS arrival, 
     t.fare_conditions AS class, 
     t.amount 
 FROM ticket_flights t 
-    INNER JOIN flights_v lat_flights_v ON t.flight_id = lat_flights_v.flight_id 
+    INNER JOIN flights_v ref_flights_v ON t.flight_id = ref_flights_v.flight_id 
 WHERE t.ticket_no = '0005432661915' 
-ORDER BY lat_flights_v.scheduled_departure"
+ORDER BY ref_flights_v.scheduled_departure"
 
 #Retrieve the film title along with the first name and last name of up to 3 actors associated with each film
 @testsql begin
@@ -73,9 +73,9 @@ ORDER BY lat_flights_v.scheduled_departure"
 end,
 "SELECT f.title, q.first_name, q.last_name 
     FROM film f 
-    LEFT JOIN LATERAL (SELECT lat_actor.first_name, lat_actor.last_name 
+    LEFT JOIN LATERAL (SELECT ref_actor.first_name, ref_actor.last_name 
                 FROM film_actor f2 
-                INNER JOIN actor lat_actor ON f2.actor_id = lat_actor.actor_id 
+                INNER JOIN actor ref_actor ON f2.actor_id = ref_actor.actor_id 
                 WHERE f2.film_id = f.film_id 
                 LIMIT 3) q ON true"
 

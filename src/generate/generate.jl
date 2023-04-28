@@ -83,8 +83,8 @@ function rowstruct_expression(reltype, typename)
         end
     )
     writelateralplandef = :(
-        function SQLCompose.writelateralplan!(plan, node::$typename, tableitem)
-            $((:(SQLCompose.writelateralplan!(plan, node.$f, tableitem)) for f in fnames)...)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::$typename, tableitem)
+            $((:(SQLCompose.write_referredtable_location_plan!(plan, node.$f, tableitem)) for f in fnames)...)
         end
     )
 

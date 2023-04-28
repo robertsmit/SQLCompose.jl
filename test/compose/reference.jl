@@ -15,7 +15,7 @@
 
     @info "test with reference"
     @testsql map(p -> (person=fullname(p), salary=personsalary(p).amount), query(persontable)),
-    "SELECT CONCAT(p.first_name, ' ', p.surname) AS person, lat_salary.amount AS salary FROM person p 
-        INNER JOIN salary lat_salary ON p.id = lat_salary.person_id"
+    "SELECT CONCAT(p.first_name, ' ', p.surname) AS person, ref_salary.amount AS salary FROM person p 
+        INNER JOIN salary ref_salary ON p.id = ref_salary.person_id"
 end
 

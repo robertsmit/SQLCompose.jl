@@ -57,11 +57,11 @@
             groupby(r -> r.title) |>
             sort(r -> r.title)
         end,
-        "SELECT lat_film.title, array_agg(CONCAT(lat_actor.first_name, ' ', lat_actor.last_name)) AS actors FROM film_actor f 
-            INNER JOIN film lat_film ON f.film_id = lat_film.film_id 
-            INNER JOIN actor lat_actor ON f.actor_id = lat_actor.actor_id 
-            GROUP BY lat_film.title 
-            ORDER BY lat_film.title"
+        "SELECT ref_film.title, array_agg(CONCAT(ref_actor.first_name, ' ', ref_actor.last_name)) AS actors FROM film_actor f 
+            INNER JOIN film ref_film ON f.film_id = ref_film.film_id 
+            INNER JOIN actor ref_actor ON f.actor_id = ref_actor.actor_id 
+            GROUP BY ref_film.title 
+            ORDER BY ref_film.title"
     end
 
     begin
@@ -80,8 +80,8 @@
             map(fc -> count())
         end,
         "SELECT count(*) AS elem1 FROM film_category f 
-            INNER JOIN category lat_category ON f.category_id = lat_category.category_id 
-            WHERE lat_category.category_id = 7"
+            INNER JOIN category ref_category ON f.category_id = ref_category.category_id 
+            WHERE ref_category.category_id = 7"
 
     end
 

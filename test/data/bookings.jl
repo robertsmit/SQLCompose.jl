@@ -64,12 +64,12 @@ begin
             AircraftsRow(SQLCompose.mapfields(f, result.aircraft_code, SQLCompose.nextalias(alias, :aircraft_code)), SQLCompose.mapfields(f, result.model, SQLCompose.nextalias(alias, :model)), SQLCompose.mapfields(f, result.range, SQLCompose.nextalias(alias, :range)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::AircraftsRow, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::AircraftsRow, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.aircraft_code, tableitem)
-            SQLCompose.writelateralplan!(plan, node.model, tableitem)
-            SQLCompose.writelateralplan!(plan, node.range, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.aircraft_code, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.model, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.range, tableitem)
         end
     end
     begin
@@ -126,12 +126,12 @@ begin
             Aircrafts_DataRow(SQLCompose.mapfields(f, result.aircraft_code, SQLCompose.nextalias(alias, :aircraft_code)), SQLCompose.mapfields(f, result.model, SQLCompose.nextalias(alias, :model)), SQLCompose.mapfields(f, result.range, SQLCompose.nextalias(alias, :range)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::Aircrafts_DataRow, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::Aircrafts_DataRow, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.aircraft_code, tableitem)
-            SQLCompose.writelateralplan!(plan, node.model, tableitem)
-            SQLCompose.writelateralplan!(plan, node.range, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.aircraft_code, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.model, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.range, tableitem)
         end
     end
     begin
@@ -192,14 +192,14 @@ begin
             AirportsRow(SQLCompose.mapfields(f, result.airport_code, SQLCompose.nextalias(alias, :airport_code)), SQLCompose.mapfields(f, result.airport_name, SQLCompose.nextalias(alias, :airport_name)), SQLCompose.mapfields(f, result.city, SQLCompose.nextalias(alias, :city)), SQLCompose.mapfields(f, result.coordinates, SQLCompose.nextalias(alias, :coordinates)), SQLCompose.mapfields(f, result.timezone, SQLCompose.nextalias(alias, :timezone)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::AirportsRow, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::AirportsRow, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.airport_code, tableitem)
-            SQLCompose.writelateralplan!(plan, node.airport_name, tableitem)
-            SQLCompose.writelateralplan!(plan, node.city, tableitem)
-            SQLCompose.writelateralplan!(plan, node.coordinates, tableitem)
-            SQLCompose.writelateralplan!(plan, node.timezone, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.airport_code, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.airport_name, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.city, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.coordinates, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.timezone, tableitem)
         end
     end
     begin
@@ -260,14 +260,14 @@ begin
             Airports_DataRow(SQLCompose.mapfields(f, result.airport_code, SQLCompose.nextalias(alias, :airport_code)), SQLCompose.mapfields(f, result.airport_name, SQLCompose.nextalias(alias, :airport_name)), SQLCompose.mapfields(f, result.city, SQLCompose.nextalias(alias, :city)), SQLCompose.mapfields(f, result.coordinates, SQLCompose.nextalias(alias, :coordinates)), SQLCompose.mapfields(f, result.timezone, SQLCompose.nextalias(alias, :timezone)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::Airports_DataRow, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::Airports_DataRow, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.airport_code, tableitem)
-            SQLCompose.writelateralplan!(plan, node.airport_name, tableitem)
-            SQLCompose.writelateralplan!(plan, node.city, tableitem)
-            SQLCompose.writelateralplan!(plan, node.coordinates, tableitem)
-            SQLCompose.writelateralplan!(plan, node.timezone, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.airport_code, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.airport_name, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.city, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.coordinates, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.timezone, tableitem)
         end
     end
     begin
@@ -326,13 +326,13 @@ begin
             Boarding_PassesRow(SQLCompose.mapfields(f, result.ticket_no, SQLCompose.nextalias(alias, :ticket_no)), SQLCompose.mapfields(f, result.flight_id, SQLCompose.nextalias(alias, :flight_id)), SQLCompose.mapfields(f, result.boarding_no, SQLCompose.nextalias(alias, :boarding_no)), SQLCompose.mapfields(f, result.seat_no, SQLCompose.nextalias(alias, :seat_no)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::Boarding_PassesRow, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::Boarding_PassesRow, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.ticket_no, tableitem)
-            SQLCompose.writelateralplan!(plan, node.flight_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.boarding_no, tableitem)
-            SQLCompose.writelateralplan!(plan, node.seat_no, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.ticket_no, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.flight_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.boarding_no, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.seat_no, tableitem)
         end
     end
     begin
@@ -389,12 +389,12 @@ begin
             BookingsRow(SQLCompose.mapfields(f, result.book_ref, SQLCompose.nextalias(alias, :book_ref)), SQLCompose.mapfields(f, result.book_date, SQLCompose.nextalias(alias, :book_date)), SQLCompose.mapfields(f, result.total_amount, SQLCompose.nextalias(alias, :total_amount)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::BookingsRow, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::BookingsRow, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.book_ref, tableitem)
-            SQLCompose.writelateralplan!(plan, node.book_date, tableitem)
-            SQLCompose.writelateralplan!(plan, node.total_amount, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.book_ref, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.book_date, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.total_amount, tableitem)
         end
     end
     begin
@@ -465,19 +465,19 @@ begin
             FlightsRow(SQLCompose.mapfields(f, result.flight_id, SQLCompose.nextalias(alias, :flight_id)), SQLCompose.mapfields(f, result.flight_no, SQLCompose.nextalias(alias, :flight_no)), SQLCompose.mapfields(f, result.scheduled_departure, SQLCompose.nextalias(alias, :scheduled_departure)), SQLCompose.mapfields(f, result.scheduled_arrival, SQLCompose.nextalias(alias, :scheduled_arrival)), SQLCompose.mapfields(f, result.departure_airport, SQLCompose.nextalias(alias, :departure_airport)), SQLCompose.mapfields(f, result.arrival_airport, SQLCompose.nextalias(alias, :arrival_airport)), SQLCompose.mapfields(f, result.status, SQLCompose.nextalias(alias, :status)), SQLCompose.mapfields(f, result.aircraft_code, SQLCompose.nextalias(alias, :aircraft_code)), SQLCompose.mapfields(f, result.actual_departure, SQLCompose.nextalias(alias, :actual_departure)), SQLCompose.mapfields(f, result.actual_arrival, SQLCompose.nextalias(alias, :actual_arrival)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::FlightsRow, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::FlightsRow, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.flight_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.flight_no, tableitem)
-            SQLCompose.writelateralplan!(plan, node.scheduled_departure, tableitem)
-            SQLCompose.writelateralplan!(plan, node.scheduled_arrival, tableitem)
-            SQLCompose.writelateralplan!(plan, node.departure_airport, tableitem)
-            SQLCompose.writelateralplan!(plan, node.arrival_airport, tableitem)
-            SQLCompose.writelateralplan!(plan, node.status, tableitem)
-            SQLCompose.writelateralplan!(plan, node.aircraft_code, tableitem)
-            SQLCompose.writelateralplan!(plan, node.actual_departure, tableitem)
-            SQLCompose.writelateralplan!(plan, node.actual_arrival, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.flight_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.flight_no, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.scheduled_departure, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.scheduled_arrival, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.departure_airport, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.arrival_airport, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.status, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.aircraft_code, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.actual_departure, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.actual_arrival, tableitem)
         end
     end
     begin
@@ -568,29 +568,29 @@ begin
             Flights_VRow(SQLCompose.mapfields(f, result.flight_id, SQLCompose.nextalias(alias, :flight_id)), SQLCompose.mapfields(f, result.flight_no, SQLCompose.nextalias(alias, :flight_no)), SQLCompose.mapfields(f, result.scheduled_departure, SQLCompose.nextalias(alias, :scheduled_departure)), SQLCompose.mapfields(f, result.scheduled_departure_local, SQLCompose.nextalias(alias, :scheduled_departure_local)), SQLCompose.mapfields(f, result.scheduled_arrival, SQLCompose.nextalias(alias, :scheduled_arrival)), SQLCompose.mapfields(f, result.scheduled_arrival_local, SQLCompose.nextalias(alias, :scheduled_arrival_local)), SQLCompose.mapfields(f, result.scheduled_duration, SQLCompose.nextalias(alias, :scheduled_duration)), SQLCompose.mapfields(f, result.departure_airport, SQLCompose.nextalias(alias, :departure_airport)), SQLCompose.mapfields(f, result.departure_airport_name, SQLCompose.nextalias(alias, :departure_airport_name)), SQLCompose.mapfields(f, result.departure_city, SQLCompose.nextalias(alias, :departure_city)), SQLCompose.mapfields(f, result.arrival_airport, SQLCompose.nextalias(alias, :arrival_airport)), SQLCompose.mapfields(f, result.arrival_airport_name, SQLCompose.nextalias(alias, :arrival_airport_name)), SQLCompose.mapfields(f, result.arrival_city, SQLCompose.nextalias(alias, :arrival_city)), SQLCompose.mapfields(f, result.status, SQLCompose.nextalias(alias, :status)), SQLCompose.mapfields(f, result.aircraft_code, SQLCompose.nextalias(alias, :aircraft_code)), SQLCompose.mapfields(f, result.actual_departure, SQLCompose.nextalias(alias, :actual_departure)), SQLCompose.mapfields(f, result.actual_departure_local, SQLCompose.nextalias(alias, :actual_departure_local)), SQLCompose.mapfields(f, result.actual_arrival, SQLCompose.nextalias(alias, :actual_arrival)), SQLCompose.mapfields(f, result.actual_arrival_local, SQLCompose.nextalias(alias, :actual_arrival_local)), SQLCompose.mapfields(f, result.actual_duration, SQLCompose.nextalias(alias, :actual_duration)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::Flights_VRow, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::Flights_VRow, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.flight_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.flight_no, tableitem)
-            SQLCompose.writelateralplan!(plan, node.scheduled_departure, tableitem)
-            SQLCompose.writelateralplan!(plan, node.scheduled_departure_local, tableitem)
-            SQLCompose.writelateralplan!(plan, node.scheduled_arrival, tableitem)
-            SQLCompose.writelateralplan!(plan, node.scheduled_arrival_local, tableitem)
-            SQLCompose.writelateralplan!(plan, node.scheduled_duration, tableitem)
-            SQLCompose.writelateralplan!(plan, node.departure_airport, tableitem)
-            SQLCompose.writelateralplan!(plan, node.departure_airport_name, tableitem)
-            SQLCompose.writelateralplan!(plan, node.departure_city, tableitem)
-            SQLCompose.writelateralplan!(plan, node.arrival_airport, tableitem)
-            SQLCompose.writelateralplan!(plan, node.arrival_airport_name, tableitem)
-            SQLCompose.writelateralplan!(plan, node.arrival_city, tableitem)
-            SQLCompose.writelateralplan!(plan, node.status, tableitem)
-            SQLCompose.writelateralplan!(plan, node.aircraft_code, tableitem)
-            SQLCompose.writelateralplan!(plan, node.actual_departure, tableitem)
-            SQLCompose.writelateralplan!(plan, node.actual_departure_local, tableitem)
-            SQLCompose.writelateralplan!(plan, node.actual_arrival, tableitem)
-            SQLCompose.writelateralplan!(plan, node.actual_arrival_local, tableitem)
-            SQLCompose.writelateralplan!(plan, node.actual_duration, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.flight_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.flight_no, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.scheduled_departure, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.scheduled_departure_local, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.scheduled_arrival, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.scheduled_arrival_local, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.scheduled_duration, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.departure_airport, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.departure_airport_name, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.departure_city, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.arrival_airport, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.arrival_airport_name, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.arrival_city, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.status, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.aircraft_code, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.actual_departure, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.actual_departure_local, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.actual_arrival, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.actual_arrival_local, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.actual_duration, tableitem)
         end
     end
     begin
@@ -661,19 +661,19 @@ begin
             RoutesRow(SQLCompose.mapfields(f, result.flight_no, SQLCompose.nextalias(alias, :flight_no)), SQLCompose.mapfields(f, result.departure_airport, SQLCompose.nextalias(alias, :departure_airport)), SQLCompose.mapfields(f, result.departure_airport_name, SQLCompose.nextalias(alias, :departure_airport_name)), SQLCompose.mapfields(f, result.departure_city, SQLCompose.nextalias(alias, :departure_city)), SQLCompose.mapfields(f, result.arrival_airport, SQLCompose.nextalias(alias, :arrival_airport)), SQLCompose.mapfields(f, result.arrival_airport_name, SQLCompose.nextalias(alias, :arrival_airport_name)), SQLCompose.mapfields(f, result.arrival_city, SQLCompose.nextalias(alias, :arrival_city)), SQLCompose.mapfields(f, result.aircraft_code, SQLCompose.nextalias(alias, :aircraft_code)), SQLCompose.mapfields(f, result.duration, SQLCompose.nextalias(alias, :duration)), SQLCompose.mapfields(f, result.days_of_week, SQLCompose.nextalias(alias, :days_of_week)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::RoutesRow, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::RoutesRow, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.flight_no, tableitem)
-            SQLCompose.writelateralplan!(plan, node.departure_airport, tableitem)
-            SQLCompose.writelateralplan!(plan, node.departure_airport_name, tableitem)
-            SQLCompose.writelateralplan!(plan, node.departure_city, tableitem)
-            SQLCompose.writelateralplan!(plan, node.arrival_airport, tableitem)
-            SQLCompose.writelateralplan!(plan, node.arrival_airport_name, tableitem)
-            SQLCompose.writelateralplan!(plan, node.arrival_city, tableitem)
-            SQLCompose.writelateralplan!(plan, node.aircraft_code, tableitem)
-            SQLCompose.writelateralplan!(plan, node.duration, tableitem)
-            SQLCompose.writelateralplan!(plan, node.days_of_week, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.flight_no, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.departure_airport, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.departure_airport_name, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.departure_city, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.arrival_airport, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.arrival_airport_name, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.arrival_city, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.aircraft_code, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.duration, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.days_of_week, tableitem)
         end
     end
     begin
@@ -730,12 +730,12 @@ begin
             SeatsRow(SQLCompose.mapfields(f, result.aircraft_code, SQLCompose.nextalias(alias, :aircraft_code)), SQLCompose.mapfields(f, result.seat_no, SQLCompose.nextalias(alias, :seat_no)), SQLCompose.mapfields(f, result.fare_conditions, SQLCompose.nextalias(alias, :fare_conditions)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::SeatsRow, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::SeatsRow, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.aircraft_code, tableitem)
-            SQLCompose.writelateralplan!(plan, node.seat_no, tableitem)
-            SQLCompose.writelateralplan!(plan, node.fare_conditions, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.aircraft_code, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.seat_no, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.fare_conditions, tableitem)
         end
     end
     begin
@@ -794,13 +794,13 @@ begin
             Ticket_FlightsRow(SQLCompose.mapfields(f, result.ticket_no, SQLCompose.nextalias(alias, :ticket_no)), SQLCompose.mapfields(f, result.flight_id, SQLCompose.nextalias(alias, :flight_id)), SQLCompose.mapfields(f, result.fare_conditions, SQLCompose.nextalias(alias, :fare_conditions)), SQLCompose.mapfields(f, result.amount, SQLCompose.nextalias(alias, :amount)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::Ticket_FlightsRow, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::Ticket_FlightsRow, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.ticket_no, tableitem)
-            SQLCompose.writelateralplan!(plan, node.flight_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.fare_conditions, tableitem)
-            SQLCompose.writelateralplan!(plan, node.amount, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.ticket_no, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.flight_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.fare_conditions, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.amount, tableitem)
         end
     end
     begin
@@ -861,14 +861,14 @@ begin
             TicketsRow(SQLCompose.mapfields(f, result.ticket_no, SQLCompose.nextalias(alias, :ticket_no)), SQLCompose.mapfields(f, result.book_ref, SQLCompose.nextalias(alias, :book_ref)), SQLCompose.mapfields(f, result.passenger_id, SQLCompose.nextalias(alias, :passenger_id)), SQLCompose.mapfields(f, result.passenger_name, SQLCompose.nextalias(alias, :passenger_name)), SQLCompose.mapfields(f, result.contact_data, SQLCompose.nextalias(alias, :contact_data)))
         end
         #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:100 =#
-        function SQLCompose.writelateralplan!(plan, node::TicketsRow, tableitem)
+        function SQLCompose.write_referredtable_location_plan!(plan, node::TicketsRow, tableitem)
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:86 =#
             #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:87 =#
-            SQLCompose.writelateralplan!(plan, node.ticket_no, tableitem)
-            SQLCompose.writelateralplan!(plan, node.book_ref, tableitem)
-            SQLCompose.writelateralplan!(plan, node.passenger_id, tableitem)
-            SQLCompose.writelateralplan!(plan, node.passenger_name, tableitem)
-            SQLCompose.writelateralplan!(plan, node.contact_data, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.ticket_no, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.book_ref, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.passenger_id, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.passenger_name, tableitem)
+            SQLCompose.write_referredtable_location_plan!(plan, node.contact_data, tableitem)
         end
     end
     #= c:\Users\Rob\Projects\SQLCompose.jl\src\generate\generate.jl:133 =#
