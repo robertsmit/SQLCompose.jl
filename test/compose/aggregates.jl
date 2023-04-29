@@ -57,9 +57,10 @@
             groupby(r -> r.title) |>
             sort(r -> r.title)
         end,
+
         "SELECT ref_film.title, array_agg(CONCAT(ref_actor.first_name, ' ', ref_actor.last_name)) AS actors FROM film_actor f 
-            INNER JOIN film ref_film ON f.film_id = ref_film.film_id 
             INNER JOIN actor ref_actor ON f.actor_id = ref_actor.actor_id 
+            INNER JOIN film ref_film ON f.film_id = ref_film.film_id 
             GROUP BY ref_film.title 
             ORDER BY ref_film.title"
     end

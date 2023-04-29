@@ -82,12 +82,11 @@ end,
 
 
 
-"""
-In this example, we use a LATERAL join to join the customer table 
-    with a subquery that selects the rental_id, inventory_id, 
-    and rental_duration for each film rental associated with the customer_id from the outer query. 
-    We then calculate the rental cost by multiplying the rental_duration and rental_rate for each film.
-"""
+
+# In this example, we use a LATERAL join to join the customer table 
+#     with a subquery that selects the rental_id, inventory_id, 
+#     and rental_duration for each film rental associated with the customer_id from the outer query. 
+#     We then calculate the rental cost by multiplying the rental_duration and rental_rate for each film.
 @testsql Pagila.query_customer() |>
          join_lateral(c -> Pagila.query_rental() |>
                            filter(r -> r.customer_id == c.customer_id) |>
@@ -110,21 +109,19 @@ In this example, we use a LATERAL join to join the customer table
         ON true"
 
 
-
+# #Define pagila film list   
 begin
-    """Define pagila film list"""
     all_actor_of(f::Pagila.FilmRow) = f |> Pagila.all_film_actor_of |> Pagila.actor_of
     all_category_of(f::Pagila.FilmRow) = f |> Pagila.all_film_category_of |> Pagila.category_of
     actor_name(actor) = actor.first_name * " " * actor.last_name
-    @testsql
-    Pagila.query_film() |>
-    map(f -> (film=f, category=all_category_of(f), actor=all_actor_of(f))) |>
-    map(((; film, actor, category),) ->
-        (fid=film.film_id, film.title, film.description,
-            category=category.name, price=film.rental_rate, film.length, film.rating,
-            actors=join(actor_name(actor), ", ")
-        )) |>
-    groupby(r -> Tuple(v for (k, v) in pairs(r) if k != :actors)),
+    @testsql Pagila.query_film() |>
+             map(f -> (film=f, category=all_category_of(f), actor=all_actor_of(f))) |>
+             map(((; film, actor, category),) ->
+                 (fid=film.film_id, film.title, film.description,
+                     category=category.name, price=film.rental_rate, film.length, film.rating,
+                     actors=join(actor_name(actor), ", ")
+                 )) |>
+             groupby(r -> Tuple(v for (k, v) in pairs(r) if k != :actors)),
     """
         SELECT f.film_id                                                                AS fid,
         f.title,
@@ -141,16 +138,4 @@ begin
             INNER JOIN category ref_category ON ref_film_category.category_id = ref_category.category_id
     GROUP BY f.film_id, f.title, f.description, ref_category.name, f.rental_rate, f.length, f.rating
     """
-
 end
-
-#                 SELECT c.customer_id, c.first_name, c.last_name, r.total_revenue
-# FROM customer c
-#  JOIN LATERAL (
-#   SELECT customer_id, SUM(amount) AS total_revenue
-#   FROM payment
-#   WHERE customer_id = c.customer_id
-#   GROUP BY customer_id
-# ) AS r ON r.total_revenue > 100 -- Example condition
-# ORDER BY r.total_revenue desc
-# LIMIT 10;
