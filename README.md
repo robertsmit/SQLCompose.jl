@@ -12,6 +12,8 @@ is such easier to built complex queries.
 
 Also retrieving the data of the queried julia structure is supported.
 
+Supports generating query code from existing database.
+
 See samples.jl in the test directory.
 
 
