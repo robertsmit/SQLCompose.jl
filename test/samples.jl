@@ -115,13 +115,21 @@ begin
     all_category_of(f::Pagila.FilmRow) = f |> Pagila.all_film_category_of |> Pagila.category_of
     actor_name(actor) = actor.first_name * " " * actor.last_name
     @testsql Pagila.query_film() |>
-             map(f -> (film=f, category=all_category_of(f), actor=all_actor_of(f))) |>
-             map(((; film, actor, category),) ->
-                 (fid=film.film_id, film.title, film.description,
-                     category=category.name, price=film.rental_rate, film.length, film.rating,
-                     actors=join(actor_name(actor), ", ")
-                 )) |>
-             groupby(r -> Tuple(v for (k, v) in pairs(r) if k != :actors)),
+             map(film ->
+                 let category = all_category_of(film),
+                     actor = all_actor_of(film)
+
+                     (fid=film.film_id,
+                         film.title,
+                         film.description,
+                         category=category.name,
+                         price=film.rental_rate,
+                         film.length,
+                         film.rating,
+                         actors=join(actor_name(actor), ", ")
+                     )
+                 end) |>
+                 groupby(r -> Tuple(v for (k, v) in pairs(r) if k != :actors)),
     """
         SELECT f.film_id                                                                AS fid,
         f.title,
