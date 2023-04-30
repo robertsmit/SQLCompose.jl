@@ -109,7 +109,7 @@ end,
         ON true"
 
 
-# #Define pagila film list   
+#Define pagila film list   
 begin
     all_actor_of(f::Pagila.FilmRow) = f |> Pagila.all_film_actor_of |> Pagila.actor_of
     all_category_of(f::Pagila.FilmRow) = f |> Pagila.all_film_category_of |> Pagila.category_of
