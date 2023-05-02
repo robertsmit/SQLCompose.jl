@@ -13,6 +13,9 @@
         @testsql table |> filter(t -> t.salary in 1000:2000)  "SELECT p.person_id, p.surname, p.salary FROM person_salaries p WHERE p.salary BETWEEN 1000 AND 2000"
         @testsql table |> filter(t -> t.salary in t.salary:2000)  "SELECT p.person_id, p.surname, p.salary FROM person_salaries p WHERE p.salary BETWEEN p.salary AND 2000"
     end
+
+
+    
 end
 
 @testset "arithmetic operators" begin

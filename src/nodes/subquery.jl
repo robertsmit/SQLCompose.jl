@@ -23,9 +23,6 @@ end
 SubqueryTableItem(table::SubqueryTableItem) = table
 SubqueryTableItem(table::Union{TableItem,TableDefinition}) = SubqueryTableItem(SelectQuery(table); aliashint=aliashint(table))
 
-unordered(query::SelectQuery) = isnothing(query.order) ? query : with_order(query, nothing)
-unordered(query::Query) = query
-
 function SelectQuery(from::SubqueryTableItem)
     mapfield = let ref = from.ref
         (field, alias) -> TableItemFieldRef(Symbol(alias), sqltypeclassof(field), ref)
