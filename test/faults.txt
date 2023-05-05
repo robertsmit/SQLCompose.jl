@@ -1,0 +1,4 @@
+e1 := repository queryDb employments select: [:e | e surname size > 0 ].
+e2 := repository queryDb positions select: [:e | e id notNil].
+(e2 select: [:e | (e1 select: [:a | a id = e id]) notEmpty]) asArray
+todo nulls first nulls last
