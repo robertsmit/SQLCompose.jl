@@ -131,7 +131,10 @@ import SQLCompose: TableDefinition, ValuesTableItem, TextType, query, Int8Type, 
         @testsql filter(a -> contains(a.last_name, like"J%N"), actors),
         "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.last_name LIKE 'J%N'"
 
-        @testsql filter(a -> !contains(a.last_name, like"J%N"), actors),
+        @testsql filter(a -> contains(a.last_name, ilike"j%N"), actors),
+        "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.last_name ILIKE 'j%N'"
+
+        @testsql filter(a -> !contains(a.last_name, like"J%N"), actors),    
         "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.last_name NOT LIKE 'J%N'"
 
         @testsql filter(a -> contains(a.last_name, first(a.first_name, 2)), actors),
@@ -154,6 +157,18 @@ import SQLCompose: TableDefinition, ValuesTableItem, TextType, query, Int8Type, 
 
         @testsql filter(a -> contains(a.last_name, regex(a.first_name, false)), actors),
         "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.last_name ~* a.first_name"
+
+        @testsql filter(a -> contains(a.last_name, similarto"%[AB]%"), actors),
+        "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.last_name SIMILAR TO '%[AB]%'"
+
+        @testsql filter(a -> !contains(a.last_name, similarto"%[AB]%"), actors),
+        "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.last_name NOT SIMILAR TO '%[AB]%'"
+
+        @testsql filter(a -> !contains(a.last_name, similarto"%[AB]%"), actors),
+        "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.last_name NOT SIMILAR TO '%[AB]%'"
+
+        @testsql filter(a -> !(!contains(a.last_name, similarto"%[AB]%")), actors),
+        "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.last_name SIMILAR TO '%[AB]%'"
     end
 
 end

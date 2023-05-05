@@ -49,11 +49,18 @@ struct RegexMatchPattern <: MatchPattern
     casesensitive::Bool
 end
 
+struct SimilarToMatchPattern <: MatchPattern
+    value::TextExpression
+end
+
 for (name, (operator, ci_operator, antogonist, patterntype)) in pairs((
     Like=(operator="LIKE", ci_operator="ILIKE", antogonist=:NotLike, patterntype=:LikeMatchPattern),
     NotLike=(operator="NOT LIKE", ci_operator="NOT ILIKE", antogonist=:Like, patterntype=:LikeMatchPattern),
     RegexMatch=(operator="~", ci_operator="~*", antogonist=:NotRegexMatch, patterntype=:RegexMatchPattern),
-    NotRegexMatch=(operator="!~", ci_operator="!~*", antogonist=:RegexMatch, patterntype=:RegexMatchPattern)))
+    NotRegexMatch=(operator="!~", ci_operator="!~*", antogonist=:RegexMatch, patterntype=:RegexMatchPattern),
+    SimilarTo=(operator="SIMILAR TO", ci_operator=nothing, antogonist=:NotSimilarTo, patterntype=:SimilarToMatchPattern),
+    NotSimilarTo=(operator="NOT SIMILAR TO", ci_operator=nothing, antogonist=:SimilarTo, patterntype=:SimilarToMatchPattern)
+))
 
     gettypename(name) = Symbol(name, "Expression")
     typename = gettypename(name)
@@ -66,8 +73,8 @@ for (name, (operator, ci_operator, antogonist, patterntype)) in pairs((
         function printpsql(io::IO, node::$typename, env)
             let pattern = node.pattern
                 printpsql(io, node.subject, node, env)
-                print(io, " ")
-                print(io, pattern.casesensitive ? $operator : $ci_operator)
+                print(io, " ")                
+                print(io, $(isnothing(ci_operator) ? operator : :(pattern.casesensitive ? $operator : $ci_operator)))
                 print(io, " ")
                 printpsql(io, pattern.value, node, env)
             end
@@ -88,7 +95,13 @@ macro ilike_str(v)
     return LikeMatchPattern(v, false)
 end
 
+macro similarto_str(v)
+    return SimilarToMatchPattern(v)
+end
+
 like(pattern::SQLExpression, casesensitive=true) = LikeMatchPattern(pattern, casesensitive)
+ilike(pattern::SQLExpression) = like(pattern, false)
+similarto(pattern::SQLExpression) = SimilarToMatchPattern(pattern)
 regex(pattern::SQLExpression, casesensitive=true) = RegexMatchPattern(pattern, casesensitive)
 
 Base.occursin(needle::String, haystack::TextExpression; casesensitive=true) =
@@ -99,8 +112,10 @@ Base.occursin(needle::String, haystack::TextExpression; casesensitive=true) =
 
 Base.occursin(needle::LikeMatchPattern, haystack::TextExpression) =
     LikeExpression(haystack, needle)
-Base.occursin(needle::Regex, haystack::TextExpression; casesensitive=true) = occursin(RegexMatchPattern(needle.pattern, casesensitive), haystack)
 Base.occursin(needle::RegexMatchPattern, haystack::TextExpression) = RegexMatchExpression(haystack, needle)
+Base.occursin(needle::SimilarToMatchPattern, haystack::TextExpression) = SimilarToExpression(haystack, needle)
+
+Base.occursin(needle::Regex, haystack::TextExpression; casesensitive=true) = occursin(RegexMatchPattern(needle.pattern, casesensitive), haystack)
 Base.occursin(needle::TextExpression, haystack; casesensitive=true) = occursin(LikeMatchPattern("%" * needle * "%", casesensitive), haystack)
 
 Base.contains(haystack::TextExpression, needle) = occursin(needle, haystack)
