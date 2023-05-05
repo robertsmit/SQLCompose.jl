@@ -1,9 +1,6 @@
 import Base: !, |, &
 import StaticArrays: SA
 
-BooleanExpression = SQLExpression{BooleanType}
-BooleanConstant = SQLConstant{BooleanType}
-
 #not
 struct Not <: BooleanExpression
     expr::BooleanExpression

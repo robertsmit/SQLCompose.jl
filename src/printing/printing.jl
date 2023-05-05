@@ -237,7 +237,7 @@ printpsql_referred_joins(_, ::NullPrintEnvironment) = nothing
 function printpsql_referred_joins(io, env::ReferredTableEnvironment)
     printpsql_referred_joins(io, next_referred(env))
     printpsql_referred_join(io, env)
-    
+
 end
 
 function printpsql_referred_join(io::IO, env::ReferredTableEnvironment)
@@ -278,7 +278,9 @@ end
 printpsql(io::IO, n::Number, env) = print(io, n)
 printpsql(io::IO, b::Bool, env) = print(io, b)
 printpsql(io::IO, v::String, env) = (print(io, "\'"); print(io, v); print(io, "\'"))
-printpsql(io::IO, c::SQLConstant, env) = printpsql(io, c.value, env)
+printpsql(io::IO, c::SQLConstant, env) = begin
+    printpsql(io, c.value, env)
+end
 function printpsql(io::IO, node::SQLCompose.InExpression, env)
     printpsql(io, node.element, env)
     print(io, " IN ")
@@ -345,5 +347,7 @@ needs_parentheses(child::And, parent::Or) = false
 needs_parentheses(child::TableItemFieldRef, parent::SQLNode) = false
 needs_parentheses(child::SQLConstant, parent::SQLNode) = false
 needs_parentheses(child::Cast, parent::SQLNode) = false
+needs_parentheses(child::FunctionCall, parent::SQLNode) = false
+needs_parentheses(child::Concat, parent::SQLNode) = false
 needs_parentheses(child, parent) = false
 

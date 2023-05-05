@@ -37,36 +37,71 @@ for (typename, (op, sqloperator, antogonist)) in pairs(comparators)
     end
 end
 
-for (name, (operator, ci_operator, antogonist)) in pairs((
-    Like=(operator="LIKE", ci_operator="ILIKE", antogonist=:NotLike),
-    NotLike=(operator="NOT LIKE", ci_operator="NOT ILIKE", antogonist=:Like),
-    RegexMatch=(operator="~", ci_operator="~*", antogonist=:NotRegexMatch),
-    NotRegexMatch=(operator="!~", ci_operator="!~*", antogonist=:RegexMatch)))
-    typename = Symbol(name, "Expression")
+abstract type MatchPattern end
+
+struct LikeMatchPattern <: MatchPattern
+    value::TextExpression
+    casesensitive::Bool
+end
+
+struct RegexMatchPattern <: MatchPattern
+    value::TextExpression
+    casesensitive::Bool
+end
+
+for (name, (operator, ci_operator, antogonist, patterntype)) in pairs((
+    Like=(operator="LIKE", ci_operator="ILIKE", antogonist=:NotLike, patterntype=:LikeMatchPattern),
+    NotLike=(operator="NOT LIKE", ci_operator="NOT ILIKE", antogonist=:Like, patterntype=:LikeMatchPattern),
+    RegexMatch=(operator="~", ci_operator="~*", antogonist=:NotRegexMatch, patterntype=:RegexMatchPattern),
+    NotRegexMatch=(operator="!~", ci_operator="!~*", antogonist=:RegexMatch, patterntype=:RegexMatchPattern)))
+
+    gettypename(name) = Symbol(name, "Expression")
+    typename = gettypename(name)
     @eval begin
         struct $typename <: BooleanExpression
-            subject::SQLExpression
-            pattern::SQLExpression{<:CharacterType}
-            casesensitive::Bool
+            subject::TextExpression
+            pattern::$patterntype
         end
-        $typename(subject, pattern, casesensitive) =
-            $typename(convert(SQLExpression, subject), convert(SQLExpression, pattern), casesensitive)
-        Not(arg::$typename) = $antogonist(arg.subject, arg.pattern, arg.casesensitive)
+        Not(arg::$typename) = $(gettypename(antogonist))(arg.subject, arg.pattern)
         function printpsql(io::IO, node::$typename, env)
-            printpsql(io, node.subject, node, env)
-            print(io, " ")
-            print(io, node.casesensitive ? $operator : $ci_operator)
-            print(io, " ")
-            printpsql(io, node.pattern, node, env)
+            let pattern = node.pattern
+                printpsql(io, node.subject, node, env)
+                print(io, " ")
+                print(io, pattern.casesensitive ? $operator : $ci_operator)
+                print(io, " ")
+                printpsql(io, pattern.value, node, env)
+            end
         end
         function write_referredtable_location_plan!(plan, node::$typename, tableitem)
             write_referredtable_location_plan!(plan, node.subject, tableitem)
-            write_referredtable_location_plan!(plan, node.pattern, tableitem)
+            write_referredtable_location_plan!(plan, node.pattern.value, tableitem)
         end
     end
 end
 
-Base.occursin(pattern::String, subject::SQLExpression; casesensitive=true) =
-    LikeExpression(subject, "%$(pattern)%", casesensitive)
-Base.occursin(r::Regex, subject::SQLExpression; casesensitive=true) =
-    RegexMatchExpression(subject, string(r), casesensitive)
+
+macro like_str(v)
+    return LikeMatchPattern(v, true)
+end
+
+macro ilike_str(v)
+    return LikeMatchPattern(v, false)
+end
+
+like(pattern::SQLExpression, casesensitive=true) = LikeMatchPattern(pattern, casesensitive)
+regex(pattern::SQLExpression, casesensitive=true) = RegexMatchPattern(pattern, casesensitive)
+
+Base.occursin(needle::String, haystack::TextExpression; casesensitive=true) =
+    let
+        escaped_needle = replace(needle, "%" => "\\%")
+        occursin(LikeMatchPattern("%$(escaped_needle)%", casesensitive), haystack)
+    end
+
+Base.occursin(needle::LikeMatchPattern, haystack::TextExpression) =
+    LikeExpression(haystack, needle)
+Base.occursin(needle::Regex, haystack::TextExpression; casesensitive=true) = occursin(RegexMatchPattern(needle.pattern, casesensitive), haystack)
+Base.occursin(needle::RegexMatchPattern, haystack::TextExpression) = RegexMatchExpression(haystack, needle)
+Base.occursin(needle::TextExpression, haystack; casesensitive=true) = occursin(LikeMatchPattern("%" * needle * "%", casesensitive), haystack)
+
+Base.contains(haystack::TextExpression, needle) = occursin(needle, haystack)
+Base.contains(haystack::String, needle::TextExpression) = occursin(needle, haystack)

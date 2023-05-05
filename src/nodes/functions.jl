@@ -26,3 +26,6 @@ Base.string(expr::SQLExpression; pattern::String) = FunctionCall{TextType}(:to_c
 
 unnest(expr::SQLExpression{ArrayType{T}}) where T = SetReturningFunctionCall{T}(:unnest, (expr,))
 unnest(expr) = unnest(convert(SQLExpression, expr))
+
+Base.first(expr::TextExpression, n::Int) = FunctionCall{TextType}(:left, (expr, n))
+Base.last(expr::TextExpression, n::Int) = FunctionCall{TextType}(:right, (expr, n))

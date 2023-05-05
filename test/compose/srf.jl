@@ -12,7 +12,7 @@
     @testsql (map(query([1,2,3])) do x
         unnest(x) + 3
         end), 
-        "SELECT (unnest(ARRAY[1, 2, 3])) + 3 AS elem1"
+        "SELECT unnest(ARRAY[1, 2, 3]) + 3 AS elem1"
 
     @testsql query(unnest([1,2,3])) "SELECT u.val FROM unnest(ARRAY[1, 2, 3]) u (val)"
 end

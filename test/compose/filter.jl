@@ -82,15 +82,15 @@ import SQLCompose: TableDefinition, ValuesTableItem, TextType, query, Int8Type, 
             table = TableDefinition(:persons, :id => Int8Type, :surname => TextType; aliashint=:per)
             # persons non empty surname
             @info "in literal"
-            q = filter(t -> t.id in [1,2,3], table)
+            q = filter(t -> t.id in [1, 2, 3], table)
             @testsql q "SELECT per.id, per.surname FROM persons per WHERE per.id IN (1, 2, 3)"
             @info "in self ref"
             q = filter(t -> t.id in [t.id + 1, t.id + 2], table)
             @testsql q "SELECT per.id, per.surname FROM persons per WHERE per.id IN (per.id + 1, per.id + 2)"
         end
 
-        
-        
+
+
 
     end
 
@@ -114,4 +114,46 @@ import SQLCompose: TableDefinition, ValuesTableItem, TextType, query, Int8Type, 
     @test string(qSurnameAnyOrMale) === "SELECT employments.id, employments.is_male, employments.surname FROM employments WHERE ((employments.surname = 'Smith') OR (employments.surname = 'Adams')) AND employments.is_male"
     qMaleCast = filter(e -> !(convert(Int8Type(), e.is_male) == 0), q)
     @test string(qMaleCast) === "SELECT employments.id, employments.is_male, employments.surname FROM employments WHERE employments.is_male::bigint <> 0"
+
+
+    @testset "Pattern match" begin
+        actors = @chain Pagila.actor_table() begin
+            query(_)
+            map(_, :actor_id, :first_name, :last_name)
+        end
+
+        @testsql filter(a -> contains(a.first_name, "JO"), actors),
+        "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.first_name LIKE '%JO%'"
+
+        @testsql filter(a -> contains(a, "a%b%c"), query("%a%b%c")),
+        "SELECT q.elem1 FROM (SELECT '%a%b%c' AS elem1) q WHERE q.elem1 LIKE '%a\\%b\\%c%'"
+
+        @testsql filter(a -> contains(a.last_name, like"J%N"), actors),
+        "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.last_name LIKE 'J%N'"
+
+        @testsql filter(a -> !contains(a.last_name, like"J%N"), actors),
+        "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.last_name NOT LIKE 'J%N'"
+
+        @testsql filter(a -> contains(a.last_name, first(a.first_name, 2)), actors),
+        "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.last_name LIKE CONCAT('%', left(a.first_name, 2), '%')"
+
+        @testsql filter(a -> contains(a.last_name, like(first(a.first_name, 2) * "%")), actors),
+        "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.last_name LIKE CONCAT(left(a.first_name, 2), '%')"
+
+        @testsql filter(a -> contains(a.last_name, regex(first(a.first_name, 2))), actors),
+        "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.last_name ~ left(a.first_name, 2)"
+
+        @testsql filter(a -> occursin(r"JO", a.last_name), actors),
+        "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.last_name ~ 'JO'"
+
+        @testsql filter(a -> !occursin(r"JO", a.last_name), actors),
+        "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.last_name !~ 'JO'"
+
+        @testsql filter(a -> occursin(r"jo", a.last_name; casesensitive=false), actors),
+        "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.last_name ~* 'jo'"
+
+        @testsql filter(a -> contains(a.last_name, regex(a.first_name, false)), actors),
+        "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.last_name ~* a.first_name"
+    end
+
 end

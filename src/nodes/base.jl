@@ -14,6 +14,10 @@ end
 
 SQLConstant(value) = SQLConstant(value, sqltypeclassof(value))
 
+BooleanExpression = SQLExpression{BooleanType}
+BooleanConstant = SQLConstant{BooleanType}
+TextExpression = SQLExpression{<:CharacterType}
+
 struct Cast{T} <: SQLExpression{T}
     expr::SQLExpression
     type::T
