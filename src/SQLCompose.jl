@@ -8,7 +8,9 @@ export TableDefinition, reference
 export query, groupby, join, with, join_lateral
 export InnerJoin, LeftJoin, RightJoin, FullJoin
 # operators
-export between, avg, unnest, @like_str, @ilike_str, @similarto_str, like, regex
+export between, avg, unnest
+#comparing
+export @like_str, @ilike_str, @similarto_str, like, similarto, matching
 #globals
 export All
 #types

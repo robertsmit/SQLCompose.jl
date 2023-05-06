@@ -53,6 +53,12 @@ struct SimilarToMatchPattern <: MatchPattern
     value::TextExpression
 end
 
+Base.:(==)(haystick::TextExpression, needle::MatchPattern) = contains(haystick, needle)
+Base.:(!=)(haystick::TextExpression, needle::MatchPattern) = !contains(haystick, needle)
+Base.:(==)(haystick::TextExpression, needle::Regex) = contains(haystick, RegexMatchPattern(needle.pattern, true))
+Base.:(!=)(haystick::TextExpression, needle::Regex) = !(haystick == needle)
+
+
 for (name, (operator, ci_operator, antogonist, patterntype)) in pairs((
     Like=(operator="LIKE", ci_operator="ILIKE", antogonist=:NotLike, patterntype=:LikeMatchPattern),
     NotLike=(operator="NOT LIKE", ci_operator="NOT ILIKE", antogonist=:Like, patterntype=:LikeMatchPattern),
@@ -69,6 +75,7 @@ for (name, (operator, ci_operator, antogonist, patterntype)) in pairs((
             subject::TextExpression
             pattern::$patterntype
         end
+
         Not(arg::$typename) = $(gettypename(antogonist))(arg.subject, arg.pattern)
         function printpsql(io::IO, node::$typename, env)
             let pattern = node.pattern
@@ -86,7 +93,6 @@ for (name, (operator, ci_operator, antogonist, patterntype)) in pairs((
     end
 end
 
-
 macro like_str(v)
     return LikeMatchPattern(v, true)
 end
@@ -99,14 +105,14 @@ macro similarto_str(v)
     return SimilarToMatchPattern(v)
 end
 
-like(pattern::SQLExpression, casesensitive=true) = LikeMatchPattern(pattern, casesensitive)
-ilike(pattern::SQLExpression) = like(pattern, false)
-similarto(pattern::SQLExpression) = SimilarToMatchPattern(pattern)
-regex(pattern::SQLExpression, casesensitive=true) = RegexMatchPattern(pattern, casesensitive)
+like(pattern::Union{TextExpression, String}; casesensitive=true) = LikeMatchPattern(pattern, casesensitive)
+ilike(pattern::Union{TextExpression, String}) = like(pattern, casesensitive=false)
+similarto(pattern::Union{TextExpression, String}) = SimilarToMatchPattern(pattern)
+matching(pattern::Union{TextExpression, String};casesensitive=true) = RegexMatchPattern(pattern, casesensitive)
 
 Base.occursin(needle::String, haystack::TextExpression; casesensitive=true) =
     let
-        escaped_needle = replace(needle, "%" => "\\%")
+        escaped_needle = replace(needle, "%" => "\\%", "_" => "\\_")
         occursin(LikeMatchPattern("%$(escaped_needle)%", casesensitive), haystack)
     end
 

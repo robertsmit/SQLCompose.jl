@@ -125,25 +125,28 @@ import SQLCompose: TableDefinition, ValuesTableItem, TextType, query, Int8Type, 
         @testsql filter(a -> contains(a.first_name, "JO"), actors),
         "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.first_name LIKE '%JO%'"
 
-        @testsql filter(a -> contains(a, "a%b%c"), query("%a%b%c")),
-        "SELECT q.elem1 FROM (SELECT '%a%b%c' AS elem1) q WHERE q.elem1 LIKE '%a\\%b\\%c%'"
+        @testsql filter(a -> contains(a, "a%b_c"), query("%a%b_c")),
+        "SELECT q.elem1 FROM (SELECT '%a%b_c' AS elem1) q WHERE q.elem1 LIKE '%a\\%b\\_c%'"
 
         @testsql filter(a -> contains(a.last_name, like"J%N"), actors),
         "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.last_name LIKE 'J%N'"
 
-        @testsql filter(a -> contains(a.last_name, ilike"j%N"), actors),
+        @testsql filter(a -> a.last_name == like"J%N", actors),
+        "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.last_name LIKE 'J%N'"
+
+        @testsql filter(a -> a.last_name == ilike"j%N", actors),
         "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.last_name ILIKE 'j%N'"
 
-        @testsql filter(a -> !contains(a.last_name, like"J%N"), actors),    
+        @testsql filter(a -> a.last_name != like"J%N", actors),    
         "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.last_name NOT LIKE 'J%N'"
 
         @testsql filter(a -> contains(a.last_name, first(a.first_name, 2)), actors),
         "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.last_name LIKE CONCAT('%', left(a.first_name, 2), '%')"
 
-        @testsql filter(a -> contains(a.last_name, like(first(a.first_name, 2) * "%")), actors),
+        @testsql filter(a -> a.last_name == like(first(a.first_name, 2) * "%"), actors),
         "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.last_name LIKE CONCAT(left(a.first_name, 2), '%')"
 
-        @testsql filter(a -> contains(a.last_name, regex(first(a.first_name, 2))), actors),
+        @testsql filter(a -> a.last_name == matching(first(a.first_name, 2)), actors),
         "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.last_name ~ left(a.first_name, 2)"
 
         @testsql filter(a -> occursin(r"JO", a.last_name), actors),
@@ -155,7 +158,7 @@ import SQLCompose: TableDefinition, ValuesTableItem, TextType, query, Int8Type, 
         @testsql filter(a -> occursin(r"jo", a.last_name; casesensitive=false), actors),
         "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.last_name ~* 'jo'"
 
-        @testsql filter(a -> contains(a.last_name, regex(a.first_name, false)), actors),
+        @testsql filter(a -> a.last_name == matching(a.first_name, casesensitive = false), actors),
         "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.last_name ~* a.first_name"
 
         @testsql filter(a -> contains(a.last_name, similarto"%[AB]%"), actors),
