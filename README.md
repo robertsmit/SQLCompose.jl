@@ -14,7 +14,7 @@ Also retrieving the data of the queried julia structure is supported.
 
 Supports generating query code from existing database.
 
-See samples.jl in the test directory.
+See [Samples](https://github.com/robertsmit/SQLCompose.jl/blob/main/test/samples.jl).
 
 Example:
 ```
