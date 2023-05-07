@@ -16,47 +16,41 @@ Supports generating query code from existing database.
 
 See [Samples](https://github.com/robertsmit/SQLCompose.jl/blob/main/test/samples.jl).
 
-Example:
+Examples:
 ```
+#Find the id, first name, and last name of an actor of whom you know only the first name of "Joe."
+@testsql begin
+    Pagila.query_actor() |>
+    filter(a -> occursin("JOE", a.first_name)) |>
+    map(a -> (; a.actor_id, a.first_name, a.last_name))
+end,
+"SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.first_name LIKE '%JOE%'"
 
-#Define pagila film list   
-begin
-    all_actor_of(f::Pagila.FilmRow) = f |> Pagila.all_film_actor_of |> Pagila.actor_of
-    all_category_of(f::Pagila.FilmRow) = f |> Pagila.all_film_category_of |> Pagila.category_of
-    actor_name(actor) = actor.first_name * " " * actor.last_name
-    @testsql Pagila.query_film() |>
-             map(film ->
-                 let category = all_category_of(film),
-                     actor = all_actor_of(film)
-
-                     (fid=film.film_id,
-                         film.title,
-                         film.description,
-                         category=category.name,
-                         price=film.rental_rate,
-                         film.length,
-                         film.rating,
-                         actors=join(actor_name(actor), ", ")
-                     )
-                 end) |>
-                 groupby(r -> Tuple(v for (k, v) in pairs(r) if k != :actors)),
-    """
-        SELECT f.film_id                                                                AS fid,
-        f.title,
-        f.description,
-        ref_category.name                                                        AS category,
-        f.rental_rate                                                            AS price,
-        f.length,
-        f.rating,
-        string_agg(CONCAT(ref_actor.first_name, ' ', ref_actor.last_name), ', ') AS actors
-    FROM film f
-            INNER JOIN film_actor ref_film_actor ON f.film_id = ref_film_actor.film_id
-            INNER JOIN actor ref_actor ON ref_film_actor.actor_id = ref_actor.actor_id
-            INNER JOIN film_category ref_film_category ON f.film_id = ref_film_category.film_id
-            INNER JOIN category ref_category ON ref_film_category.category_id = ref_category.category_id
-    GROUP BY f.film_id, f.title, f.description, ref_category.name, f.rental_rate, f.length, f.rating
-    """
-end
+#Retrieve the film title along with the first name and last name of up to 3 actors associated with each film
+@testsql begin
+    Pagila.query_film() |>
+    join_lateral(f -> begin
+            Pagila.query_film_actor() |>
+            filter(fa -> fa.film_id == f.film_id) |>
+            map(Pagila.actor_of) |>
+            map(a -> (; a.first_name, a.last_name)) |>
+            q -> q[1:3]
+        end,
+        type=LeftJoin()) |>
+    map((f, a) -> (; f.title, a.first_name, a.last_name)) |>
+    sort(values)
+end,
+"SELECT f.title, q.first_name, q.last_name 
+    FROM film f 
+    LEFT JOIN LATERAL (SELECT ref_actor.first_name, ref_actor.last_name 
+                FROM film_actor f2 
+                INNER JOIN actor ref_actor ON f2.actor_id = ref_actor.actor_id 
+                WHERE f2.film_id = f.film_id 
+                LIMIT 3) q ON true
+    ORDER BY f.title, q.first_name, q.last_name"
+    
+    
+    
 ```
 
 
