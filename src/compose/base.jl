@@ -155,6 +155,14 @@ groupby(q::Queryable, field::Symbol, morefields::Symbol...) =
 groupby(f::Function) = (q::Queryable) -> groupby(f, q)
 groupby(field::Symbol, morefields::Symbol...) = (q::Queryable) -> groupby(q, field, morefields...)
 
+having(f::Function, arg::Queryable) = having(f, convert(SelectQuery, node))
+function having(f::Function, q::SelectQuery)
+    f = q.groupfilter & convert(SQLExpression, f(tableresults(q)...))
+    with_groupfilter(q, f)
+end
+having(f::Function, q::QuerySet) = QuerySet(having(f, q.query), q.executor)
+having(f::Function) = (q) -> having(f, q)
+
 sort(f::Function, node::Queryable) = sort(f, convert(SelectQuery, node))
 sort(f::Function, q::SelectQuery) = with_order(q, f(tableresults(q)...))
 sort(f::Function, q::QuerySet) = QuerySet(sort(f, q.query), q.executor)
