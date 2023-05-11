@@ -1,6 +1,6 @@
 import Base: filter, map, sort, join, getindex
 
-Queryable = Union{TableDefinition,Query,QuerySet, SetReturningFunctionCall}
+Queryable = Union{TableDefinition,Query,QuerySet, SetReturningFunctionCall, Type{<:RowType}}
 
 commontable(q::Queryable) = SubqueryTableItem(q)
 

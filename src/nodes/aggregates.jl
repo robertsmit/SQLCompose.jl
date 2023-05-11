@@ -61,5 +61,6 @@ Base.join(expr::SQLExpression{<:CharacterType}, delim; distinct=false, order=(),
 Base.collect(expr::SQLExpression{T}; distinct=false, order=(), filter=true) where {T} =
     aggregate(:array_agg, ArrayType{T}, expr; distinct, order, filter)
 
+
 count_over(expr; filter=true, partition=(), order=()) =
     WindowFunctionCall{Int8Type}(:count, expr; filter, partition, order)

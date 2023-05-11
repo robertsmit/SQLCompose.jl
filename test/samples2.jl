@@ -30,7 +30,19 @@ end), "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.first_n
 #4a. List the last names of actors, as well as how many actors have that last name.
 @testsql (@chain Pagila.query_actor() begin
    groupby(_, :last_name)
-   map(a -> (;a.last_name, count=count(a.last_name)), _)
-end), "SELECT a.last_name, count(a.last_name) AS count FROM actor a GROUP BY a.last_name"
+   map(a -> (; a.last_name, count=count(a.last_name)), _)
+end),"
+   SELECT a.last_name, count(a.last_name) AS count 
+   FROM actor a 
+   GROUP BY a.last_name"
 
 #4b. List last names of actors and the number of actors who have that last name, but only for names that are shared by at least two actors
+@testsql (@chain Pagila.query_actor() begin
+   groupby(_, :last_name)
+   map(a -> (; a.last_name, count=count(a.last_name)), _)
+   having(a -> a.count > 1, _)
+end),"
+   SELECT a.last_name, count(a.last_name) AS count 
+   FROM actor a 
+   GROUP BY a.last_name
+   HAVING count(a.last_name) > 1"

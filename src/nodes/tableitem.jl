@@ -1,5 +1,3 @@
-export TableDefinition
-
 abstract type FromItem <: SQLNode end
 
 abstract type TableItem <: FromItem end
@@ -25,6 +23,7 @@ end
 struct TableDefinition
     type::Type{<:RowType}
     aliashint::Symbol
+    
 end
 
 
