@@ -69,7 +69,7 @@ tableresult(ref::TableItemRef, fnames, ftypes) =
     NamedTuple{fnames}(TableItemFieldRef(name, type, ref) for (name, type) in zip(fnames, ftypes))
 tableresult(ref::TableItemRef, type::Type{<:RowType}) = tableresult(ref, field_names(type), field_types(type))
 
-function SelectQuery(table::TableDefinition)
+function SelectQuery(table::TableSource)
     ref = TableItemRef(table.aliashint)
     result = tableresult(ref, table.type)
     from = DefinedTableItem(ref, name(table))
@@ -78,8 +78,7 @@ end
 
 SelectQuery(query::SelectWithoutFromQuery) = SelectQuery(SubqueryTableItem(query))
 
-function SelectQuery(from::ValuesTableItem{T}) where {T<:Tuple}
-    #sqltypeclassof(t)
+function SelectQuery(from::ValuesTableItem{T}) where {T<:Tuple}    
     result = tableresult(from.ref, from.fieldnames, map(sqltypeclassof, T.types))
     SelectQuery(result, from)
 end

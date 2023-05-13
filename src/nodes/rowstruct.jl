@@ -2,20 +2,20 @@ abstract type RowStruct{T} <: SQLNode end
 
 NodeCompositionStyle(::Type{RowStruct}) = NodeStructure()
 
-table(::Type{<:RowStruct{T}}) where {T} = TableDefinition(T)
-table(rs::RowStruct) = table(typeof(rs))
 field_names(::Type{<:RowStruct{T}}) where {T} = field_names(T)
+field_pairs(::Type{<:RowStruct{T}}) where {T} = field_pairs(T)
 field_names(::RowStruct{T}) where {T} = field_names(T)
+name(::Type{<:RowStruct{T}}) where {T} = name(T)
 
-function SelectQuery(type::Type{<:RowStruct})
-    let tab = table(type)
-        ref = TableItemRef(tab.aliashint)
-        result = type((TableItemFieldRef(name, type, ref)
-                       for (name, type) in field_pairs(tab))...)
-        table = DefinedTableItem(ref, name(tab))
-        SelectQuery(result, table)
-    end
-end
+tableresult(ref::TableItemRef, rst::Type{<:RowStruct}) =
+    rst((TableItemFieldRef(name, type, ref)
+          for (name, type) in field_pairs(rst))...)
+
+
+SelectQuery(type::Type{<:RowStruct}) = SelectQuery(TableSource(type))
+
+→(type::Type{<:RowStruct}, alias::Symbol) = TableSource(type, alias)
+
 
 @generated function Base.pairs(rs::RowStruct{T}) where {T}
     fnames = field_names(T)
@@ -47,11 +47,9 @@ function write_referredtable_location_plan!(plan, node::T, tableitem) where {T<:
     end
 end
 
-function reference(to::Type{<:RowStruct}, primarykeys::Tuple, foreignkeys, isnullable=false)
-    let tab = table(to)
-        ref = ReferredTableItemRef(name(tab), primarykeys, foreignkeys, isnullable)
-        to((TableItemFieldRef(fname, ftype, ref) for (fname, ftype) in field_pairs(tab))...)
-    end
+function reference(to::Type{<:RowStruct}, primarykeys::Tuple, foreignkeys::Tuple, isnullable=false)
+    ref = ReferredTableItemRef(name(to), primarykeys, foreignkeys, isnullable)
+    to((TableItemFieldRef(fname, ftype, ref) for (fname, ftype) in field_pairs(to))...)
 end
 
 reference(to::Type{<:RowStruct}, primarykey, foreignkey, isnullable=false) = reference(to, (primarykey,), (foreignkey,), isnullable)

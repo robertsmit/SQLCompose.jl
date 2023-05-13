@@ -1,7 +1,7 @@
 @info "Running reference tests"
 @testset "reference" begin
-    persontable = TableDefinition(:person, :id => SQLCompose.Int8Type, :first_name => SQLCompose.TextType, :initials => SQLCompose.TextType, :surname => SQLCompose.TextType)
-    salarytable = TableDefinition(:salary, :person_id => SQLCompose.Int8Type, :amount => SQLCompose.Int4Type)
+    persontable = TableSource(:person, :id => SQLCompose.Int8Type, :first_name => SQLCompose.TextType, :initials => SQLCompose.TextType, :surname => SQLCompose.TextType)
+    salarytable = TableSource(:salary, :person_id => SQLCompose.Int8Type, :amount => SQLCompose.Int4Type)
 
     fullname(p) = p.first_name * " " * p.surname
     personsalary(p) = reference(salarytable, (:person_id,), (p.id,))

@@ -1,3 +1,8 @@
+aliashintdefault(name::Symbol, len=1) =
+    let str = string(name)
+        Symbol(str[1:min(len, length(str))])
+    end
+
 abstract type FromItem <: SQLNode end
 
 abstract type TableItem <: FromItem end
@@ -20,29 +25,24 @@ struct TableItemFieldRef{T} <: SQLExpression{T}
     table::TableItemRef
 end
 
-struct TableDefinition
-    type::Type{<:RowType}
+struct TableSource
+    type
     aliashint::Symbol
-    
 end
 
+TableSource(type) = TableSource(type, aliashintdefault(name(type)))
 
-
-aliashintdefault(name::Symbol, len = 1) = let str = string(name)
-    Symbol(str[1:min(len, length(str))])
-end
-
-TableDefinition(type::Type{<:RowType{name,fieldnames,T}}) where {name,fieldnames,T} = TableDefinition(type, aliashintdefault(name))
-TableDefinition(name::Symbol, pairs::Pair...; aliashint=aliashintdefault(name)) =
-    let nt = NamedTuple(pairs)
-        TableDefinition(RowType{name,keys(nt),Tuple{values(nt)...}}, aliashint)
+TableSource(name::Symbol, names_types::Pair...; aliashint=aliashintdefault(name)) =
+    let nt = NamedTuple(names_types)
+        TableSource(RowType{name,keys(nt),Tuple{values(nt)...}}, aliashint)
     end
+name(table::TableSource) = name(table.type)
+field_names(table::TableSource) = field_names(table.type)
+field_pairs(table::TableSource) = field_pairs(table.type)
 
-→(table::TableDefinition, alias::Symbol) = TableDefinition(table.type, alias)
-name(table::TableDefinition) = name(table.type)
-fields(table::TableDefinition) = fields(table.type)
-field_names(table::TableDefinition) = field_names(table.type)
-field_pairs(table::TableDefinition) = field_pairs(table.type)
+
+→(table::TableSource, alias::Symbol) = TableSource(table.type, alias)
+→(type::Type{<:RowType}, alias::Symbol) = TableSource(type, alias)
 
 struct DefinedTableItem <: TableItem
     ref::TableItemRef
@@ -50,7 +50,7 @@ struct DefinedTableItem <: TableItem
 end
 
 struct SetReturningFunctionTableItem{T} <: TableItem
-    ref::TableItemRef    
+    ref::TableItemRef
     fieldnames::Tuple
     f::SetReturningFunctionCall{T}
 end
@@ -65,9 +65,9 @@ struct ValuesTableItem{T} <: TableItem
     values::AbstractVector{T}
 end
 
-function ValuesTableItem(values::AbstractVector{T}, fieldnames::Tuple, aliashint = :vals) where {T<:Tuple}
+function ValuesTableItem(values::AbstractVector{T}, fieldnames::Tuple, aliashint=:vals) where {T<:Tuple}
     @assert length(values) > 0
     @assert length(T.types) == length(fieldnames)
     ref = TableItemRef(aliashint)
     ValuesTableItem(ref, fieldnames, values)
- end 
+end

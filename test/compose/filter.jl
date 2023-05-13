@@ -4,7 +4,7 @@ compose:
 - Author: Rob
 - Date: 2022-04-19
 =#
-import SQLCompose: TableDefinition, ValuesTableItem, TextType, query, Int8Type, BooleanType, →
+import SQLCompose: TableSource, ValuesTableItem, TextType, query, Int8Type, BooleanType, →
 
 @info "Running filter tests"
 @testset "filter" begin
@@ -12,7 +12,7 @@ import SQLCompose: TableDefinition, ValuesTableItem, TextType, query, Int8Type, 
     @testset "basic filtering" begin
         @info "equality: table"
         begin
-            table = TableDefinition(:persons, :surname => TextType; aliashint=:per)
+            table = TableSource(:persons, :surname => TextType; aliashint=:per)
             q = filter(table) do t
                 t.surname == "Smit"
             end
@@ -21,7 +21,7 @@ import SQLCompose: TableDefinition, ValuesTableItem, TextType, query, Int8Type, 
 
         @info "equality"
         begin
-            table = TableDefinition(:persons, :surname => TextType, :firstname => TextType)
+            table = TableSource(:persons, :surname => TextType, :firstname => TextType)
             q = filter(p -> p.surname == "Smit", table)
             @testsql q "SELECT p.surname, p.firstname FROM persons p WHERE p.surname = 'Smit'"
             q = filter(p -> p.surname == p.firstname, table)
@@ -32,7 +32,7 @@ import SQLCompose: TableDefinition, ValuesTableItem, TextType, query, Int8Type, 
 
         @info "equality: correlated subquery"
         begin
-            table = TableDefinition(:persons, :id => Int8Type, :surname => TextType; aliashint=:per)
+            table = TableSource(:persons, :id => Int8Type, :surname => TextType; aliashint=:per)
             # persons with non unique surname
             q = filter(table) do t
                 t.surname == map(t2 -> t2.surname, filter(t2 -> (t2.surname == t.surname) & (t2.id != t.id), table))
@@ -43,7 +43,7 @@ import SQLCompose: TableDefinition, ValuesTableItem, TextType, query, Int8Type, 
 
         @info "semi-join / anti-join"
         begin
-            table = TableDefinition(:persons, :id => Int8Type, :surname => TextType; aliashint=:per)
+            table = TableSource(:persons, :id => Int8Type, :surname => TextType; aliashint=:per)
             # persons with non unique surname
             q = filter(table) do t1
                 subquery = filter(t2 -> (t2.id != t1.id) & (t2.surname == t1.surname), table → :other)
@@ -60,7 +60,7 @@ import SQLCompose: TableDefinition, ValuesTableItem, TextType, query, Int8Type, 
 
         @info "is null / is not null"
         begin
-            table = TableDefinition(:persons, :id => Int8Type, :surname => TextType; aliashint=:per)
+            table = TableSource(:persons, :id => Int8Type, :surname => TextType; aliashint=:per)
             # persons with missing surname
             q = filter(t -> ismissing(t.surname), table)
             @test string(q) == "SELECT per.id, per.surname FROM persons per WHERE per.surname IS NULL"
@@ -71,7 +71,7 @@ import SQLCompose: TableDefinition, ValuesTableItem, TextType, query, Int8Type, 
 
         @info "function call"
         begin
-            table = TableDefinition(:persons, :id => Int8Type, :surname => TextType; aliashint=:per)
+            table = TableSource(:persons, :id => Int8Type, :surname => TextType; aliashint=:per)
             # persons non empty surname
             q = map(t -> length(t.surname), table)
             @testsql q "SELECT length(per.surname) AS elem1 FROM persons per"
@@ -79,7 +79,7 @@ import SQLCompose: TableDefinition, ValuesTableItem, TextType, query, Int8Type, 
 
         @info "in array"
         begin
-            table = TableDefinition(:persons, :id => Int8Type, :surname => TextType; aliashint=:per)
+            table = TableSource(:persons, :id => Int8Type, :surname => TextType; aliashint=:per)
             # persons non empty surname
             @info "in literal"
             q = filter(t -> t.id in [1, 2, 3], table)
@@ -94,7 +94,7 @@ import SQLCompose: TableDefinition, ValuesTableItem, TextType, query, Int8Type, 
 
     end
 
-    table = TableDefinition(:employments, :id => Int8Type, :is_male => BooleanType, :surname => TextType; aliashint=:employments)
+    table = TableSource(:employments, :id => Int8Type, :is_male => BooleanType, :surname => TextType; aliashint=:employments)
     q = query(table)
     qTrue = filter(e -> true, q)
     @test string(qTrue) === "SELECT employments.id, employments.is_male, employments.surname FROM employments"
@@ -117,11 +117,8 @@ import SQLCompose: TableDefinition, ValuesTableItem, TextType, query, Int8Type, 
 
 
     @testset "Pattern match" begin
-        actors = @chain Pagila.actor_table() begin
-            query(_)
-            map(_, :actor_id, :first_name, :last_name)
-        end
-
+        actors = map(Pagila.Actor, :actor_id, :first_name, :last_name)
+        
         @testsql filter(a -> contains(a.first_name, "JO"), actors),
         "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.first_name LIKE '%JO%'"
 

@@ -9,7 +9,7 @@ using SQLCompose
 
 @info "Running group by tests"
 @testset "group by" begin
-    table = TableDefinition(:persons_salaries, :person_id => UUIDType, :salary => Int8Type)
+    table = TableSource(:persons_salaries, :person_id => UUIDType, :salary => Int8Type)
     grouped = groupby(table, :salary, :person_id)
 
     @testsql grouped,

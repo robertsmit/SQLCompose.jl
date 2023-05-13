@@ -21,7 +21,7 @@ function subquerytypeof(query::Union{SelectQuery, SelectWithoutFromQuery})
 end
 
 SubqueryTableItem(table::SubqueryTableItem) = table
-SubqueryTableItem(table::Union{TableItem,TableDefinition}) = SubqueryTableItem(SelectQuery(table); aliashint=aliashint(table))
+SubqueryTableItem(table) = SubqueryTableItem(SelectQuery(table); aliashint=aliashint(table))
 
 function SelectQuery(from::SubqueryTableItem)
     mapfield = let ref = from.ref

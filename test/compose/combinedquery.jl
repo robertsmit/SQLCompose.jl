@@ -1,9 +1,9 @@
 
 @info "Running combined query by tests"
 @testset "combined queries" begin
-    persons = TableDefinition(:persons, :person_id => UUIDType, :surname => TextType)
-    members = TableDefinition(:members, :member_id => UUIDType, :name => TextType)
-    aliens = TableDefinition(:aliens, :alien_id => UUIDType, :name => TextType)
+    persons = TableSource(:persons, :person_id => UUIDType, :surname => TextType)
+    members = TableSource(:members, :member_id => UUIDType, :name => TextType)
+    aliens = TableSource(:aliens, :alien_id => UUIDType, :name => TextType)
     @info "union tables"
     @test string(vcat(query(persons), query(members))) == "SELECT p.person_id, p.surname FROM persons p UNION SELECT m.member_id, m.name FROM members m"
     @info "union all tables"

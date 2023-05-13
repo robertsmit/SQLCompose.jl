@@ -1,13 +1,14 @@
 using Test: @testset, @test
 using SQLCompose
+using SQLCompose.Generate
 using Chain
 
 include("./testsql.jl")
 include("./data/bookings.jl")
 include("./data/pagila.jl")
 
-aircrafts = TableDefinition(:aircrafts, :aircraft_code => SQLCompose.CharType, :model => TextType, :range => SQLCompose.Int4Type; aliashint=:a)
-flights = TableDefinition(:flights, :flight_id => Int4Type, :flight_no => SQLCompose.CharType,
+aircrafts = TableSource(:aircrafts, :aircraft_code => SQLCompose.CharType, :model => TextType, :range => SQLCompose.Int4Type; aliashint=:a)
+flights = TableSource(:flights, :flight_id => Int4Type, :flight_no => SQLCompose.CharType,
     :scheduled_departure => SQLCompose.TimestampType, :scheduled_arrival => SQLCompose.TimestampType,
     :departure_airport => SQLCompose.CharType, :arrival_airport => SQLCompose.CharType, :status => SQLCompose.VarCharType,
     :aircraft_code => SQLCompose.CharType, :actual_departure => SQLCompose.TimestampType,

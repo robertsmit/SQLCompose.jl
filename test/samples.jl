@@ -1,12 +1,12 @@
 
 
 #All flights are operated by several types of aircraft:
-@testsql Bookings.query_aircrafts() "SELECT a.aircraft_code, a.model, a.range FROM aircrafts a"
+@testsql query(Bookings.Aircraft) "SELECT a.aircraft_code, a.model, a.range FROM aircrafts a"
 #For each aircraft type, a separate list of seats is supported. For example, in a small Cessna 208 Caravan, one can select the following seats:
 @testsql begin
-    Bookings.query_aircrafts() |>
+    Bookings.Aircraft |>
     filter(a -> a.model == "Cessna 208 Caravan") |>
-    join(Bookings.query_seats(), :aircraft_code) |>
+    join(Bookings.Seat, :aircraft_code) |>
     map((a, s) -> (; a.aircraft_code, a.model, s.seat_no, s.fare_conditions)) |>
     sort(:seat_no)
 end,
@@ -16,15 +16,20 @@ end,
 
 #Bigger aircraft have more seats of various travel classes:
 @testsql begin
-    seats_fare_condition_nums = Bookings.query_seats() |>
-                                groupby(:aircraft_code, :fare_conditions) |>
-                                sort(:aircraft_code, :fare_conditions) |>
-                                map(s -> (; s.aircraft_code, s.fare_conditions, num=count()))
-    query(seats_fare_condition_nums) |>
-    groupby(:aircraft_code) |>
-    sort(:aircraft_code) |>
-    map(r -> (; r.aircraft_code,
-        fare_conditions=join(r.fare_conditions * "(" * convert(TextType(), r.num) * ")", ", ")))
+    seats_fare_condition_nums = @chain Bookings.Seat begin
+        groupby(_, :aircraft_code, :fare_conditions)
+        sort(_, :aircraft_code, :fare_conditions)
+        map(s -> (; s.aircraft_code, s.fare_conditions, num=count(All)), _)
+    end
+    @chain seats_fare_condition_nums begin
+        query(_)
+        groupby(_, :aircraft_code)
+        sort(_, :aircraft_code)
+        map(_) do r
+            (; r.aircraft_code,
+                fare_conditions=join(r.fare_conditions * "(" * convert(TextType(), r.num) * ")", ", "))
+        end
+    end
 end,
 "SELECT q.aircraft_code, string_agg(CONCAT(q.fare_conditions, '(', q.num::text, ')'), ', ') AS fare_conditions 
 FROM (SELECT s.aircraft_code, s.fare_conditions, count(*) AS num 
@@ -36,18 +41,22 @@ ORDER BY q.aircraft_code"
 
 #Which flight segments are included into Antonina Kuznecova's ticket
 @testsql begin
-    flights_v_of(ticket_flights::Bookings.Ticket_FlightsRow) = SQLCompose.reference(Bookings.Flights_VRow, :flight_id, ticket_flights.flight_id)
-    Bookings.query_ticket_flights() |>
-    map(tf -> (; tf, f=flights_v_of(tf))) |>
-    sort(((; f),) -> f.scheduled_departure) |>
-    filter(((; tf),) -> tf.ticket_no == "0005432661915") |>
-    map(((tf, f),) -> (
-        when=string(f.scheduled_departure; pattern="DD.MM.YYYY"),
-        departure=string(f.departure_city, " (", f.departure_airport, ")"),
-        arrival=string(f.arrival_city, " (", f.arrival_airport, ")"),
-        class=tf.fare_conditions,
-        tf.amount
-    ))
+    flights_v_of(ticket_flights::Bookings.Ticket_Flight) = SQLCompose.reference(Bookings.Flights_V, :flight_id, ticket_flights.flight_id)
+    @chain Bookings.Ticket_Flight begin
+        filter(ticketflight -> ticketflight.ticket_no == "0005432661915", _)
+        sort(ticketflight -> flights_v_of(ticketflight).scheduled_departure, _)
+        map(_) do ticket_flight
+            let flight = flights_v_of(ticket_flight)
+                (
+                    when=string(flight.scheduled_departure; pattern="DD.MM.YYYY"),
+                    departure=string(flight.departure_city, " (", flight.departure_airport, ")"),
+                    arrival=string(flight.arrival_city, " (", flight.arrival_airport, ")"),
+                    class=ticket_flight.fare_conditions,
+                    ticket_flight.amount
+                )
+            end
+        end
+    end
 end,
 "SELECT 
     to_char(ref_flights_v.scheduled_departure, 'DD.MM.YYYY') AS when, 
@@ -62,25 +71,27 @@ ORDER BY ref_flights_v.scheduled_departure"
 
 #Find the id, first name, and last name of an actor of whom you know only the first name of "Joe."
 @testsql begin
-    Pagila.query_actor() |>
-    filter(a -> occursin("JOE", a.first_name)) |>
-    map(a -> (; a.actor_id, a.first_name, a.last_name))
+    @chain Pagila.Actor begin
+        filter(a -> occursin("JOE", a.first_name), _)
+        map(a -> (; a.actor_id, a.first_name, a.last_name), _)
+    end
 end,
 "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.first_name LIKE '%JOE%'"
 
 #Retrieve the film title along with the first name and last name of up to 3 actors associated with each film
 @testsql begin
-    Pagila.query_film() |>
-    join_lateral(f -> begin
-            Pagila.query_film_actor() |>
-            filter(fa -> fa.film_id == f.film_id) |>
-            map(Pagila.actor_of) |>
-            map(a -> (; a.first_name, a.last_name)) |>
-            q -> q[1:3]
-        end,
-        type=LeftJoin()) |>
-    map((f, a) -> (; f.title, a.first_name, a.last_name)) |>
-    sort(values)
+    @chain Pagila.Film begin
+        left_join_lateral(_) do f
+            @chain Pagila.Film_Actor begin
+                filter(fa -> fa.film_id == f.film_id, _)
+                map(Pagila.actor_of, _)
+                map(a -> (; a.first_name, a.last_name), _)
+                _[1:3]
+            end
+        end
+        map((f, a) -> (; f.title, a.first_name, a.last_name), _)
+        sort(values, _)
+    end
 end,
 "SELECT f.title, q.first_name, q.last_name 
     FROM film f 
@@ -92,21 +103,31 @@ end,
     ORDER BY f.title, q.first_name, q.last_name"
 
 
-
-
-
 # In this example, we use a LATERAL join to join the customer table 
 #     with a subquery that selects the rental_id, inventory_id, 
 #     and rental_duration for each film rental associated with the customer_id from the outer query. 
 #     We then calculate the rental cost by multiplying the rental_duration and rental_rate for each film.
-@testsql Pagila.query_customer() |>
-         join_lateral(c -> Pagila.query_rental() |>
-                           filter(r -> r.customer_id == c.customer_id) |>
-                           map(r -> (; r.rental_id, r.inventory_id))) |>
-         join_lateral((c, r) -> Pagila.query_film() |>
-                                filter(f -> Pagila.all_inventory_of(f).inventory_id == r.inventory_id) |>
-                                map(f -> (; f.title, f.rental_rate, f.rental_duration))) |>
-         map((c, r, f) -> (; c.customer_id, f.title, f.rental_rate, rental_cost=f.rental_duration * f.rental_rate)),
+@testsql begin
+    @chain Pagila.Customer begin
+        join_lateral(_) do c
+            @chain Pagila.Rental begin
+                filter(r -> r.customer_id == c.customer_id, _)
+                map(r -> (; r.rental_id, r.inventory_id), _)
+            end
+        end
+        join_lateral(_) do c, r
+            @chain Pagila.Film begin
+                filter(_) do f
+                    Pagila.all_inventory_of(f).inventory_id == r.inventory_id
+                end
+                map(_) do f
+                    (; f.title, f.rental_rate, f.rental_duration)
+                end
+            end
+        end
+        map((c, r, f) -> (; c.customer_id, f.title, f.rental_rate, rental_cost=f.rental_duration * f.rental_rate), _)
+    end
+end,
 "SELECT c.customer_id, q2.title, q2.rental_rate, q2.rental_duration * q2.rental_rate AS rental_cost 
     FROM customer c 
     INNER JOIN LATERAL (SELECT r.rental_id, r.inventory_id 
@@ -122,40 +143,42 @@ end,
 
 
 #Define pagila film list   
-begin
-    all_actor_of(f::Pagila.FilmRow) = f |> Pagila.all_film_actor_of |> Pagila.actor_of
-    all_category_of(f::Pagila.FilmRow) = f |> Pagila.all_film_category_of |> Pagila.category_of
+@testsql begin
+    all_actor_of(f::Pagila.Film) = f |> Pagila.all_film_actor_of |> Pagila.actor_of
+    all_category_of(f::Pagila.Film) = f |> Pagila.all_film_category_of |> Pagila.category_of
     actor_name(actor) = actor.first_name * " " * actor.last_name
-    @testsql Pagila.query_film() |>
-             map(film ->
-                 let category = all_category_of(film),
-                     actor = all_actor_of(film)
+    @chain Pagila.Film begin
+        map(_) do film
+            let category = all_category_of(film),
+                actor = all_actor_of(film)
 
-                     (fid=film.film_id,
-                         film.title,
-                         film.description,
-                         category=category.name,
-                         price=film.rental_rate,
-                         film.length,
-                         film.rating,
-                         actors=join(actor_name(actor), ", ")
-                     )
-                 end) |>
-             groupby(r -> Tuple(v for (k, v) in pairs(r) if k != :actors)),
-    """
-        SELECT f.film_id                                                                AS fid,
-        f.title,
-        f.description,
-        ref_category.name                                                        AS category,
-        f.rental_rate                                                            AS price,
-        f.length,
-        f.rating,
-        string_agg(CONCAT(ref_actor.first_name, ' ', ref_actor.last_name), ', ') AS actors
-    FROM film f
-            INNER JOIN film_actor ref_film_actor ON f.film_id = ref_film_actor.film_id
-            INNER JOIN actor ref_actor ON ref_film_actor.actor_id = ref_actor.actor_id
-            INNER JOIN film_category ref_film_category ON f.film_id = ref_film_category.film_id
-            INNER JOIN category ref_category ON ref_film_category.category_id = ref_category.category_id
-    GROUP BY f.film_id, f.title, f.description, ref_category.name, f.rental_rate, f.length, f.rating
-    """
-end
+                (fid=film.film_id,
+                    film.title,
+                    film.description,
+                    category=category.name,
+                    price=film.rental_rate,
+                    film.length,
+                    film.rating,
+                    actors=join(actor_name(actor), ", ")
+                )
+            end
+        end
+        groupby(r -> Tuple(v for (k, v) in pairs(r) if k != :actors), _)
+    end
+end,
+"""
+    SELECT f.film_id                                                                AS fid,
+    f.title,
+    f.description,
+    ref_category.name                                                        AS category,
+    f.rental_rate                                                            AS price,
+    f.length,
+    f.rating,
+    string_agg(CONCAT(ref_actor.first_name, ' ', ref_actor.last_name), ', ') AS actors
+FROM film f
+        INNER JOIN film_actor ref_film_actor ON f.film_id = ref_film_actor.film_id
+        INNER JOIN actor ref_actor ON ref_film_actor.actor_id = ref_actor.actor_id
+        INNER JOIN film_category ref_film_category ON f.film_id = ref_film_category.film_id
+        INNER JOIN category ref_category ON ref_film_category.category_id = ref_category.category_id
+GROUP BY f.film_id, f.title, f.description, ref_category.name, f.rental_rate, f.length, f.rating
+"""

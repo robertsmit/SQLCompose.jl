@@ -3,9 +3,10 @@ using LibPQ, Tables, StaticArrays
 import UUIDs: UUID
 import Base: ImmutableDict
 
-export TableDefinition, reference
+export →
+export TableSource, reference
 # composition
-export query, groupby, join, with, join_lateral, having
+export query, groupby, join, with, join_lateral, having, left_join_lateral
 export InnerJoin, LeftJoin, RightJoin, FullJoin
 # operators
 export between, avg, unnest

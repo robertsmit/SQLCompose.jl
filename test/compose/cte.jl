@@ -1,7 +1,7 @@
 @info "Running cte tests"
 @testset "cte" begin
-    persons = TableDefinition(:persons, :person_id => SQLCompose.UUIDType, :surname => SQLCompose.TextType)
-    salaries = TableDefinition(:persons_salaries, :person_id => SQLCompose.UUIDType, :salary => SQLCompose.Int8Type)
+    persons = TableSource(:persons, :person_id => SQLCompose.UUIDType, :surname => SQLCompose.TextType)
+    salaries = TableSource(:persons_salaries, :person_id => SQLCompose.UUIDType, :salary => SQLCompose.Int8Type)
 
     @info "simple useless cte"
     @testsql with(t -> t, persons), "WITH p AS (SELECT p.person_id, p.surname FROM persons p) SELECT p.person_id, p.surname FROM p"

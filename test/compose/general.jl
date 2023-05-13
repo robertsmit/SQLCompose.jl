@@ -1,10 +1,10 @@
-import SQLCompose: TableDefinition, ValuesTableItem, TextType, query, Int8Type, BooleanType, →, Int8Type
+import SQLCompose: TableSource, ValuesTableItem, TextType, query, Int8Type, BooleanType, →, Int8Type
 
 @info "Running general composition tests"
 @testset "general" begin
 
     @testset "aliasing" begin
-        persons = TableDefinition(:persons, :id => Int8Type, :surname => TextType; aliashint=:per)
+        persons = TableSource(:persons, :id => Int8Type, :surname => TextType; aliashint=:per)
         @info "conflicting alias"
         persons2 = persons → :per2
         @testsql join(join(query(persons), query(persons)), persons2) do a, b, c

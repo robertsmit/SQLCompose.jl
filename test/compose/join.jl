@@ -4,18 +4,18 @@ map:
 - Author: Rob
 - Date: 2022-04-22
 =#
-import SQLCompose: TextType, query, TableDefinition, Int8Type, BooleanType, map, join
+import SQLCompose: TextType, query, TableSource, Int8Type, BooleanType, map, join
 using Chain
 using Test: @testset, @test, @test_throws
 
 @info "Running join tests"
-emps = TableDefinition(:employments, :id => Int8Type, :first_name => TextType, :initials => TextType,
+emps = TableSource(:employments, :id => Int8Type, :first_name => TextType, :initials => TextType,
     :surname => TextType, :manager_id => Int8Type; aliashint=:emp)
 
 @testset "join" begin
 
-    achs = TableDefinition(:achievements, :id => Int8Type, :employment_id => Int8Type, :qualification_id => Int8Type; aliashint=:ach)
-    qs = TableDefinition(:qualifications, :id => Int8Type, :name => TextType)
+    achs = TableSource(:achievements, :id => Int8Type, :employment_id => Int8Type, :qualification_id => Int8Type; aliashint=:ach)
+    qs = TableSource(:qualifications, :id => Int8Type, :name => TextType)
 
     emp_ach = join((e, a) -> e.id == a.employment_id, emps, achs)
     @testsql emp_ach "SELECT * FROM employments emp INNER JOIN achievements ach ON emp.id = ach.employment_id"
@@ -98,7 +98,7 @@ emps = TableDefinition(:employments, :id => Int8Type, :first_name => TextType, :
     end
 
     @testset "self join" begin
-        table = TableDefinition(:t, :c1 => Int8Type, :c2 => TextType, :c3 => TextType, :c4 => TextType)
+        table = TableSource(:t, :c1 => Int8Type, :c2 => TextType, :c3 => TextType, :c4 => TextType)
         selfjoin = join(table, table, :c1 => :c1, :c2 => :c2)
         @testsql selfjoin "SELECT * FROM t INNER JOIN t t2 ON (t.c1 = t2.c1) AND (t.c2 = t2.c2)"
         @testsql map((t1, t2) -> t1.c1, selfjoin) "SELECT t.c1 FROM t INNER JOIN t t2 ON (t.c1 = t2.c1) AND (t.c2 = t2.c2)"

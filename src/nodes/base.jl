@@ -2,8 +2,8 @@ abstract type SQLNode end
 
 include("./types/base.jl")
 
-struct AllOperand <: SQLNode end
-const All = AllOperand()
+struct Asterisk <: SQLNode end
+const All = Asterisk()
 
 abstract type SQLExpression{T<:SQLType} <: SQLNode end
 

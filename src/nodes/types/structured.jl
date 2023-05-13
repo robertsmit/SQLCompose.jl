@@ -7,10 +7,6 @@ struct RowType{name,fieldnames,T<:Tuple} <: StructuredType
 end
 
 RowType{name,fieldnames}(types::T) where {name,fieldnames,T<:Tuple} = RowType{name,fieldnames,T}(types)
-RowType(name::Symbol, pairs::Pair...) =
-    let nt = NamedTuple(pairs)
-        RowType{name,keys(nt),Tuple{values(nt)...}}
-    end
 name(r::RowType) = name(typeof(r))
 name(::Type{RowType{n,fns,T}}) where {n,fns,T} = n
 field_names(::Type{RowType{name,fieldnames,T}}) where {name,fieldnames,T} = fieldnames

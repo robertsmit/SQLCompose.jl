@@ -1,6 +1,6 @@
 import Base: filter, map, sort, join, getindex
 
-Queryable = Union{TableDefinition,Query,QuerySet, SetReturningFunctionCall, Type{<:RowType}}
+Queryable = Union{TableSource,Query,QuerySet,SetReturningFunctionCall,Type{<:RowType}, Type{<:RowStruct}}
 
 commontable(q::Queryable) = SubqueryTableItem(q)
 
@@ -11,11 +11,13 @@ tableresults(arg::SelectQuery) = tableresults(arg.result)
 tableresults(arg::UnmergedResult) = arg.results
 tableresults(a, b) = (tableresults(a)..., tableresults(b)...)
 
+
 query(from::Queryable) = SelectQuery(from)
+query(from::Queryable, executor::AbstractQueryExecutor) = QuerySet(query(from), executor)
 query(f::SetReturningFunctionCall, fnames, ftypes) = SelectQuery(f, fnames, ftypes)
 query(q::SelectQuery) = SelectQuery(SubqueryTableItem(q))
 query(q::SelectQuery{UnmergedResult}) = error("unmerged result: $(q)")
-query(q::QuerySet) = QuerySet(query(q.query), q.connection)
+query(q::QuerySet) = QuerySet(query(q.query), q.executor)
 query(values::AbstractVector{<:Tuple}, fieldnames::Tuple; aliashint=:v) =
     SelectQuery(ValuesTableItem(values, fieldnames, aliashint))
 query(values::AbstractVector{T}; aliashint=:v) where {T<:Tuple} =
@@ -127,6 +129,7 @@ end
 join(f::Function, right::Queryable) = (left::Queryable) -> join(f, left, right)
 join(right::Queryable, field::Symbol, morefields::Symbol...) = (left::Queryable) -> join(left, right, field, morefields...)
 
+
 function join_lateral(rightf::Function, left::Queryable; on=(args...) -> true, type::JoinType=InnerJoin())
     left = convert(SelectQuery, left)
     right = rightf(tableresults(left)...)
@@ -137,6 +140,9 @@ function join_lateral(rightf::Function, left::Queryable; on=(args...) -> true, t
     joinitem = JoinItem(left.from, right.from, joinvalue)
     SelectQuery(left; from=joinitem, result=UnmergedResult(results))
 end
+
+left_join_lateral(rightf::Function, left::Queryable; kwargs...) =
+    join_lateral(rightf::Function, left::Queryable; kwargs..., type=LeftJoin()) 
 
 function join_lateral(right::Function, left::QuerySet; kwargs...)
     QuerySet(join_lateral(right, left.query; kwargs...), left.executor)
@@ -200,11 +206,11 @@ end
 iterate(it::Function, base::QuerySet; unique=false) = QuerySet(iterate(it, base.query; unique), base.executor)
 
 #range
-getindex(q::Queryable, arg) = getindex(convert(SelectQuery, q), arg) 
+getindex(q::Queryable, arg) = getindex(convert(SelectQuery, q), arg)
 getindex(q::Queryable, ::Colon) = q
 getindex(q::SelectQuery, ::Colon) = q
 getindex(q::SelectQuery, i::Int) = getindex(q, TableRange(i - 1, 1))
-getindex(q::SelectQuery;offset=0, limit=nothing) = getindex(q, TableRange(offset, limit))
+getindex(q::SelectQuery; offset=0, limit=nothing) = getindex(q, TableRange(offset, limit))
 getindex(q::SelectQuery, range::UnitRange) = getindex(q, TableRange(range.start - 1, range.stop - range.start + 1))
 getindex(q::SelectQuery, range::TableRange) = with_range(q, range)
 
