@@ -80,15 +80,15 @@ end,
 
 #Retrieve the film title along with the first name and last name of up to 3 actors associated with each film
 @testsql begin
-    @chain Pagila.Film begin
-        left_join_lateral(_) do f
-            @chain Pagila.Film_Actor begin
-                filter(fa -> fa.film_id == f.film_id, _)
-                map(Pagila.actor_of, _)
-                map(a -> (; a.first_name, a.last_name), _)
-                _[1:3]
-            end
+    function query_actors(f::Pagila.Film)
+        @chain Pagila.Film_Actor begin
+            filter(fa -> fa.film_id == f.film_id, _)
+            map(Pagila.actor_of, _)
+            map(a -> (; a.first_name, a.last_name), _)
         end
+    end
+    @chain Pagila.Film begin
+        left_join_lateral(f -> query_actors(f)[1:3], _)
         map((f, a) -> (; f.title, a.first_name, a.last_name), _)
         sort(values, _)
     end

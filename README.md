@@ -20,25 +20,27 @@ Examples:
 ```
 #Find the id, first name, and last name of an actor of whom you know only the first name of "Joe."
 @testsql begin
-    Pagila.query_actor() |>
-    filter(a -> occursin("JOE", a.first_name)) |>
-    map(a -> (; a.actor_id, a.first_name, a.last_name))
+    @chain Pagila.Actor begin
+        filter(a -> occursin("JOE", a.first_name), _)
+        map(a -> (; a.actor_id, a.first_name, a.last_name), _)
+    end
 end,
 "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.first_name LIKE '%JOE%'"
 
 #Retrieve the film title along with the first name and last name of up to 3 actors associated with each film
 @testsql begin
-    Pagila.query_film() |>
-    join_lateral(f -> begin
-            Pagila.query_film_actor() |>
-            filter(fa -> fa.film_id == f.film_id) |>
-            map(Pagila.actor_of) |>
-            map(a -> (; a.first_name, a.last_name)) |>
-            q -> q[1:3]
-        end,
-        type=LeftJoin()) |>
-    map((f, a) -> (; f.title, a.first_name, a.last_name)) |>
-    sort(values)
+    function query_actors(f::Pagila.Film)
+        @chain Pagila.Film_Actor begin
+            filter(fa -> fa.film_id == f.film_id, _)
+            map(Pagila.actor_of, _)
+            map(a -> (; a.first_name, a.last_name), _)
+        end
+    end
+    @chain Pagila.Film begin
+        left_join_lateral(f -> query_actors(f)[1:3], _)
+        map((f, a) -> (; f.title, a.first_name, a.last_name), _)
+        sort(values, _)
+    end
 end,
 "SELECT f.title, q.first_name, q.last_name 
     FROM film f 
