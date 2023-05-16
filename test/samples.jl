@@ -4,11 +4,12 @@
 @testsql query(Bookings.Aircraft) "SELECT a.aircraft_code, a.model, a.range FROM aircrafts a"
 #For each aircraft type, a separate list of seats is supported. For example, in a small Cessna 208 Caravan, one can select the following seats:
 @testsql begin
-    Bookings.Aircraft |>
-    filter(a -> a.model == "Cessna 208 Caravan") |>
-    join(Bookings.Seat, :aircraft_code) |>
-    map((a, s) -> (; a.aircraft_code, a.model, s.seat_no, s.fare_conditions)) |>
-    sort(:seat_no)
+    @chain Bookings.Aircraft begin
+    filter(a -> a.model == "Cessna 208 Caravan", _)
+    join(_, Bookings.Seat, :aircraft_code) 
+    map((a, s) -> (; a.aircraft_code, a.model, s.seat_no, s.fare_conditions), _) 
+    sort(_, :seat_no)
+end
 end,
 "SELECT a.aircraft_code, a.model, s.seat_no, s.fare_conditions FROM aircrafts a 
     INNER JOIN seats s ON a.aircraft_code = s.aircraft_code 

@@ -9,7 +9,7 @@ export TableSource, reference
 export query, groupby, join, with, join_lateral, having, left_join_lateral
 export InnerJoin, LeftJoin, RightJoin, FullJoin
 # operators
-export between, avg, unnest
+export between, avg, unnest, case, @nsc
 #comparing
 export @like_str, @ilike_str, @similarto_str, like, similarto, matching
 #globals

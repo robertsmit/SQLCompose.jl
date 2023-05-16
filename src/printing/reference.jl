@@ -18,9 +18,8 @@ haslocation(plan::ReferredTableLocationPlan, ref::ReferredTableItemRef) =  haslo
 
 function write_referredtable_location_plan!(plan::ReferredTableLocationPlan, node::ReferredTableItemRef, tableitem)    
     if haslocation(plan, node)
-        return plan
+        return
     end
-    
     plan.locations = referredtablelocations(plan.locations, node, tableitem)
     write_referredtable_location_plan!(plan, node.foreignkeys, tableitem)
 end
@@ -31,8 +30,8 @@ function write_referredtable_location_plan!(plan, node::NodeList, tableitem)
     for each in node
         write_referredtable_location_plan!(plan, each, tableitem)
     end
-    plan
 end
+
 write_referredtable_location_plan!(plan, node::SQLNode, tableitem) = error("please implement: write_referredtable_location_plan! for $(typeof(node))")
 
 function write_referredtable_location_plan!(plan, node::SelectQuery)
@@ -62,8 +61,8 @@ function write_referredtable_location_plan!(plan, node::And, tableitem)
     for each in node.elems
         write_referredtable_location_plan!(plan, each, tableitem)
     end
-    plan
 end
+
 function write_referredtable_location_plan!(plan, node::Or, tableitem)
     write_referredtable_location_plan!(plan, node.left, tableitem)
     write_referredtable_location_plan!(plan, node.right, tableitem)
@@ -73,7 +72,6 @@ function write_referredtable_location_plan!(plan, node::Concat, tableitem)
     for each in node.expressions
         write_referredtable_location_plan!(plan, each, tableitem)
     end
-    plan
 end
 
 write_referredtable_location_plan!(plan, node::Cast, tableitem) = write_referredtable_location_plan!(plan, node.expr, tableitem)
@@ -95,7 +93,6 @@ function write_referredtable_location_plan!(plan, node::FunctionCall, tableitem)
     for each in node.operands
         write_referredtable_location_plan!(plan, each, tableitem)
     end
-    plan
 end
 
 write_referredtable_location_plan!(plan, ::KeyedTableItemRef, ::FromItem) = plan
@@ -115,32 +112,34 @@ function write_referredtable_location_plan!(plan, node::AggregateExpression, tab
     write_referredtable_location_plan!(plan, node.operands, tableitem)
     write_referredtable_location_plan!(plan, node.filter, tableitem)
     write_referredtable_location_plan!(plan, node.order, tableitem)
-    plan
 end
 
 function write_referredtable_location_plan!(plan, node::OrderedSetAggregateExpression, tableitem)
     write_referredtable_location_plan!(plan, node.operands, tableitem)
     write_referredtable_location_plan!(plan, node.filter, tableitem)
     write_referredtable_location_plan!(plan, node.order, tableitem)
-    plan
 end
 
 function write_referredtable_location_plan!(plan, node::WindowFunctionCall, tableitem)
     write_referredtable_location_plan!(plan, node.operands, tableitem)
     write_referredtable_location_plan!(plan, node.filter, tableitem)
     write_referredtable_location_plan!(plan, node.window, tableitem)
-    plan
 end
 
 function write_referredtable_location_plan!(plan, node::WindowDefinition, tableitem)
     write_referredtable_location_plan!(plan, node.order, tableitem)
     write_referredtable_location_plan!(plan, node.partition, tableitem)
-    plan
 end
 
 function write_referredtable_location_plan!(plan, t::Tuple, tableitem)
     for each in t
         write_referredtable_location_plan!(plan, each, tableitem)
     end
-    plan
+end
+
+function write_referredtable_location_plan!(plan, node::CaseExpression, tableitem)
+    for each in node.clauses
+        write_referredtable_location_plan!(plan, each, tableitem)
+    end
+    write_referredtable_location_plan!(plan, node.otherwise, tableitem)
 end

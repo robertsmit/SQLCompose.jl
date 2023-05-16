@@ -20,7 +20,7 @@ end
 
 SetReturningFunctionCall{T}(name::Symbol) where T = SetReturningFunctionCall{T}(name, ())
 
-Base.length(expr::SQLExpression{<:CharacterType}) = FunctionCall{Int8Type}(:length, expr)
+Base.length(expr::TextExpression) = FunctionCall{Int8Type}(:length, expr)
 Base.round(expr::SQLExpression{<:NumericType}; digits=0) = FunctionCall{NumericType}(:round, (expr, digits))
 Base.string(expr::SQLExpression; pattern::String) = FunctionCall{TextType}(:to_char, (expr, pattern))
 
@@ -29,3 +29,4 @@ unnest(expr) = unnest(convert(SQLExpression, expr))
 
 Base.first(expr::TextExpression, n::Int) = FunctionCall{TextType}(:left, (expr, n))
 Base.last(expr::TextExpression, n::Int) = FunctionCall{TextType}(:right, (expr, n))
+Base.lowercase(expr::TextExpression) = FunctionCall{TextType}(:lower, expr)

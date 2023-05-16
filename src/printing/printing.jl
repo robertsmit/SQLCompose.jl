@@ -46,6 +46,21 @@ function printpsql(io::IO, arg::SelectWithoutFromQuery, env)
     printpsql_result(io, arg.result, env)
 end
 
+function printpsql(io::IO, node::CaseExpression, env)
+    print(io, "CASE")
+    for (index, clause) in enumerate(node.clauses)
+        print(io, " WHEN ")
+        printpsql(io, clause.predicate, node, env)
+        print(io, " THEN ")
+        printpsql(io, clause.consequence, node, env)
+    end
+    if !isnothing(node.otherwise)
+        print(io, " ELSE ")
+        printpsql(io, node.otherwise, node, env)
+    end
+    print(io, " END")
+end
+
 printpsql_filter(io, ::Nothing, env; prefix="") = nothing
 function printpsql_filter(io, expr::BooleanExpression, env; prefix="", postfix="")
     if expr === SQLConstant(true)

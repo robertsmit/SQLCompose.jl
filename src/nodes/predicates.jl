@@ -53,3 +53,5 @@ Base.in(elem::SQLExpression, coll::Union{Query, AbstractVector}) = InExpression(
 Base.in(subject, range::BetweenRange) = Between(subject, range)
 Base.in(subject::SQLExpression, range::AbstractRange) = Between(subject, BetweenRange(first(range), last(range)))
 between(subject, inclusiveLower, inclusiveUpper) = Between(subject, BetweenRange(inclusiveLower, inclusiveUpper))
+
+Base.isempty(expr::TextExpression) = expr == ""
