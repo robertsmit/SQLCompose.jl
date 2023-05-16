@@ -27,6 +27,27 @@ Examples:
 end,
 "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.first_name LIKE '%JOE%'"
 
+
+# query the full name of actors, first_name or last_name or its combination
+@testsql @query Pagila.Actor begin
+	map(_) do a
+		if ismissing(a.last_name) || isempty(a.last_name)
+			a.first_name
+		elseif ismissing(a.first_name) || isempty(a.first_name)
+			a.last_name
+		else
+			a.first_name * " " * a.last_name
+		end
+	end
+end,
+"SELECT CASE 
+            WHEN ((a.last_name IS NULL) OR (a.last_name = '')) 
+            THEN a.first_name 
+            WHEN ((a.first_name IS NULL) OR (a.first_name = '')) 
+            THEN a.last_name 
+            ELSE CONCAT(a.first_name, ' ', a.last_name) END AS elem1 
+FROM actor a"
+
 #Retrieve the film title along with the first name and last name of up to 3 actors associated with each film
 @testsql begin
     function query_actors(f::Pagila.Film)

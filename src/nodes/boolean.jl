@@ -81,3 +81,7 @@ function non_short_circuit(expr::Expr)
 		Expr(expr.head, nsc_args...)
 	end
 end
+
+macro query(base, next)
+	esc(:(@chain convert(SQLCompose.Query, $base) $(non_short_circuit(next))))
+end
