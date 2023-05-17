@@ -18,28 +18,47 @@ See [Samples](https://github.com/robertsmit/SQLCompose.jl/blob/main/test/samples
 
 Examples:
 ```
-#Find the id, first name, and last name of an actor of whom you know only the first name of "Joe."
-@testsql begin
-    @chain Pagila.Actor begin
-        filter(a -> occursin("JOE", a.first_name), _)
-        map(a -> (; a.actor_id, a.first_name, a.last_name), _)
+# query the full name of actors, first_name or last_name or its combination and last_name or first_name contains "PEN"
+@testsql (@query Pagila.Actor begin
+    filter(_) do a
+        let check = contains("PEN")
+            check(a.last_name) || check(a.first_name)
+        end
     end
-end,
-"SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.first_name LIKE '%JOE%'"
+    map(_) do a
+        if ismissing(a.last_name) || isempty(a.last_name)
+            coalesce(a.first_name, "")
+        elseif ismissing(a.first_name) || isempty(a.first_name)
+            coalesce(a.last_name, "")
+        else
+            a.first_name * " " * a.last_name
+        end
+    end
+end),
+"SELECT 
+    CASE 
+        WHEN ((a.last_name IS NULL) OR (a.last_name = '')) 
+        THEN coalesce(a.first_name, '') 
+        WHEN ((a.first_name IS NULL) OR (a.first_name = '')) 
+        THEN coalesce(a.last_name, '') 
+        ELSE CONCAT(a.first_name, ' ', a.last_name) 
+    END AS elem1 
+FROM actor a 
+WHERE (a.last_name LIKE '%PEN%') OR (a.first_name LIKE '%PEN%')"
 
 
 # query the full name of actors, first_name or last_name or its combination
-@testsql @query Pagila.Actor begin
-	map(_) do a
-		if ismissing(a.last_name) || isempty(a.last_name)
-			a.first_name
-		elseif ismissing(a.first_name) || isempty(a.first_name)
-			a.last_name
-		else
-			a.first_name * " " * a.last_name
-		end
-	end
-end,
+@testsql (@query Pagila.Actor begin
+    map(_) do a
+        if ismissing(a.last_name) || isempty(a.last_name)
+            a.first_name
+        elseif ismissing(a.first_name) || isempty(a.first_name)
+            a.last_name
+        else
+            a.first_name * " " * a.last_name
+        end
+    end
+end),
 "SELECT CASE 
             WHEN ((a.last_name IS NULL) OR (a.last_name = '')) 
             THEN a.first_name 

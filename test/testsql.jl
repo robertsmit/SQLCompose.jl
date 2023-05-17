@@ -11,7 +11,7 @@ macro testsql(left, right)
 end
 
 macro testsql(expr)
-    @assert expr.head == :block || expr.head == :tuple
+    @assert expr.head in (:block,:tuple)
     left, right = filter(x -> !(x isa LineNumberNode), expr.args)
     testsql(left, right)
 end

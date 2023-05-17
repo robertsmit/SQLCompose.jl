@@ -64,7 +64,7 @@ case(predicate::BooleanExpression, consequence, otherwise::CaseExpression) =
 	CaseExpression(SA[CaseClause(predicate, consequence), otherwise.clauses...], otherwise.otherwise)
 
 
-macro nsc(expr)
+macro eager(expr)
 	esc(non_short_circuit(expr))
 end
 

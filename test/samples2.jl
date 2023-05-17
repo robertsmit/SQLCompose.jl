@@ -9,13 +9,13 @@ end,
 "SELECT CONCAT(a.first_name, ' ', a.last_name) AS elem1 FROM actor a"
 
 #2a. You need to find the id, first name, and last name of an actor of whom you know only the first name of "Joe." What is one query would you use to obtain this information?
-@testsql (@chain Pagila.Actor begin
+@testsql (@query Pagila.Actor begin
    filter(a -> a.first_name == "JOE", _)
    map(_, :actor_id, :first_name, :last_name)
 end), "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.first_name = 'JOE'"
 
 #2b. Find all actors whose last name contain the letters GEN. Make this case insensitive
-@testsql (@chain Pagila.Actor begin
+@testsql (@query Pagila.Actor begin
    filter(a -> a.first_name == like"JOE", _)
    map(_, :actor_id, :first_name, :last_name)
 end), "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.first_name LIKE 'JOE'"
@@ -28,7 +28,7 @@ end), "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.first_n
    WHERE c.country IN ('Afghanistan', 'Bangladesh', 'China')"
 
 #4a. List the last names of actors, as well as how many actors have that last name.
-@testsql (@chain Pagila.Actor begin
+@testsql (@query Pagila.Actor begin
    groupby(_, :last_name)
    map(a -> (; a.last_name, count=count(a.last_name)), _)
 end),"
@@ -37,7 +37,7 @@ end),"
    GROUP BY a.last_name"
 
 #4b. List last names of actors and the number of actors who have that last name, but only for names that are shared by at least two actors
-@testsql (@chain Pagila.Actor begin
+@testsql (@query Pagila.Actor begin
    groupby(_, :last_name)
    map(a -> (; a.last_name, count=count(a.last_name)), _)
    having(a -> a.count > 1, _)
