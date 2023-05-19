@@ -63,25 +63,3 @@ case(predicate::BooleanExpression, consequence, otherwise = nothing) =
 case(predicate::BooleanExpression, consequence, otherwise::CaseExpression) =
 	CaseExpression(SA[CaseClause(predicate, consequence), otherwise.clauses...], otherwise.otherwise)
 
-
-macro eager(expr)
-	esc(non_short_circuit(expr))
-end
-
-non_short_circuit(expr::Any) = expr
-function non_short_circuit(expr::Expr)
-	nsc_args = map(non_short_circuit, expr.args)
-	if expr.head in [:if, :elseif]
-		Expr(:call, :case, nsc_args...)
-	elseif expr.head == :&&
-		Expr(:call, :&, nsc_args...)
-	elseif expr.head == :||
-		Expr(:call, :|, nsc_args...)
-	else
-		Expr(expr.head, nsc_args...)
-	end
-end
-
-macro query(base, next)
-	esc(:(@chain convert(SQLCompose.Query, $base) $(non_short_circuit(next))))
-end

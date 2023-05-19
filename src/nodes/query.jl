@@ -110,5 +110,3 @@ end
 
 Base.convert(::Type{SelectQuery}, value::SelectQuery) = value
 Base.convert(::Type{SelectQuery}, value) = SelectQuery(value)
-Base.convert(::Type{Query}, value::Query) = value
-Base.convert(::Type{Query}, value) = SelectQuery(value)

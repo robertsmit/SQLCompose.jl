@@ -2,6 +2,9 @@ import Base: filter, map, sort, join, getindex
 
 Queryable = Union{TableSource,Query,QuerySet,SetReturningFunctionCall,Type{<:RowType}, Type{<:RowStruct}}
 
+Base.convert(::Type{Query}, value::Query) = value
+Base.convert(::Type{Query}, value) = query(value)
+
 commontable(q::Queryable) = SubqueryTableItem(q)
 
 ref(table::TableItem) = SelectQuery(SelectQuery(table); from=RefTableItem(table.ref))
@@ -214,3 +217,4 @@ getindex(q::SelectQuery; offset=0, limit=nothing) = getindex(q, TableRange(offse
 getindex(q::SelectQuery, range::UnitRange) = getindex(q, TableRange(range.start - 1, range.stop - range.start + 1))
 getindex(q::SelectQuery, range::TableRange) = with_range(q, range)
 
+include("util.jl")
