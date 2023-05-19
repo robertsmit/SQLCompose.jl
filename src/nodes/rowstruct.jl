@@ -9,41 +9,37 @@ name(::Type{<:RowStruct{T}}) where {T} = name(T)
 
 tableresult(ref::TableItemRef, rst::Type{<:RowStruct}) =
     rst((TableItemFieldRef(name, type, ref)
-          for (name, type) in field_pairs(rst))...)
+         for (name, type) in field_pairs(rst))...)
 
 
 SelectQuery(type::Type{<:RowStruct}) = SelectQuery(TableSource(type))
 
+aliashint(type::Type{<:RowStruct}) = aliashintdefault(name(type))
+
 →(type::Type{<:RowStruct}, alias::Symbol) = TableSource(type, alias)
 
-
-@generated function Base.pairs(rs::RowStruct{T}) where {T}
-    fnames = field_names(T)
-    p = (:($(QuoteNode(fname)) => rs.$fname) for fname in fnames)
-    quote
-        ($(p...),)
-    end
+function Base.pairs(rs::RowStruct{T}) where {T}
+    Base.Pairs(rs, SQLCompose.field_names(rs))
 end
 
 Base.NamedTuple(rs::RowStruct) = NamedTuple(collect(pairs(rs)))
 
 function foreachfield(f::Function, result::T, alias, index) where {T<:RowStruct}
     let i = index
-        fnames = field_names(T)
-        for fieldname in fnames
-            i = foreachfield(f, getfield(result, fieldname), nextalias(alias, fieldname), i)
+        for (fieldname, fieldvalue) in pairs(result)
+            i = foreachfield(f, fieldvalue, nextalias(alias, fieldname), i)
         end
         i
     end
 end
 
 function mapfields(f::Function, result::T, alias) where {T<:RowStruct}
-    T((mapfields(f, getfield(result, fname), nextalias(alias, fname)) for fname in field_names(T))...)
+    T((mapfields(f, fieldvalue, nextalias(alias, fieldname)) for (fieldname, fieldvalue) in pairs(result))...)
 end
 
 function write_referredtable_location_plan!(plan, node::T, tableitem) where {T<:RowStruct}
-    for fname in field_names(T)
-        write_referredtable_location_plan!(plan, getfield(node, fname), tableitem)
+    for each in node
+        write_referredtable_location_plan!(plan, each, tableitem)
     end
 end
 
@@ -64,3 +60,25 @@ function Base.show(io::IO, node::RowStruct)
     end
     print(io, ")")
 end
+
+@generated function Base.iterate(rs::RowStruct{T}, state=1) where {T}
+    fnames = field_names(rs)
+    statements = (
+        quote
+            if state == $i
+                return (rs.$f, $(i + 1))
+            end
+        end for (i, f) in pairs(fnames)
+    )
+    quote
+        if state > $(length(fnames))
+            return nothing
+        end
+        $(statements...)
+    end
+end
+
+Base.getindex(row::RowStruct, i::Int) = getfield(row, field_names(row)[i])
+Base.getindex(row::RowStruct, f::Symbol) = getfield(row, f)
+Base.length(row::RowStruct) = length(field_names(row))
+Base.merge(nt::NamedTuple, row::RowStruct) = merge(nt, pairs(row))

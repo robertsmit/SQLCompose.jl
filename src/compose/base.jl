@@ -1,6 +1,7 @@
 import Base: filter, map, sort, join, getindex
 
-Queryable = Union{TableSource,Query,QuerySet,SetReturningFunctionCall,Type{<:RowType}, Type{<:RowStruct}}
+QuerySource = Union{Type{<:RowType}, Type{<:RowStruct}, TableSource}
+Queryable = Union{Query,QuerySet,SetReturningFunctionCall, QuerySource}
 
 Base.convert(::Type{Query}, value::Query) = value
 Base.convert(::Type{Query}, value) = query(value)

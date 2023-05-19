@@ -97,6 +97,7 @@ emps = TableSource(:employments, :id => Int8Type, :first_name => TextType, :init
         @testsql emp_emp "SELECT * FROM employments emp INNER JOIN employments emp2 ON true"
     end
 
+
     @testset "self join" begin
         table = TableSource(:t, :c1 => Int8Type, :c2 => TextType, :c3 => TextType, :c4 => TextType)
         selfjoin = join(table, table, :c1 => :c1, :c2 => :c2)

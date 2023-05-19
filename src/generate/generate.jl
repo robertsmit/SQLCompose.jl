@@ -1,4 +1,3 @@
-
 function generate(path::String, connstr::String; modulename::Symbol=:Database, schema::String="public", kwargs...)
     reltypes = sc_relationtypes(connstr, schema)
     defs = queries_expression(reltypes; kwargs...)
@@ -19,7 +18,6 @@ function wrapmodule(expr, modulename)
     result_without_begin = result.args[2]
     return result_without_begin
 end
-
 
 chop_postfix(from, postfix) = chop(from; tail=length(postfix))
 
@@ -45,37 +43,11 @@ function backref_methodname(childname::Symbol, key::ForeignKey, postfixmappings)
     Symbol("all_", ref_methodname(key, postfixmappings; defaultname=childname))
 end
 
-
 function rowstruct_expression(reltype, typename)
     fnames = field_names(reltype)
-    typestructdef = :(struct $typename <: SQLCompose.RowStruct{$(reltype.rowtype)}
+    :(struct $typename <: SQLCompose.RowStruct{$(reltype.rowtype)}
         $(fnames...)
     end)
-
-    foreachfielddef = :(
-        function SQLCompose.foreachfield(f::Function, result::$typename, alias, index)
-            let i = index
-                $((:(i = SQLCompose.foreachfield(f, result.$f, SQLCompose.nextalias(alias, $(QuoteNode(f))), i)) for f in fnames)...)
-            end
-        end
-    )
-    mapfieldsdef = :(
-        function SQLCompose.mapfields(f::Function, result::$typename, alias)
-            $typename($((:(SQLCompose.mapfields(f, result.$f, SQLCompose.nextalias(alias, $(QuoteNode(f))))) for f in fnames)...))
-        end
-    )
-    writelateralplandef = :(
-        function SQLCompose.write_referredtable_location_plan!(plan, node::$typename, tableitem)
-            $((:(SQLCompose.write_referredtable_location_plan!(plan, node.$f, tableitem)) for f in fnames)...)
-        end
-    )
-
-    quote
-        $(typestructdef)
-        $(foreachfielddef)
-        $(mapfieldsdef)
-        $(writelateralplandef)
-    end
 end
 
 function queries_expression(types;
