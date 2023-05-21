@@ -21,10 +21,6 @@ for (typename, (op, sqloperator, antogonist)) in pairs(comparators)
         end
         Not(arg::$typename) = $antogonist(arg.left, arg.right)
         printpsql(io::IO, node::$typename, env) = printpsql_infix(io, node, $sqloperator, env)
-        function write_referredtable_location_plan!(plan, node::$typename, tableitem)
-            write_referredtable_location_plan!(plan, node.left, tableitem)
-            write_referredtable_location_plan!(plan, node.right, tableitem)
-        end
     end
 
     if !isnothing(op)
@@ -85,10 +81,6 @@ for (name, (operator, ci_operator, antogonist, patterntype)) in pairs((
                 print(io, " ")
                 printpsql(io, pattern.value, node, env)
             end
-        end
-        function write_referredtable_location_plan!(plan, node::$typename, tableitem)
-            write_referredtable_location_plan!(plan, node.subject, tableitem)
-            write_referredtable_location_plan!(plan, node.pattern.value, tableitem)
         end
     end
 end

@@ -16,9 +16,7 @@ struct AggregateExpression{T} <: AbstractAggregateExpression{T}
     filter::BooleanExpression
 end
 
-
-
-struct WindowDefinition
+struct WindowDefinition <: SQLNode
     partition::Tuple
     order::Tuple
 end
@@ -28,10 +26,6 @@ struct WindowFunctionCall{T} <: SQLExpression{T}
     operands::Tuple
     filter::BooleanExpression
     window::WindowDefinition
-end
-
-struct DefinedFunction{T<:SQLType}
-    name::Symbol
 end
 
 WindowFunctionCall{T}(name, operands...; filter=true, order=(), partition=()) where {T} =
