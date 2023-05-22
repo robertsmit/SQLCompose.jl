@@ -81,8 +81,8 @@ function nextenv(env, node::SelectQuery)
 end
 
 nextenv_laterals(env, ::TableItem, ::Nothing) = env
-nextenv_laterals(env, table::TableItem, locs::ReferredTableLocationDict) = nextenv_laterals(env, key(table), locs)
-function nextenv_laterals(env, table::Symbol, locs::ReferredTableLocationDict)
+nextenv_laterals(env, table::TableItem, locs) = nextenv_laterals(env, key(table), locs)
+function nextenv_laterals(env, table::Symbol, locs)
     let next_env = env
         for (lat, location) in locs
             next_env = location == table ? nextenv(next_env, lat, location) : next_env
