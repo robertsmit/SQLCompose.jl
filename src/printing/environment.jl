@@ -8,8 +8,6 @@ struct TablePrintEnvironment <: AbstractPrintEnvironment
     parent::AbstractPrintEnvironment
 end
 
-TablePrintEnvironment(env::TablePrintEnvironment, parent) = TablePrintEnvironment(env.key, env.alias, parent)
-
 struct ReferredTableEnvironment <: AbstractPrintEnvironment
     key::ReferredTableItemRef
     location::Symbol
@@ -52,26 +50,13 @@ function getaliasactual(env::AbstractPrintEnvironment, aliashint, aliascandidate
     getaliasactual(env, aliashint, aliascandidate, count + 1)
 end
 
-
-
-function nextenv(env, table::RefTableItem; referredtablelocations=nothing)
-    definition_env = unwind(env, table)
-    next_env = TablePrintEnvironment(definition_env, env)
-    nextenv_laterals(next_env, table, referredtablelocations)
+function nextenv(env, node::SelectQuery)
+    plan = ReferredTableLocationPlan(env)
+    write_referredtable_location_plan!(plan, node)
+    env = nextenv(env, node.from; referredtablelocations=plan.locations)
+    env
 end
 
-function nextenv(env, table::TableItem; referredtablelocations = nothing)
-    (; key, aliashint) = table.ref
-    aliasactual = getaliasactual(env, aliashint)
-    nextenv = TablePrintEnvironment(key, aliasactual, env)
-    nextenv_laterals(nextenv, table, referredtablelocations)
-end
-
-function nextenv(env, tableitem::JoinItem; referredtablelocations) 
-    envleft = nextenv(env, tableitem.left; referredtablelocations)
-    envright = nextenv(envleft, tableitem.right; referredtablelocations)
-    envright
-end
 
 function nextenv(env, node::SelectQuery)
     plan = ReferredTableLocationPlan(env)
@@ -80,9 +65,29 @@ function nextenv(env, node::SelectQuery)
     env
 end
 
-nextenv_laterals(env, ::TableItem, ::Nothing) = env
-nextenv_laterals(env, table::TableItem, locs) = nextenv_laterals(env, key(table), locs)
-function nextenv_laterals(env, table::Symbol, locs)
+function nextenv(env, table::TableItem; referredtablelocations = nothing)
+    (; key, aliashint) = table.ref
+    aliasactual = getaliasactual(env, aliashint)
+    nextenv = TablePrintEnvironment(key, aliasactual, env)
+    nextenv_referred(nextenv, table, referredtablelocations)
+end
+
+function nextenv(env, table::RefTableItem; referredtablelocations=nothing)
+    definition_env = unwind(env, table)
+    (;key, alias) = definition_env
+    next_env = TablePrintEnvironment(key, alias, env)
+    nextenv_referred(next_env, table, referredtablelocations)
+end
+
+function nextenv(env, tableitem::JoinItem; referredtablelocations) 
+    envleft = nextenv(env, tableitem.left; referredtablelocations)
+    envright = nextenv(envleft, tableitem.right; referredtablelocations)
+    envright
+end
+
+nextenv_referred(env, ::TableItem, ::Nothing) = env
+nextenv_referred(env, table::TableItem, locs) = nextenv_referred(env, key(table), locs)
+function nextenv_referred(env, table::Symbol, locs)
     let next_env = env
         for (lat, location) in locs
             next_env = location == table ? nextenv(next_env, lat, location) : next_env
