@@ -57,14 +57,6 @@ function nextenv(env, node::SelectQuery)
     env
 end
 
-
-function nextenv(env, node::SelectQuery)
-    plan = ReferredTableLocationPlan(env)
-    write_referredtable_location_plan!(plan, node)
-    env = nextenv(env, node.from; referredtablelocations=plan.locations)
-    env
-end
-
 function nextenv(env, table::TableItem; referredtablelocations = nothing)
     (; key, aliashint) = table.ref
     aliasactual = getaliasactual(env, aliashint)

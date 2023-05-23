@@ -33,5 +33,27 @@
         INNER JOIN salary ref_salary ON p.id = ref_salary.person_id"
 
 
+   
+
+    @info "test with reference in subquery"
+    @testsql (@query persons begin
+        map(p -> begin
+                let nextsalary = (@query salaries begin
+                        filter(s -> s.amount > salary(p).amount &&
+                        s.person_id != p.id, _)
+                        map(s -> minimum(s.amount), _)
+                    end)
+                    (person=fullname(p), nextsalary)
+                end
+            end, _)
+    end),
+    "SELECT 
+        CONCAT(p.first_name, ' ', p.surname) AS person, 
+        (SELECT min(s.amount) AS elem1 
+            FROM salary s 
+            INNER JOIN salary ref_salary ON p.id = ref_salary.person_id 
+            WHERE (s.amount > ref_salary.amount) AND (s.person_id <> p.id)) AS nextsalary 
+    FROM person p"
 end
 
+ 
