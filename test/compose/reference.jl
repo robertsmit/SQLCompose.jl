@@ -54,6 +54,21 @@
             INNER JOIN salary ref_salary ON p.id = ref_salary.person_id 
             WHERE (s.amount > ref_salary.amount) AND (s.person_id <> p.id)) AS nextsalary 
     FROM person p"
+
+    @info "test with reference in subquery without from"
+    @testsql (@query persons begin
+        map(p -> begin
+                let salary = query(salary(p).amount)
+                    (person=fullname(p), salary)
+                end
+            end, _)
+    end),
+    "SELECT 
+        CONCAT(p.first_name, ' ', p.surname) AS person, 
+        (SELECT ref_salary.amount) AS salary 
+    FROM person p 
+    INNER JOIN salary ref_salary 
+        ON p.id = ref_salary.person_id"
 end
 
  

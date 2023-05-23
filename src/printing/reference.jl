@@ -37,6 +37,9 @@ end
 
 write_referredtable_location_plan!(plan, ::Any, tableitem) = nothing
 write_referredtable_location_plan!(plan, node::Query, tableitem) = nothing
+write_referredtable_location_plan!(plan, node::SelectWithoutFromQuery, tableitem) =
+    write_referredtable_location_plan!(plan, node.result, tableitem)
+
 
 function write_referredtable_location_plan!(plan, node::ReferredTableItemRef, tableitem)
     if islocated(plan, node)
