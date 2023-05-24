@@ -1,7 +1,7 @@
 import Base: filter, map, sort, join, getindex
 
-QuerySource = Union{Type{<:RowType}, Type{<:RowStruct}, TableSource}
-Queryable = Union{Query,QuerySet,SetReturningFunctionCall, QuerySource}
+QuerySource = Union{Type{<:RowType},Type{<:RowStruct},TableSource}
+Queryable = Union{Query,QuerySet,SetReturningFunctionCall,QuerySource}
 
 Base.convert(::Type{Query}, value::Query) = value
 Base.convert(::Type{Query}, value) = query(value)
@@ -53,7 +53,7 @@ function filter(f::Function, q::SelectQuery)
 end
 filter(f::Function, q::QuerySet) = QuerySet(filter(f, q.query), q.executor)
 filter(f::Function) = (q) -> filter(f, q)
-postmap(result) = mapfields((f,a) -> convert(SQLExpression, f), result)
+postmap(result) = mapfields((f, a) -> convert(SQLExpression, f), result)
 
 map(f::Function, node::Queryable) = map(f, SelectQuery(node))
 map(f::Function, q::SelectQuery) = with_result(q, postmap(f(tableresults(q.result)...)))
@@ -144,7 +144,7 @@ function join_lateral(rightf::Function, left::Queryable; on=(args...) -> true, t
 end
 
 left_join_lateral(rightf::Function, left::Queryable; kwargs...) =
-    join_lateral(rightf::Function, left::Queryable; kwargs..., type=LeftJoin()) 
+    join_lateral(rightf::Function, left::Queryable; kwargs..., type=LeftJoin())
 
 function join_lateral(right::Function, left::QuerySet; kwargs...)
     QuerySet(join_lateral(right, left.query; kwargs...), left.executor)
