@@ -27,12 +27,13 @@ function SelectQuery(from::SubqueryTableItem)
     mapfield = let ref = from.ref
         (field, alias) -> TableItemFieldRef(Symbol(alias), sqltypeclassof(field), ref)
     end
-    result = mapfields(mapfield, from.query)
-    SelectQuery(result, from)
+    queryresult = result(from.query)
+    mappedresult = mapfields(mapfield, queryresult)
+    SelectQuery(mappedresult, from)
 end
 
 #maps result in same structure 
-mapfields(f::Function, query::Query) = mapfields(f, result(query))
+
 mapfields(f::Function, result) = mapfields(f, result, nothing)
 mapfields(f::Function, result::T, alias) where {T} = mapfields(f::Function, result, alias, NodeCompositionStyle(T), )
 mapfields(f::Function, field, alias, ::NodeElement) = f(field, fieldalias(field, alias))

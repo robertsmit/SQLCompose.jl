@@ -118,7 +118,7 @@ import SQLCompose: TableSource, ValuesTableItem, TextType, query, Int8Type, Bool
 
     @testset "Pattern match" begin
         actors = map(Pagila.Actor, :actor_id, :first_name, :last_name)
-        
+
         @testsql filter(a -> contains(a.first_name, "JO"), actors),
         "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.first_name LIKE '%JO%'"
 
@@ -134,7 +134,7 @@ import SQLCompose: TableSource, ValuesTableItem, TextType, query, Int8Type, Bool
         @testsql filter(a -> a.last_name == ilike"j%N", actors),
         "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.last_name ILIKE 'j%N'"
 
-        @testsql filter(a -> a.last_name != like"J%N", actors),    
+        @testsql filter(a -> a.last_name != like"J%N", actors),
         "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.last_name NOT LIKE 'J%N'"
 
         @testsql filter(a -> contains(a.last_name, first(a.first_name, 2)), actors),
@@ -155,7 +155,7 @@ import SQLCompose: TableSource, ValuesTableItem, TextType, query, Int8Type, Bool
         @testsql filter(a -> occursin(r"jo", a.last_name; casesensitive=false), actors),
         "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.last_name ~* 'jo'"
 
-        @testsql filter(a -> a.last_name == matching(a.first_name, casesensitive = false), actors),
+        @testsql filter(a -> a.last_name == matching(a.first_name, casesensitive=false), actors),
         "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.last_name ~* a.first_name"
 
         @testsql filter(a -> contains(a.last_name, similarto"%[AB]%"), actors),
@@ -169,6 +169,32 @@ import SQLCompose: TableSource, ValuesTableItem, TextType, query, Int8Type, Bool
 
         @testsql filter(a -> !(!contains(a.last_name, similarto"%[AB]%")), actors),
         "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.last_name SIMILAR TO '%[AB]%'"
+    end
+
+    @testset "Advanced filtering" begin
+        @info "Filter subquery result"
+        @testsql (@query Pagila.Actor begin
+            map(_) do a
+                longest_film = @query Pagila.Film begin
+                    filter(f -> Pagila.all_film_actor_of(f).actor_id == a.actor_id, _)
+                    map(f -> maximum(f.length), _)
+                end
+                (; a.actor_id,
+                    longest_film
+                )
+            end
+            filter(r -> r.longest_film < 60, _)
+        end),
+        "SELECT 
+            a.actor_id, 
+            (SELECT max(f.length) AS elem1 FROM film f INNER JOIN film_actor ref_film_actor ON f.film_id = ref_film_actor.film_id WHERE ref_film_actor.actor_id = a.actor_id) AS longest_film 
+        FROM actor a 
+        WHERE (SELECT max(f.length) AS elem1 
+                FROM film f 
+                INNER JOIN film_actor ref_film_actor ON f.film_id = ref_film_actor.film_id 
+                WHERE ref_film_actor.actor_id = a.actor_id) 
+                < 60"
+
     end
 
 end

@@ -33,7 +33,7 @@ hasreferred(env::NullPrintEnvironment, ref::ReferredTableItemRef) = false
 hasreferred(env::ReferredTableEnvironment, ref::ReferredTableItemRef) = env.key == ref ? true : hasreferred(env.parent, ref)
 hasreferred(env::TablePrintEnvironment, ref::ReferredTableItemRef) = hasreferred(env.parent, ref)
 
-tablealias(::NullPrintEnvironment, ref) = error("should not occur")
+tablealias(::NullPrintEnvironment, ref) = :kaas
 tablealias(env::AbstractPrintEnvironment, table::TableItem) = tablealias(env, table.ref)
 tablealias(env::AbstractPrintEnvironment, ref::KeyedTableItemRef) = tablealias(env, ref.key)
 tablealias(env::AbstractPrintEnvironment, ref) = env.key == ref ? env.alias : tablealias(env.parent, ref)

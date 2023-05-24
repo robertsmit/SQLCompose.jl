@@ -155,7 +155,11 @@ function printpsql(io::IO, node::Concat, env)
     print(io, ")")
 end
 
-printpsql(io::IO, node::SubqueryExpression, env) = printpsql(io, node.query, env)
+printpsql(io::IO, node::SubqueryExpression, env) = begin 
+    print(io, "(")
+    printpsql(io, node.query, env)
+    print(io, ")")
+end
 
 function printpsql_fromitem(io::IO, node::SubqueryTableItem, env)
     print(io, "(")
@@ -365,5 +369,6 @@ needs_parentheses(child::Cast, parent::SQLNode) = false
 needs_parentheses(child::FunctionCall, parent::SQLNode) = false
 needs_parentheses(child::AbstractAggregateExpression, parent::SQLNode) = false
 needs_parentheses(child::Concat, parent::SQLNode) = false
+needs_parentheses(child::SubqueryExpression, parent::SQLNode) = false
 needs_parentheses(child, parent) = false
 

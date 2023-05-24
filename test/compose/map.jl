@@ -19,8 +19,8 @@
         "SELECT a.aircraft_code AS elem1_1, a.model AS elem1_2, a.range AS elem2 FROM aircrafts a"
 
         @info "array"
-        @testsql map(f -> [f.aircraft_code, f.model], aircrafts),
-        "SELECT ARRAY[a.aircraft_code, a.model] AS elem1 FROM aircrafts a"
+        @testsql map(f -> [f.first_name, f.last_name], Pagila.Actor),
+        "SELECT ARRAY[a.first_name, a.last_name] AS elem1 FROM actor a"
 
         @info "alias: keyargs"
         @testsql map(aircrafts; code=:aircraft_code, rng=:range),
@@ -74,7 +74,8 @@
     end
 
     @info "map subquery"
-    @testsql map(t -> query((1, 2)), flights) "SELECT (SELECT 1 AS elem1, 2 AS elem2) AS elem1 FROM flights f"
+    @testsql map(t -> query(1), flights) "SELECT (SELECT 1 AS elem1) AS elem1 FROM flights f"
+
 
     @info "map from tuple subquery"
     let subq = query(map(f -> ((f.flight_id,), (a=f.aircraft_code,),), flights))

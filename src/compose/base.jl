@@ -11,7 +11,6 @@ commontable(q::Queryable) = SubqueryTableItem(q)
 ref(table::TableItem) = SelectQuery(SelectQuery(table); from=RefTableItem(table.ref))
 
 tableresults(arg) = (arg,)
-tableresults(arg::SelectQuery) = tableresults(arg.result)
 tableresults(arg::UnmergedResult) = arg.results
 tableresults(a, b) = (tableresults(a)..., tableresults(b)...)
 
@@ -49,16 +48,15 @@ query(value) = SelectWithoutFromQuery(value)
 
 filter(f::Function, arg::Queryable) = filter(f, SelectQuery(arg))
 function filter(f::Function, q::SelectQuery)
-    f = q.filter & convert(SQLExpression, f(tableresults(q)...))
+    f = q.filter & convert(SQLExpression, f(tableresults(q.result)...))
     with_filter(q, f)
 end
 filter(f::Function, q::QuerySet) = QuerySet(filter(f, q.query), q.executor)
 filter(f::Function) = (q) -> filter(f, q)
-
-
+postmap(result) = mapfields((f,a) -> convert(SQLExpression, f), result)
 
 map(f::Function, node::Queryable) = map(f, SelectQuery(node))
-map(f::Function, q::SelectQuery) = with_result(q, f(tableresults(q)...))
+map(f::Function, q::SelectQuery) = with_result(q, postmap(f(tableresults(q.result)...)))
 map(f::Function, q::QuerySet) = QuerySet(map(f, q.query), q.executor)
 map(f::Function, q::CommonTableExpressionQuery) = CommonTableExpressionQuery(map(f, q.query), q.commontables...)
 map(f::Function, q::SelectWithoutFromQuery) = SelectWithoutFromQuery(f(q.result))
@@ -90,7 +88,7 @@ joinable(q::SelectQuery, ::TableItem) = isgrouped(q) || ispaged(q) ? query(q) : 
 function join(f::Function, left::Queryable, right::Queryable; type::JoinType=InnerJoin())
     left = convert(SelectQuery, left)
     right = joinable(convert(SelectQuery, right))
-    results = tableresults(left, right)
+    results = tableresults(left.result, right.result)
     condition = convert(SQLExpression, f(results...))
     joinvalue = EquiJoin(type, condition)
     joinitem = JoinItem(left.from, right.from, joinvalue)
@@ -136,9 +134,9 @@ join(right::Queryable, field::Symbol, morefields::Symbol...) = (left::Queryable)
 
 function join_lateral(rightf::Function, left::Queryable; on=(args...) -> true, type::JoinType=InnerJoin())
     left = convert(SelectQuery, left)
-    right = rightf(tableresults(left)...)
+    right = rightf(tableresults(left.result)...)
     right = query(right)
-    results = tableresults(left, right)
+    results = tableresults(left.result, result(right))
     condition = convert(SQLExpression, on(results...))
     joinvalue = LateralJoin(type, condition)
     joinitem = JoinItem(left.from, right.from, joinvalue)
@@ -155,7 +153,7 @@ end
 join_lateral(rightf::Function; kwargs...) = (left) -> join_lateral(rightf, left; kwargs...)
 
 groupby(f, node::Queryable) = groupby(f, convert(SelectQuery, node))
-groupby(f::Function, q::SelectQuery) = with_group(q, f(tableresults(q)...))
+groupby(f::Function, q::SelectQuery) = with_group(q, f(tableresults(q.result)...))
 groupby(f::Function, q::QuerySet) = QuerySet(groupby(f, q.query), q.executor)
 groupby(q::Queryable, field::Symbol, morefields::Symbol...) =
     let fields = (field, morefields...)
@@ -167,14 +165,14 @@ groupby(field::Symbol, morefields::Symbol...) = (q::Queryable) -> groupby(q, fie
 
 having(f::Function, arg::Queryable) = having(f, convert(SelectQuery, node))
 function having(f::Function, q::SelectQuery)
-    f = q.groupfilter & convert(SQLExpression, f(tableresults(q)...))
+    f = q.groupfilter & convert(SQLExpression, f(tableresults(q.result)...))
     with_groupfilter(q, f)
 end
 having(f::Function, q::QuerySet) = QuerySet(having(f, q.query), q.executor)
 having(f::Function) = (q) -> having(f, q)
 
 sort(f::Function, node::Queryable) = sort(f, convert(SelectQuery, node))
-sort(f::Function, q::SelectQuery) = with_order(q, f(tableresults(q)...))
+sort(f::Function, q::SelectQuery) = with_order(q, f(tableresults(q.result)...))
 sort(f::Function, q::QuerySet) = QuerySet(sort(f, q.query), q.executor)
 function sort(node::Queryable, field::Symbol, morefields::Symbol...)
     let fields = (field, morefields...)
