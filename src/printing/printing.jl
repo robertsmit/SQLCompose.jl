@@ -48,7 +48,7 @@ end
 
 function printpsql(io::IO, node::CaseExpression, env)
     print(io, "CASE")
-    for (index, clause) in enumerate(node.clauses)
+    for clause in node.clauses
         print(io, " WHEN ")
         printpsql(io, clause.predicate, node, env)
         print(io, " THEN ")
@@ -71,18 +71,15 @@ function printpsql_filter(io, expr::BooleanExpression, env; prefix="", postfix="
     print(io, postfix)
 end
 
-printpsql_fieldlist(io, ::Nothing, env; prefix="", postfix="") = nothing
-function printpsql_fieldlist(io, node::NodeList, env; prefix="", postfix="", nofix="")
-    if isempty(node)
-        print(io, nofix)
-        return
+function printpsql_fieldlist(io, node, env; prefix="", postfix="", nofix="")
+    let hasfields = false
+        foreachfield(node) do f, a, i
+            hasfields = true
+            i == 1 ? print(io, prefix) : print(io, ", ")
+            printpsql_field(io, f, env)
+        end
+        hasfields ? print(io, postfix) : print(io, nofix)
     end
-    print(io, prefix)
-    for i in eachindex(node)
-        i != 1 && print(io, ", ")
-        printpsql_field(io, node[i], env)
-    end
-    print(io, postfix)
 end
 
 function printpsql(io::IO, arg::AbstractVector, env)
@@ -155,7 +152,7 @@ function printpsql(io::IO, node::Concat, env)
     print(io, ")")
 end
 
-printpsql(io::IO, node::SubqueryExpression, env) = begin 
+printpsql(io::IO, node::SubqueryExpression, env) = begin
     print(io, "(")
     printpsql(io, node.query, env)
     print(io, ")")

@@ -12,7 +12,6 @@ nextalias(s1::Alias, s2::Symbol) = "$(s1)_$(s2)"
 nextalias(s1::Alias, i::Integer) = "$(s1)_$i"
 
 #iterates each field
-# foreachfield(f::Function, q::Query) = foreachfield(f, result(q)) 
 foreachfield(f::Function, result) = foreachfield(f, result, nothing, 1) 
 
 foreachfield(f::Function, result::T, alias, index) where {T} = 
@@ -24,10 +23,4 @@ function foreachfield(f::Function, result::NodeList, alias, index)
         index = foreachfield(f, v, nextalias(alias, n), index)
     end
     index
-end
-
-function result_fieldnames(result)
-    let names = []
-
-    end
 end
