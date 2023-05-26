@@ -83,4 +83,11 @@
         "SELECT q.elem1_1 AS elem1, q.elem2_a AS elem2 FROM (SELECT f.flight_id AS elem1_1, f.aircraft_code AS elem2_a FROM flights f) q"
     end
 
+    @info "map name conflicts"
+    @testsql (@query Pagila.Actor begin
+       map(_) do a
+       (a.last_name, (last_name=a.last_name,))
+       end
+       end), "SELECT a.last_name AS elem1, a.last_name AS elem2_last_name FROM actor a"
+
 end

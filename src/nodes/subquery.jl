@@ -32,16 +32,6 @@ function SelectQuery(from::SubqueryTableItem)
     SelectQuery(mappedresult, from)
 end
 
-#maps result in same structure 
-
-mapfields(f::Function, result) = mapfields(f, result, nothing)
-mapfields(f::Function, result::T, alias) where {T} = mapfields(f::Function, result, alias, NodeCompositionStyle(T), )
-mapfields(f::Function, field, alias, ::NodeElement) = f(field, fieldalias(field, alias))
-mapfields(f::Function, field, alias, ::NodeStructure) = error("Please implement mapfields function for", typeof(field))
-
-mapfields(f::Function, result::Tuple, alias) = Tuple(mapfields(f, x, nextalias(alias, i)) for (i, x) in pairs(result))
-mapfields(f::Function, result::NamedTuple{K}, alias) where K = NamedTuple{K}(mapfields(f, x, nextalias(alias, i)) for (i, x) in pairs(result))
-
 
 
 

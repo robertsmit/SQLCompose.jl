@@ -54,10 +54,10 @@ end
 filter(f::Function, q::QuerySet) = QuerySet(filter(f, q.query), q.executor)
 filter(f::Function) = (q) -> filter(f, q)
 
-convert_fields(result) = mapfields((f, a) -> convert(SQLExpression, f), result)
+
 
 map(f::Function, node::Queryable) = map(f, SelectQuery(node))
-map(f::Function, q::SelectQuery) = with_result(q, convert_fields(f(resultargs(q.result)...)))
+map(f::Function, q::SelectQuery) = with_result(q, convert_fields(SQLExpression, f(resultargs(q.result)...)))
 map(f::Function, q::QuerySet) = QuerySet(map(f, q.query), q.executor)
 map(f::Function, q::CommonTableExpressionQuery) = CommonTableExpressionQuery(map(f, q.query), q.commontables...)
 map(f::Function, q::SelectWithoutFromQuery) = SelectWithoutFromQuery(f(q.result))
@@ -156,7 +156,7 @@ join_lateral(rightf::Function; kwargs...) = (left) -> join_lateral(rightf, left;
 groupby(f, node::Queryable) = groupby(f, convert(SelectQuery, node))
 groupby(f::Function, q::SelectQuery) =
     let groupval = f(resultargs(q.result)...)
-        with_group(q, convert_fields(groupval))
+        with_group(q, convert_fields(SQLExpression, groupval))
     end
 groupby(f::Function, q::QuerySet) = QuerySet(groupby(f, q.query), q.executor)
 groupby(q::Queryable, field::Symbol, morefields::Symbol...) =
@@ -178,7 +178,7 @@ having(f::Function) = (q) -> having(f, q)
 sort(f::Function, node::Queryable) = sort(f, convert(SelectQuery, node))
 sort(f::Function, q::SelectQuery) =
     let sortvalue = f(resultargs(q.result)...)
-        with_order(q, sortvalue)
+        with_order(q, convert_fields(Union{SQLExpression, DescOrder}, sortvalue))
     end
 sort(f::Function, q::QuerySet) = QuerySet(sort(f, q.query), q.executor)
 function sort(node::Queryable, field::Symbol, morefields::Symbol...)

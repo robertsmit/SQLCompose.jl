@@ -6,7 +6,7 @@ printpsql(io::IO, node) = printpsql(io, node, PrintEnvironment())
 printpsql_result(io::IO, ::UnmergedResult, env) = print(io, "*")
 printpsql_result(io::IO, arg::TableItemFieldRef, env) = printpsql(io, arg, env)
 function printpsql_result(io::IO, arg, env)
-    foreachfield(arg) do field, alias, index
+    foreach_field(arg) do field, alias, index
         index == 1 || print(io, ", ")
         printpsql_field(io, field, env)
         printpsql_fieldalias(io, field, alias)
@@ -72,14 +72,11 @@ function printpsql_filter(io, expr::BooleanExpression, env; prefix="", postfix="
 end
 
 function printpsql_fieldlist(io, node, env; prefix="", postfix="", nofix="")
-    let hasfields = false
-        foreachfield(node) do f, a, i
-            hasfields = true
-            i == 1 ? print(io, prefix) : print(io, ", ")
-            printpsql_field(io, f, env)
-        end
-        hasfields ? print(io, postfix) : print(io, nofix)
+    field_count = foreach_field(node; alias=missing) do f, i
+        i == 1 ? print(io, prefix) : print(io, ", ")
+        printpsql_field(io, f, env)
     end
+    field_count > 0 ? print(io, postfix) : print(io, nofix)
 end
 
 function printpsql(io::IO, arg::AbstractVector, env)

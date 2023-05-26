@@ -1,6 +1,6 @@
 abstract type RowStruct{T} <: SQLNode end
 
-NodeCompositionStyle(::Type{RowStruct}) = NodeStructure()
+NodeCompositionStyle(::Type{<:RowStruct}) = NodeStructure()
 
 field_names(::Type{<:RowStruct{T}}) where {T} = field_names(T)
 field_pairs(::Type{<:RowStruct{T}}) where {T} = field_pairs(T)
@@ -10,6 +10,7 @@ name(::Type{<:RowStruct{T}}) where {T} = name(T)
 tableresult(ref::TableItemRef, rst::Type{<:RowStruct}) =
     rst((TableItemFieldRef(name, type, ref)
          for (name, type) in field_pairs(rst))...)
+
 
 
 SelectQuery(type::Type{<:RowStruct}) = SelectQuery(TableSource(type))
@@ -24,17 +25,8 @@ end
 
 Base.NamedTuple(rs::RowStruct) = NamedTuple(collect(pairs(rs)))
 
-function foreachfield(f::Function, result::T, alias, index) where {T<:RowStruct}
-    let i = index
-        for (fieldname, fieldvalue) in pairs(result)
-            i = foreachfield(f, fieldvalue, nextalias(alias, fieldname), i)
-        end
-        i
-    end
-end
-
-function mapfields(f::Function, result::T, alias) where {T<:RowStruct}
-    T((mapfields(f, fieldvalue, nextalias(alias, fieldname)) for (fieldname, fieldvalue) in pairs(result))...)
+function mapfields(f::Function, result::T; alias=nothing) where {T<:RowStruct}
+    T((mapfields(f, fieldvalue; alias=join_alias(alias, fieldname)) for (fieldname, fieldvalue) in pairs(result))...)
 end
 
 function write_referredtable_location_plan!(plan, node::T, tableitem) where {T<:RowStruct}
@@ -52,7 +44,7 @@ reference(to::Type{<:RowStruct}, primarykey, foreignkey, isnullable=false) = ref
 
 function Base.show(io::IO, node::RowStruct)
     print(io, "(")
-    foreachfield(node) do field, alias, index
+    foreach_field(node) do field, alias, index
         index == 1 || print(io, ", ")
         print(io, alias)
         print(io, " = ")

@@ -5,7 +5,7 @@ end
 function SQLCompose.execute(executor::MockQueryExecutor, query::SQLCompose.Query) 
     function makerow(data::Tuple)
         row = []
-        SQLCompose.foreachfield(SQLCompose.result(query)) do field, alias, index
+        SQLCompose.foreach_field(SQLCompose.result(query)) do field, alias, index
             push!(row, Symbol(alias) => data[index])
         end
         NamedTuple(row)
