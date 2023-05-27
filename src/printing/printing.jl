@@ -32,7 +32,6 @@ function printpsql(io::IO, arg::SelectQuery, parentenv)
     printpsql_result(io, arg.result, env)
     print(io, " FROM ")
     printpsql_fromitem_in_environment(io, arg.from, env)
-    printpsql_referred_joins(io, arg.from, env)
     printpsql_filter(io, arg.filter, env; prefix=" WHERE ")
     if !isempty(arg.group)
         printpsql_fieldlist(io, arg.group, env; prefix=" GROUP BY ")
@@ -221,12 +220,10 @@ printpsql_fromitem_in_environment(io::IO, node::TableItem, env) =
 
 function printpsql_fromitem(io::IO, node::JoinItem, env)
     printpsql_fromitem_in_environment(io, node.left, env)
-    printpsql_referred_joins(io, node.left, env)
     printpsql_join(io, node.join)
     right_env = printpsql_fromitem_in_environment(io, node.right, env)
     print(io, " ON ")
     printpsql(io, node.join.condition, right_env)
-    printpsql_referred_joins(io, node.right, env)
 end
 
 function printpsql_join(io::IO, node::LateralJoin)
@@ -238,43 +235,6 @@ printpsql_join(io::IO, ::InnerJoin) = print(io, " INNER JOIN ")
 printpsql_join(io::IO, ::LeftJoin) = print(io, " LEFT JOIN ")
 printpsql_join(io::IO, ::RightJoin) = print(io, " RIGHT JOIN ")
 printpsql_join(io::IO, ::FullJoin) = print(io, " FULL JOIN ")
-
-
-
-printpsql_referred_joins(io, ::JoinItem, env) = nothing
-
-function printpsql_referred_joins(io, referringtable::TableItem, env)
-    printpsql_referred_joins(io, unwind_referred(env, referringtable))
-end
-
-printpsql_referred_joins(_, ::NullPrintEnvironment) = nothing
-function printpsql_referred_joins(io, env::ReferredTableEnvironment)
-    printpsql_referred_joins(io, next_referred(env))
-    printpsql_referred_join(io, env)
-
-end
-
-function printpsql_referred_join(io::IO, env::ReferredTableEnvironment)
-    let referred = env.key
-        print(io, referred.isnullable ? " LEFT OUTER JOIN " : " INNER JOIN ")
-        print(io, referred.tablename)
-        alias = tablealias(env, referred)
-        print(io, " ")
-        print(io, alias)
-        print(io, " ON ")
-        for (i, (foreign, prim)) in enumerate(zip(referred.foreignkeys, referred.primarykeys))
-            if i > 1
-                print(io, " AND ")
-            end
-            printpsql(io, foreign, env)
-            print(io, " = ")
-            print(io, alias)
-            print(io, ".")
-            print(io, prim)
-        end
-    end
-end
-
 
 printpsql_infix(io::IO, node::SQLNode, operator, env) = printpsql_infix(io, node.left, operator, node.right, node, env)
 function printpsql_infix(io::IO, left::SQLNode, operator, right::SQLNode, parent::SQLNode, env)

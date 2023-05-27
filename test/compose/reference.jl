@@ -33,14 +33,14 @@
         INNER JOIN salary ref_salary ON p.id = ref_salary.person_id"
 
 
-   
+
 
     @info "test with reference in subquery"
     @testsql (@query persons begin
         map(p -> begin
                 let nextsalary = (@query salaries begin
                         filter(s -> s.amount > salary(p).amount &&
-                        s.person_id != p.id, _)
+                                s.person_id != p.id, _)
                         map(s -> minimum(s.amount), _)
                     end)
                     (person=fullname(p), nextsalary)
@@ -69,6 +69,27 @@
     FROM person p 
     INNER JOIN salary ref_salary 
         ON p.id = ref_salary.person_id"
+
+    @info "referred also in subquery"
+   @testsql begin
+        all_actor_of(f::Pagila.Film) = f |> Pagila.all_film_actor_of |> Pagila.actor_of
+        all_category_of(f::Pagila.Film) = f |> Pagila.all_film_category_of |> Pagila.category_of
+        actor_name(actor) = actor.first_name * " " * actor.last_name
+        @query Pagila.Film begin
+            map(_) do f
+                subquery = @query Pagila.Film begin
+                    map(f2 -> all_actor_of(f) |> actor_name, _)
+                    _[:1]
+                end
+                (actor_name = all_actor_of(f) |> actor_name, actor_name_sub=subquery)
+            end
+        end
+    end,
+    "SELECT 
+        CONCAT(ref_actor.first_name, ' ', ref_actor.last_name) AS actor_name, 
+        (SELECT CONCAT(ref_actor.first_name, ' ', ref_actor.last_name) AS elem1 FROM film f2 LIMIT 1) AS actor_name_sub 
+    FROM film f 
+    INNER JOIN film_actor ref_film_actor ON f.film_id = ref_film_actor.film_id 
+    INNER JOIN actor ref_actor ON ref_film_actor.actor_id = ref_actor.actor_id"
 end
 
- 

@@ -1,51 +1,30 @@
-mutable struct ReferredTableLocationPlan
-    locations::Union{ImmutableDict,Nothing}
-    env::Any
-end
 
-ReferredTableLocationPlan(env) = ReferredTableLocationPlan(nothing, env)
 
-push_reference!(plan::ReferredTableLocationPlan, ref::ReferredTableItemRef, tableitem) =
-    let entry = ref => key(tableitem)
-        plan.locations = isnothing(plan.locations) ?
-                         ImmutableDict(entry) :
-                         ImmutableDict(plan.locations, entry)
-        plan
-    end
-
-islocated(plan::ReferredTableLocationPlan, ref::ReferredTableItemRef) =
-    (!isnothing(plan.locations) && haskey(plan.locations, ref)) || hasreferred(plan.env, ref)
 
 mutable struct ReferredTableLocationPlan2
-    visited
     tableitem
     env::Any
 end
 
-ReferredTableLocationPlan2(env) = ReferredTableLocationPlan2([], nothing, env)
+ReferredTableLocationPlan2(env) = ReferredTableLocationPlan2(nothing, env)
 
 function push_reference!(plan::ReferredTableLocationPlan2, ref::ReferredTableItemRef)
-    if ref in plan.visited
-        return false
-    end
     condition = reduce(zip(ref.foreignkeys, ref.primarykeys), init=true) do acc, (foreign, prim)
         acc & (foreign == TableItemFieldRef(prim, UnknownType, ref))
     end
     plan.tableitem = JoinItem(plan.tableitem, DefinedTableItem(ref, ref.tablename), EquiJoin(ref.isnullable ? LeftJoin() : InnerJoin(), condition))
-    plan.visited = [plan.visited..., ref]
-    return true
+    plan.env = nextenv(plan.env, ref)
 end
 
 function push_tableitem!(plan::ReferredTableLocationPlan2, tableitem)
     plan.tableitem = tableitem
+    plan.env = nextenv(plan.env, tableitem)
 end
 
 function push_join!(plan::ReferredTableLocationPlan2, tableitem, join)
     plan.tableitem = JoinItem(plan.tableitem, tableitem, join)
+    plan.env = nextenv(plan.env, tableitem)
 end
-
-islocated(plan::ReferredTableLocationPlan2, ref::ReferredTableItemRef) = ref in plan.visited
-
 
 function write_referredtable_location_plan!(plan, node::SelectQuery)
     write_referredtable_location_plan!(plan, node.from)
@@ -77,9 +56,11 @@ write_referredtable_location_plan!(plan, node::SelectWithoutFromQuery, tableitem
 
 
 function write_referredtable_location_plan!(plan, node::ReferredTableItemRef, tableitem)
-    if push_reference!(plan, node)
-        write_referredtable_location_plan!(plan, node.foreignkeys, tableitem)
+    if hasreferred(plan.env, node)
+        return
     end
+    write_referredtable_location_plan!(plan, node.foreignkeys, tableitem)
+    push_reference!(plan, node)
 end
 
 function write_referredtable_location_plan!(plan, node::Union{NodeList,AbstractVector,SQLNode}, tableitem)

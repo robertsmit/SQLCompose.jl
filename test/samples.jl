@@ -168,14 +168,14 @@ end,
     end
 end,
 """
-SELECT f.film_id AS fid, f.title, f.description, ref_category.name AS category, f.rental_rate AS price, f.length, 
-    f.rating, string_agg(CONCAT(ref_actor.first_name, ' ', ref_actor.last_name), ', ') AS actors 
-    FROM film f 
-    INNER JOIN category ref_category ON kaas.category_id = ref_category.category_id 
-    INNER JOIN film_category ref_film_category ON f.film_id = ref_film_category.film_id 
-    INNER JOIN actor ref_actor ON kaas.actor_id = ref_actor.actor_id 
-    INNER JOIN film_actor ref_film_actor ON f.film_id = ref_film_actor.film_id 
-    GROUP BY f.film_id, f.title, f.description, ref_category.name, f.rental_rate, f.length, f.rating
+SELECT f.film_id AS fid, f.title, f.description, ref_category.name AS category, f.rental_rate AS price, 
+    f.length, f.rating, string_agg(CONCAT(ref_actor.first_name, ' ', ref_actor.last_name), ', ') AS actors 
+FROM film f 
+INNER JOIN film_category ref_film_category ON f.film_id = ref_film_category.film_id 
+INNER JOIN category ref_category ON ref_film_category.category_id = ref_category.category_id 
+INNER JOIN film_actor ref_film_actor ON f.film_id = ref_film_actor.film_id 
+INNER JOIN actor ref_actor ON ref_film_actor.actor_id = ref_actor.actor_id 
+GROUP BY f.film_id, f.title, f.description, ref_category.name, f.rental_rate, f.length, f.rating
 """
 
 # query the full name of actors, first_name or last_name or its combination and last_name or first_name contains "PEN"
