@@ -69,8 +69,3 @@ function write_referredtable_location_plan!(plan, node::Union{NodeList,AbstractV
     end
 end
 
-
-write_referredtable_location_plan!(plan, node::Join, tableitem) = write_referredtable_location_plan!(plan, node.condition, tableitem)
-
-write_referredtable_location_plan!(plan, node::TableItemFieldRef, tableitem::FromItem) = write_referredtable_location_plan!(plan, node.table, tableitem)
-
