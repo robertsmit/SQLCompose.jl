@@ -5,6 +5,8 @@ struct ReferredTableItemRef <: TableItemRef
     isnullable::Bool
 end
 
+key(ref::ReferredTableItemRef) = ref
+
 function aliashint(ref::ReferredTableItemRef)
     Symbol("ref_", ref.tablename)
 end

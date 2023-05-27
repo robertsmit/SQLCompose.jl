@@ -26,7 +26,8 @@ printpsql(io, node, env) = error("please implement 'printpsql(::IO, ::Any, ::Abs
 
 
 function printpsql(io::IO, arg::SelectQuery, parentenv)
-    env = nextenv(parentenv, arg)
+    (env, nextNode) = nextenv2(parentenv, arg)
+    arg = nextNode
     print(io, "SELECT ")
     printpsql_result(io, arg.result, env)
     print(io, " FROM ")

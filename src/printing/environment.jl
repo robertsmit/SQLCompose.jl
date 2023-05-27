@@ -3,7 +3,7 @@ abstract type AbstractPrintEnvironment end
 struct NullPrintEnvironment <: AbstractPrintEnvironment end
 
 struct TablePrintEnvironment <: AbstractPrintEnvironment
-    key::Symbol
+    key
     alias::Symbol
     parent::AbstractPrintEnvironment
 end
@@ -17,16 +17,21 @@ end
 
 PrintEnvironment() = NullPrintEnvironment()
 
-unwind(env, table::TableItem) = unwind(env, key(table))
+unwind(env, table::TableItem) = begin 
+
+    unwind(env, key(table))
+
+end
 unwind(env::TablePrintEnvironment, key::Symbol) = env.key == key ? env : unwind(env.parent, key)
-unwind(env::ReferredTableEnvironment, key::Symbol) = unwind(env.parent, key)
-unwind(::NullPrintEnvironment, ::Symbol) = error("should not occur")
+unwind(env::TablePrintEnvironment, key::ReferredTableItemRef) = env.key == key ? env : unwind(env.parent, key)
+unwind(env::ReferredTableEnvironment, key::Union{Symbol, TableItemRef}) = unwind(env.parent, key)
+unwind(::NullPrintEnvironment, ::Union{Symbol, TableItemRef}) = error("should not occur")
 
 unwind_referred(::NullPrintEnvironment, table::TableItem) = error("should not occur")
-unwind_referred(::NullPrintEnvironment, table::Symbol) = error("should not occur")
+unwind_referred(::NullPrintEnvironment, table::Union{Symbol, TableItemRef}) = error("should not occur")
 unwind_referred(env, table::TableItem) = unwind_referred(env, key(table))
-unwind_referred(env::TablePrintEnvironment, table::Symbol) = env.key === table ? NullPrintEnvironment() : unwind_referred(env.parent, table)
-unwind_referred(env::ReferredTableEnvironment, table::Symbol) = env.location == table ? env : unwind_referred(env.parent, table)
+unwind_referred(env::TablePrintEnvironment, table::Union{Symbol, TableItemRef}) = env.key === table ? NullPrintEnvironment() : unwind_referred(env.parent, table)
+unwind_referred(env::ReferredTableEnvironment, table::Union{Symbol,TableItemRef}) = env.location == table ? env : unwind_referred(env.parent, table)
 next_referred(env::ReferredTableEnvironment) = unwind_referred(env.parent, env.location)
 
 hasreferred(env::NullPrintEnvironment, ref::ReferredTableItemRef) = false
@@ -57,10 +62,17 @@ function nextenv(env, node::SelectQuery)
     env
 end
 
+function nextenv2(env, node::SelectQuery)
+    plan = ReferredTableLocationPlan2(env)
+    write_referredtable_location_plan!(plan, node)
+    nextnode = with_from(node, plan.tableitem)
+    env = nextenv(env, nextnode.from; referredtablelocations=nothing)
+    env, nextnode
+end
+
 function nextenv(env, table::TableItem; referredtablelocations = nothing)
-    (; key, aliashint) = table.ref
-    aliasactual = getaliasactual(env, aliashint)
-    nextenv = TablePrintEnvironment(key, aliasactual, env)
+    aliasactual = getaliasactual(env, aliashint(table))
+    nextenv = TablePrintEnvironment(key(table), aliasactual, env)
     nextenv_referred(nextenv, table, referredtablelocations)
 end
 
