@@ -2,11 +2,13 @@
 struct SubqueryTableItem <: TableItem
     ref::TableItemRef
     query::Query
+    aliashint::Symbol
 end
+aliashint(item::SubqueryTableItem) = item.aliashint
 
 function SubqueryTableItem(query::Query; aliashint::Symbol=:q)
-    ref = TableItemRef(aliashint)
-    SubqueryTableItem(ref, query)
+    ref = TableItemRef()
+    SubqueryTableItem(ref, query, aliashint)
 end
 
 struct SubqueryExpression{T} <: SQLExpression{T}

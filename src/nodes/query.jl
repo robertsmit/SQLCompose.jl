@@ -70,9 +70,9 @@ tableresult(ref::TableItemRef, fnames, ftypes) =
 tableresult(ref::TableItemRef, type::Type{<:RowType}) = tableresult(ref, field_names(type), field_types(type))
 
 function SelectQuery(table::TableSource)
-    ref = TableItemRef(table.aliashint)
+    ref = TableItemRef()
     result = tableresult(ref, table.type)
-    from = DefinedTableItem(ref, name(table))
+    from = DefinedTableItem(ref, name(table), table.aliashint)
     SelectQuery(result, from)
 end
 
@@ -85,23 +85,17 @@ end
 
 # set returning function in from
 begin
-    TableItemRef(f::SetReturningFunctionCall) = TableItemRef(aliashintdefault(f.name))
-
     SelectQuery(f::SetReturningFunctionCall{T}) where {T} = SelectQuery(f, (:val,), (T,))
 
     function SelectQuery(f::SetReturningFunctionCall{T}) where {T<:RowType}
-        ref = TableItemRef(f)
+        ref = TableItemRef()
         from = SetReturningFunctionTableItem(ref, (), f)
         SelectQuery(tableresult(ref, T), from)
     end
 
     function SelectQuery(f::SetReturningFunctionCall{T}, fnames::Tuple, ftypes::Tuple) where {T}
-        ref = TableItemRef(f)
+        ref = TableItemRef()
         from = SetReturningFunctionTableItem(ref, fnames, f)
-        SelectQuery(from, fnames, ftypes)
-    end
-
-    function SelectQuery(from::SetReturningFunctionTableItem, fnames::Tuple, ftypes::Tuple)
         result = tableresult(from.ref, fnames, ftypes)
         SelectQuery(result, from)
     end

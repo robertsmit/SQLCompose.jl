@@ -12,8 +12,9 @@ function push_reference!(plan::ReferredTableLocationPlan2, ref::ReferredTableIte
     condition = reduce(zip(ref.foreignkeys, ref.primarykeys), init=true) do acc, (foreign, prim)
         acc & (foreign == TableItemFieldRef(prim, UnknownType, ref))
     end
-    plan.tableitem = JoinItem(plan.tableitem, DefinedTableItem(ref, ref.tablename), EquiJoin(ref.isnullable ? LeftJoin() : InnerJoin(), condition))
-    plan.env = nextenv(plan.env, ref)
+    referred_tableitem = DefinedTableItem(ref)
+    plan.tableitem = JoinItem(plan.tableitem, referred_tableitem, EquiJoin(ref.isnullable ? LeftJoin() : InnerJoin(), condition))
+    plan.env = nextenv(plan.env, referred_tableitem)
 end
 
 function push_tableitem!(plan::ReferredTableLocationPlan2, tableitem)

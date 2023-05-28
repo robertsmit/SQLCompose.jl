@@ -72,8 +72,3 @@ function nextenv(env, tableitem::JoinItem)
     envright = nextenv(envleft, tableitem.right)
     envright
 end
-
-function nextenv(env, reference::ReferredTableItemRef)
-    aliasactual = getaliasactual(env, aliashint(reference))
-    TablePrintEnvironment(key(reference), aliasactual, env)
-end

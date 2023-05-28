@@ -103,7 +103,7 @@
                 subquery = @query Pagila.Film begin
                     map(f2 -> all_actor_of(f) |> actor_name, _)
                 end
-                combined = query(vcat(subquery, subquery))[:1]
+                combined = vcat(subquery, subquery)[:1]
                 (actor_name=all_actor_of(f) |> actor_name, actor_name_sub=combined)
             end
         end

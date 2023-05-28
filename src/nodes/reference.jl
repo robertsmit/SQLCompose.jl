@@ -7,9 +7,8 @@ end
 
 key(ref::ReferredTableItemRef) = ref
 
-function aliashint(ref::ReferredTableItemRef)
-    Symbol("ref_", ref.tablename)
-end
+
+DefinedTableItem(ref) = DefinedTableItem(ref, ref.tablename, Symbol("ref_", ref.tablename))
 
 function reference(table::TableSource, primarykeys::Tuple, foreignkeys, isnullable=false)
     ref = ReferredTableItemRef(name(table), primarykeys, foreignkeys, isnullable)

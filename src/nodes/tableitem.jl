@@ -11,13 +11,12 @@ abstract type TableItemRef <: SQLNode end
 
 struct KeyedTableItemRef <: TableItemRef
     key::Symbol
-    aliashint::Symbol
 end
 
 key(ref::KeyedTableItemRef) = ref.key
 key(tableitem::TableItem) = key(tableitem.ref)
 
-TableItemRef(aliashint) = KeyedTableItemRef(gensym(), aliashint)
+TableItemRef() = KeyedTableItemRef(gensym())
 
 struct TableItemFieldRef{T} <: SQLExpression{T}
     name::Symbol
@@ -31,6 +30,7 @@ struct TableSource
 end
 
 TableSource(type) = TableSource(type, aliashintdefault(name(type)))
+aliashint(source::TableSource) = source.aliashint
 
 TableSource(name::Symbol, names_types::Pair...; aliashint=aliashintdefault(name)) =
     let nt = NamedTuple(names_types)
@@ -47,7 +47,9 @@ field_pairs(table::TableSource) = field_pairs(table.type)
 struct DefinedTableItem <: TableItem
     ref::TableItemRef
     name::Symbol
+    aliashint::Symbol
 end
+aliashint(item::DefinedTableItem) = item.aliashint
 
 struct SetReturningFunctionTableItem{T} <: TableItem
     ref::TableItemRef
@@ -55,19 +57,25 @@ struct SetReturningFunctionTableItem{T} <: TableItem
     f::SetReturningFunctionCall{T}
 end
 
+aliashint(ref::SetReturningFunctionTableItem) = aliashintdefault(ref.f.name)
+
+
 struct RefTableItem <: TableItem
     ref::TableItemRef
 end
+aliashint(item::RefTableItem) = error("reftalbeitme")
 
 struct ValuesTableItem{T} <: TableItem
     ref::TableItemRef
     fieldnames::Tuple
     values::AbstractVector{T}
+    aliashint::Symbol
 end
+aliashint(item::ValuesTableItem) = item.aliashint
 
-function ValuesTableItem(values::AbstractVector{T}, fieldnames::Tuple, aliashint=:vals) where {T<:Tuple}
+function ValuesTableItem(values::AbstractVector{T}, fieldnames::Tuple, aliashint) where {T<:Tuple}
     @assert length(values) > 0
     @assert length(T.types) == length(fieldnames)
-    ref = TableItemRef(aliashint)
-    ValuesTableItem(ref, fieldnames, values)
+    ref = TableItemRef()
+    ValuesTableItem(ref, fieldnames, values, aliashint)
 end
