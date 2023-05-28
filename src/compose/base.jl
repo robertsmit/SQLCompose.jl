@@ -7,8 +7,7 @@ Base.convert(::Type{Query}, value::Query) = value
 Base.convert(::Type{Query}, value) = query(value)
 
 commontable(q::Queryable) = SubqueryTableItem(q)
-
-ref(table::TableItem) = SelectQuery(SelectQuery(table); from=RefTableItem(table.ref))
+query_commontable(table::TableItem) = SelectQuery(SelectQuery(table); from=RefTableItem(table.ref))
 
 resultargs(arg) = (arg,)
 resultargs(arg::UnmergedResult) = arg.results
@@ -192,13 +191,13 @@ sort(field::Symbol, morefields::Symbol...) = q -> sort(q, field, morefields...)
 
 function with(f::Function, commons::Queryable...)
     commontables = map(commontable, commons)
-    query = f(map(ref, commontables)...)
+    query = f(map(query_commontable, commontables)...)
     CommonTableExpressionQuery(query, commontables...)
 end
 
 function with(f::Function, arg::CommonTableExpressionQuery)
     next = commontable(arg.query)
-    query = f(ref(next))
+    query = f(query_commontable(next))
     CommonTableExpressionQuery(query, arg.commontables..., next)
 end
 
@@ -206,7 +205,7 @@ with(f::Function, arg::QuerySet) = QuerySet(with(f, arg.query), arg.executor)
 
 function iterate(it::Function, base::Queryable; unique=false)
     basetable = commontable(base)
-    reftable = ref(basetable)
+    reftable = query_commontable(basetable)
     iterateterm = SelectQuery(it(reftable))
     recurtable = RecursiveCommonTable(basetable, iterateterm, unique)
     CommonTableExpressionQuery(reftable, recurtable)

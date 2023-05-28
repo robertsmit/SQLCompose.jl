@@ -13,8 +13,7 @@ struct KeyedTableItemRef <: TableItemRef
     key::Symbol
 end
 
-key(ref::KeyedTableItemRef) = ref.key
-key(tableitem::TableItem) = key(tableitem.ref)
+ref(tableitem::TableItem) = tableitem.ref
 
 TableItemRef() = KeyedTableItemRef(gensym())
 

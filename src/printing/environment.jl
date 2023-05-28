@@ -3,33 +3,23 @@ abstract type AbstractPrintEnvironment end
 struct NullPrintEnvironment <: AbstractPrintEnvironment end
 
 struct TablePrintEnvironment <: AbstractPrintEnvironment
-    key
-    alias::Symbol
-    parent::AbstractPrintEnvironment
-end
-
-struct ReferredTableEnvironment <: AbstractPrintEnvironment
-    key::ReferredTableItemRef
-    location::Symbol
+    ref
     alias::Symbol
     parent::AbstractPrintEnvironment
 end
 
 PrintEnvironment() = NullPrintEnvironment()
 
-unwind(env, table::TableItem) =  unwind(env, key(table))
-unwind(env::TablePrintEnvironment, key::Symbol) = env.key == key ? env : unwind(env.parent, key)
-unwind(env::TablePrintEnvironment, key::ReferredTableItemRef) = env.key == key ? env : unwind(env.parent, key)
-unwind(env::ReferredTableEnvironment, key::Union{Symbol, TableItemRef}) = unwind(env.parent, key)
-unwind(::NullPrintEnvironment, ::Union{Symbol, TableItemRef}) = error("should not occur")
+unwind(env, table::TableItem) =  unwind(env, ref(table))
+unwind(env::TablePrintEnvironment, ref::TableItemRef) = env.ref == ref ? env : unwind(env.parent, ref)
+unwind(::NullPrintEnvironment, ::TableItemRef) = error("should not occur")
 
-hasreferred(env::NullPrintEnvironment, ref) = false
-hasreferred(env::TablePrintEnvironment, ref) = env.key == key(ref) ? true : hasreferred(env.parent, ref)
+hasref(env::NullPrintEnvironment, ref) = false
+hasref(env::TablePrintEnvironment, ref) = env.ref == ref ? true : hasref(env.parent, ref)
 
-tablealias(::NullPrintEnvironment, ref) = error("Unknown ref")
-tablealias(env::AbstractPrintEnvironment, table::TableItem) = tablealias(env, table.ref)
-tablealias(env::AbstractPrintEnvironment, ref::KeyedTableItemRef) = tablealias(env, ref.key)
-tablealias(env::AbstractPrintEnvironment, ref) = env.key == ref ? env.alias : tablealias(env.parent, ref)
+getalias(::NullPrintEnvironment, ref) = error("Unknown ref")
+getalias(env::AbstractPrintEnvironment, table::TableItem) = getalias(env, table.ref)
+getalias(env::AbstractPrintEnvironment, ref) = env.ref == ref ? env.alias : getalias(env.parent, ref)
 
 hasalias(::NullPrintEnvironment, alias) = false
 hasalias(env::AbstractPrintEnvironment, alias) = env.alias == alias ? true : hasalias(env.parent, alias)
@@ -58,13 +48,13 @@ end
 
 function nextenv(env, table::TableItem)
     aliasactual = getaliasactual(env, aliashint(table))
-    nextenv = TablePrintEnvironment(key(table), aliasactual, env)
+    nextenv = TablePrintEnvironment(ref(table), aliasactual, env)
 end
 
 function nextenv(env, table::RefTableItem)
     definition_env = unwind(env, table)
-    (;key, alias) = definition_env
-    TablePrintEnvironment(key, alias, env)
+    (;ref, alias) = definition_env
+    TablePrintEnvironment(ref, alias, env)
 end
 
 function nextenv(env, tableitem::JoinItem) 

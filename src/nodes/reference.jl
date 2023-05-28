@@ -5,9 +5,6 @@ struct ReferredTableItemRef <: TableItemRef
     isnullable::Bool
 end
 
-key(ref::ReferredTableItemRef) = ref
-
-
 DefinedTableItem(ref) = DefinedTableItem(ref, ref.tablename, Symbol("ref_", ref.tablename))
 
 function reference(table::TableSource, primarykeys::Tuple, foreignkeys, isnullable=false)

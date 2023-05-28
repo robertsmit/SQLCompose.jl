@@ -42,7 +42,7 @@ write_referredtable_location_plan!(plan, ::Any) = nothing
 write_referredtable_location_plan!(plan, node::SelectQuery) = nothing
 
 function write_referredtable_location_plan!(plan, node::ReferredTableItemRef)
-    if hasreferred(plan.env, node)
+    if hasref(plan.env, node)
         return
     end
     write_referredtable_location_plan!(plan, node.foreignkeys)

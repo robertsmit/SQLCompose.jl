@@ -95,7 +95,7 @@ end
 printpsql(io::IO, ::Nothing, env) = nothing
 printpsql(io::IO, ::Nothing) = nothing
 
-printpsql(io::IO, node::TableItemFieldRef, env) = (print(io, tablealias(env, node.table)); print(io, "."); print(io, node.name))
+printpsql(io::IO, node::TableItemFieldRef, env) = (print(io, getalias(env, node.table)); print(io, "."); print(io, node.name))
 function printpsql(io::IO, node::TableRange, env)
     haslimit = !isnothing(node.limit)
     if haslimit
@@ -158,7 +158,7 @@ end
 function printpsql_fromitem(io::IO, node::SubqueryTableItem, env)
     print(io, "(")
     printpsql(io, node.query, env.parent)
-    alias = tablealias(env, node)
+    alias = getalias(env, node)
     print(io, ") $alias")
 end
 
@@ -184,7 +184,7 @@ function printpsql_fromitem(io::IO, node::SetReturningFunctionTableItem, env::Ta
 end
 
 function printpsql_fromitem(io::IO, node::RefTableItem, env::TablePrintEnvironment)
-    print(io, tablealias(env, node))
+    print(io, getalias(env, node))
 end
 
 function printpsql_fromitem(io::IO, node::ValuesTableItem, env::TablePrintEnvironment)
@@ -200,7 +200,7 @@ function printpsql_fromitem(io::IO, node::ValuesTableItem, env::TablePrintEnviro
     end
     print(io, ")")
     # print table name
-    alias = tablealias(env, node)
+    alias = getalias(env, node)
     print(io, " AS $alias")
     # print field names
     print(io, " (")
@@ -283,7 +283,7 @@ end
 
 function printpsql_commontable(io::IO, table::SubqueryTableItem, env)
     cte_nextenv = nextenv(env, table)
-    alias = tablealias(cte_nextenv, table.ref)
+    alias = getalias(cte_nextenv, table.ref)
     print(io, "$alias AS (")
     printpsql(io, table.query, env)
     cte_nextenv
