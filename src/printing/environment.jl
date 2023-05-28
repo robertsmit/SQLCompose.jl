@@ -45,7 +45,12 @@ end
 
 function nextenv2(env, node::SelectQuery)
     plan = ReferredTableLocationPlan2(env)
-    write_referredtable_location_plan!(plan, node)
+    write_referredtable_location_plan!(plan, node.from)
+    write_referredtable_location_plan!(plan, node.result)
+    write_referredtable_location_plan!(plan, node.filter)
+    write_referredtable_location_plan!(plan, node.group)
+    write_referredtable_location_plan!(plan, node.groupfilter)
+    write_referredtable_location_plan!(plan, node.order)
     nextnode = with_from(node, plan.tableitem)
     env = plan.env
     env, nextnode

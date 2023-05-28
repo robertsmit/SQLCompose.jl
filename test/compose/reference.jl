@@ -71,7 +71,7 @@
         ON p.id = ref_salary.person_id"
 
     @info "referred also in subquery"
-   @testsql begin
+    @testsql begin
         all_actor_of(f::Pagila.Film) = f |> Pagila.all_film_actor_of |> Pagila.actor_of
         all_category_of(f::Pagila.Film) = f |> Pagila.all_film_category_of |> Pagila.category_of
         actor_name(actor) = actor.first_name * " " * actor.last_name
@@ -81,7 +81,7 @@
                     map(f2 -> all_actor_of(f) |> actor_name, _)
                     _[:1]
                 end
-                (actor_name = all_actor_of(f) |> actor_name, actor_name_sub=subquery)
+                (actor_name=all_actor_of(f) |> actor_name, actor_name_sub=subquery)
             end
         end
     end,
@@ -91,5 +91,33 @@
     FROM film f 
     INNER JOIN film_actor ref_film_actor ON f.film_id = ref_film_actor.film_id 
     INNER JOIN actor ref_actor ON ref_film_actor.actor_id = ref_actor.actor_id"
+
+
+    @info "referred in combined query"
+    @testsql begin
+        all_actor_of(f::Pagila.Film) = f |> Pagila.all_film_actor_of |> Pagila.actor_of
+        all_category_of(f::Pagila.Film) = f |> Pagila.all_film_category_of |> Pagila.category_of
+        actor_name(actor) = actor.first_name * " " * actor.last_name
+        @query Pagila.Film begin
+            map(_) do f
+                subquery = @query Pagila.Film begin
+                    map(f2 -> all_actor_of(f) |> actor_name, _)
+                end
+                combined = query(vcat(subquery, subquery))[:1]
+                (actor_name=all_actor_of(f) |> actor_name, actor_name_sub=combined)
+            end
+        end
+    end,
+    "SELECT 
+        CONCAT(ref_actor.first_name, ' ', ref_actor.last_name) AS actor_name, 
+        (SELECT q.elem1 
+            FROM (SELECT CONCAT(ref_actor.first_name, ' ', ref_actor.last_name) AS elem1 
+                    FROM film f2 
+                    UNION 
+                    SELECT CONCAT(ref_actor.first_name, ' ', ref_actor.last_name) AS elem1 FROM film f2) 
+        q LIMIT 1) AS actor_name_sub 
+        FROM film f 
+        INNER JOIN film_actor ref_film_actor ON f.film_id = ref_film_actor.film_id 
+        INNER JOIN actor ref_actor ON ref_film_actor.actor_id = ref_actor.actor_id"
 end
 
