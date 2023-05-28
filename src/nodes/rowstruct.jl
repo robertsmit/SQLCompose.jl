@@ -1,4 +1,4 @@
-abstract type RowStruct{T} <: SQLNode end
+abstract type RowStruct{T} end
 
 NodeCompositionStyle(::Type{<:RowStruct}) = NodeStructure()
 
