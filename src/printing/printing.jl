@@ -26,16 +26,16 @@ printpsql(io, node, env) = error("please implement 'printpsql(::IO, ::Any, ::Abs
 
 
 function printpsql(io::IO, node::SelectQuery, env)
-    builder = SelectQueryTableItemBuilder(env)
-    nextnode = build(builder, node)
-    expanded_printpsql(io, nextnode, builder.env)
+    expander = SelectQueryReferredTableExpander(env)
+    nextnode = expand(expander, node)
+    expanded_printpsql(io, nextnode, expander.env)
 end
 
 function expanded_printpsql(io::IO, node::SelectQuery, env)
     print(io, "SELECT ")
     printpsql_result(io, node.result, env)
     print(io, " FROM ")
-    printpsql_fromitem_in_environment(io, node.from, env)
+    printpsql_fromitem(io, node.from, env)
     printpsql_filter(io, node.filter, env; prefix=" WHERE ")
     if !isempty(node.group)
         printpsql_fieldlist(io, node.group, env; prefix=" GROUP BY ")
@@ -215,19 +215,14 @@ function printpsql_fromitem(io::IO, node::ValuesTableItem, env::TablePrintEnviro
     print(io, ")")
 end
 
-printpsql_fromitem_in_environment(io::IO, node::JoinItem, env) = printpsql_fromitem(io, node, env)
-printpsql_fromitem_in_environment(io::IO, node::TableItem, env) =
-    let item_env = unwind(env, node)
-        printpsql_fromitem(io, node, item_env)
-        item_env
-    end
-
 function printpsql_fromitem(io::IO, node::JoinItem, env)
-    printpsql_fromitem_in_environment(io, node.left, env)
+    env_left = unwind(env, node.left)
+    printpsql_fromitem(io, node.left, env_left)
     printpsql_join(io, node.join)
-    right_env = printpsql_fromitem_in_environment(io, node.right, env)
+    env_right = unwind(env, node.right)
+    printpsql_fromitem(io, node.right, env_right)
     print(io, " ON ")
-    printpsql(io, node.join.condition, right_env)
+    printpsql(io, node.join.condition, env_right)
 end
 
 function printpsql_join(io::IO, node::LateralJoin)

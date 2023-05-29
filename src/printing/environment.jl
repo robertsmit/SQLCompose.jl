@@ -10,6 +10,7 @@ end
 
 PrintEnvironment() = NullPrintEnvironment()
 
+unwind(env, table::JoinItem) =  unwind(env, ref(table.right))
 unwind(env, table::TableItem) =  unwind(env, ref(table))
 unwind(::NullPrintEnvironment, ::TableItemRef) = error("should not occur")
 unwind(env::TablePrintEnvironment, ref::TableItemRef) = env.ref == ref ? env : unwind(env.parent, ref)

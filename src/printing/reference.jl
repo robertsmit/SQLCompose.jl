@@ -1,24 +1,24 @@
-abstract type ReferredTableLocationPlan2 end
+abstract type ReferredTableExpander end
 
 
-mutable struct SelectQueryTableItemBuilder <: ReferredTableLocationPlan2
+mutable struct SelectQueryReferredTableExpander <: ReferredTableExpander
     tableitem
     env::Any
 end
 
-function build(builder::SelectQueryTableItemBuilder, query::SelectQuery)
-    write!(builder, query.from)
-    write!(builder, query.result)
-    write!(builder, query.filter)
-    write!(builder, query.group)
-    write!(builder, query.groupfilter)
-    write!(builder, query.order)
-    with_from(query, builder.tableitem)
+function expand(plan::SelectQueryReferredTableExpander, query::SelectQuery)
+    write!(plan, query.from)
+    write!(plan, query.result)
+    write!(plan, query.filter)
+    write!(plan, query.group)
+    write!(plan, query.groupfilter)
+    write!(plan, query.order)
+    with_from(query, plan.tableitem)
 end
 
-SelectQueryTableItemBuilder(env) = SelectQueryTableItemBuilder(nothing, env)
+SelectQueryReferredTableExpander(env) = SelectQueryReferredTableExpander(nothing, env)
 
-function push_reference!(plan::SelectQueryTableItemBuilder, ref::ReferredTableItemRef)
+function push_referred!(plan::SelectQueryReferredTableExpander, ref::ReferredTableItemRef)
     condition = reduce(zip(ref.foreignkeys, ref.primarykeys), init=true) do acc, (foreign, prim)
         acc & (foreign == TableItemFieldRef(prim, UnknownType, ref))
     end
@@ -27,19 +27,19 @@ function push_reference!(plan::SelectQueryTableItemBuilder, ref::ReferredTableIt
     plan.env = nextenv(plan.env, referred_tableitem)
 end
 
-function push_tableitem!(plan::SelectQueryTableItemBuilder, tableitem)
+function push_tableitem!(plan::SelectQueryReferredTableExpander, tableitem)
     plan.tableitem = tableitem
     plan.env = nextenv(plan.env, tableitem)
 end
 
-function push_join!(plan::SelectQueryTableItemBuilder, tableitem, join)
+function push_join!(plan::SelectQueryReferredTableExpander, tableitem, join)
     plan.tableitem = JoinItem(plan.tableitem, tableitem, join)
     plan.env = nextenv(plan.env, tableitem)
 end
 
-write!(plan::ReferredTableLocationPlan2, node::TableItem) = push_tableitem!(plan, node)
+write!(plan::ReferredTableExpander, node::TableItem) = push_tableitem!(plan, node)
 
-function write!(plan::ReferredTableLocationPlan2, node::JoinItem)
+function write!(plan::ReferredTableExpander, node::JoinItem)
     write!(plan, node.left)
     write!(plan, node.join)
     push_join!(plan, node.right, node.join)
@@ -47,25 +47,25 @@ end
 
 
 
-write!(::ReferredTableLocationPlan2, ::Any) = nothing
+write!(::ReferredTableExpander, ::Any) = nothing
 
-write!(::ReferredTableLocationPlan2, node::SelectQuery) = nothing
+write!(::ReferredTableExpander, node::SelectQuery) = nothing
 
-function write!(plan::ReferredTableLocationPlan2, node::ReferredTableItemRef)
+function write!(plan::ReferredTableExpander, node::ReferredTableItemRef)
     if hasref(plan.env, node)
         return
     end
     write!(plan, node.foreignkeys)
-    push_reference!(plan, node)
+    push_referred!(plan, node)
 end
 
-function write!(plan::ReferredTableLocationPlan2, node::Union{NodeList,AbstractVector,SQLNode})
+function write!(plan::ReferredTableExpander, node::Union{NodeList,AbstractVector,SQLNode})
     for each in node
         write!(plan, each)
     end
 end
 
-function write!(plan::ReferredTableLocationPlan2, node::T) where {T<:RowStruct}
+function write!(plan::ReferredTableExpander, node::T) where {T<:RowStruct}
     for each in node
         write!(plan, each)
     end
