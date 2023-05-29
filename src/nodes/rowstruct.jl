@@ -29,9 +29,9 @@ function mapfields(f::Function, result::T; alias=nothing) where {T<:RowStruct}
     T((mapfields(f, fieldvalue; alias=join_alias(alias, fieldname)) for (fieldname, fieldvalue) in pairs(result))...)
 end
 
-function write_referredtable_location_plan!(plan, node::T, tableitem) where {T<:RowStruct}
+function write!(plan::ReferredTableLocationPlan2, node::T, tableitem) where {T<:RowStruct}
     for each in node
-        write_referredtable_location_plan!(plan, each, tableitem)
+        write!(plan, each, tableitem)
     end
 end
 

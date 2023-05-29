@@ -35,12 +35,12 @@ end
 
 function nextenv2(env, node::SelectQuery)
     plan = ReferredTableLocationPlan2(env)
-    write_referredtable_location_plan!(plan, node.from)
-    write_referredtable_location_plan!(plan, node.result)
-    write_referredtable_location_plan!(plan, node.filter)
-    write_referredtable_location_plan!(plan, node.group)
-    write_referredtable_location_plan!(plan, node.groupfilter)
-    write_referredtable_location_plan!(plan, node.order)
+    write!(plan, node.from)
+    write!(plan, node.result)
+    write!(plan, node.filter)
+    write!(plan, node.group)
+    write!(plan, node.groupfilter)
+    write!(plan, node.order)
     nextnode = with_from(node, plan.tableitem)
     env = plan.env
     env, nextnode
@@ -55,10 +55,4 @@ function nextenv(env, table::RefTableItem)
     definition_env = unwind(env, table)
     (;ref, alias) = definition_env
     TablePrintEnvironment(ref, alias, env)
-end
-
-function nextenv(env, tableitem::JoinItem) 
-    envleft = nextenv(env, tableitem.left)
-    envright = nextenv(envleft, tableitem.right)
-    envright
 end

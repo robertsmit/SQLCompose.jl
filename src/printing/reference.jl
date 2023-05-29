@@ -27,31 +27,31 @@ function push_join!(plan::ReferredTableLocationPlan2, tableitem, join)
     plan.env = nextenv(plan.env, tableitem)
 end
 
-write_referredtable_location_plan!(plan, node::TableItem) = push_tableitem!(plan, node)
+write!(plan::ReferredTableLocationPlan2, node::TableItem) = push_tableitem!(plan, node)
 
-function write_referredtable_location_plan!(plan, node::JoinItem)
-    write_referredtable_location_plan!(plan, node.left)
-    write_referredtable_location_plan!(plan, node.join)
+function write!(plan::ReferredTableLocationPlan2, node::JoinItem)
+    write!(plan, node.left)
+    write!(plan, node.join)
     push_join!(plan, node.right, node.join)
 end
 
 
 
-write_referredtable_location_plan!(plan, ::Any) = nothing
+write!(::ReferredTableLocationPlan2, ::Any) = nothing
 
-write_referredtable_location_plan!(plan, node::SelectQuery) = nothing
+write!(::ReferredTableLocationPlan2, node::SelectQuery) = nothing
 
-function write_referredtable_location_plan!(plan, node::ReferredTableItemRef)
+function write!(plan::ReferredTableLocationPlan2, node::ReferredTableItemRef)
     if hasref(plan.env, node)
         return
     end
-    write_referredtable_location_plan!(plan, node.foreignkeys)
+    write!(plan, node.foreignkeys)
     push_reference!(plan, node)
 end
 
-function write_referredtable_location_plan!(plan, node::Union{NodeList,AbstractVector,SQLNode})
+function write!(plan::ReferredTableLocationPlan2, node::Union{NodeList,AbstractVector,SQLNode})
     for each in node
-        write_referredtable_location_plan!(plan, each)
+        write!(plan, each)
     end
 end
 

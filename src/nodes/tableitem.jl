@@ -62,7 +62,7 @@ aliashint(ref::SetReturningFunctionTableItem) = aliashintdefault(ref.f.name)
 struct RefTableItem <: TableItem
     ref::TableItemRef
 end
-aliashint(item::RefTableItem) = error("reftalbeitme")
+aliashint(item::RefTableItem) = :a
 
 struct ValuesTableItem{T} <: TableItem
     ref::TableItemRef
