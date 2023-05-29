@@ -58,7 +58,7 @@ isordered(query::SelectQuery) = !isempty(query.order)
 result(q::SelectQuery) = q.result
 
 with_result(query::SelectQuery, arg) = SelectQuery(query; result=arg)
-with_from(query::SelectQuery, arg) = SelectQuery(query; from=arg)
+with_from(query::SelectQuery, arg) = query.from != arg ? SelectQuery(query; from=arg) : query
 with_filter(query::SelectQuery, arg) = SelectQuery(query; filter=arg)
 with_order(query::SelectQuery, value) = SelectQuery(query; order=nodelist(value))
 with_group(query::SelectQuery, value) = SelectQuery(query; group=nodelist(value))

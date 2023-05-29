@@ -11,14 +11,14 @@ end
 PrintEnvironment() = NullPrintEnvironment()
 
 unwind(env, table::TableItem) =  unwind(env, ref(table))
-unwind(env::TablePrintEnvironment, ref::TableItemRef) = env.ref == ref ? env : unwind(env.parent, ref)
 unwind(::NullPrintEnvironment, ::TableItemRef) = error("should not occur")
+unwind(env::TablePrintEnvironment, ref::TableItemRef) = env.ref == ref ? env : unwind(env.parent, ref)
 
 hasref(env::NullPrintEnvironment, ref) = false
 hasref(env::TablePrintEnvironment, ref) = env.ref == ref ? true : hasref(env.parent, ref)
 
-getalias(::NullPrintEnvironment, ref) = error("Unknown ref")
 getalias(env::AbstractPrintEnvironment, table::TableItem) = getalias(env, table.ref)
+getalias(::NullPrintEnvironment, ref) = error("Unknown ref")
 getalias(env::AbstractPrintEnvironment, ref) = env.ref == ref ? env.alias : getalias(env.parent, ref)
 
 hasalias(::NullPrintEnvironment, alias) = false
@@ -31,19 +31,6 @@ function getaliasactual(env::AbstractPrintEnvironment, aliashint, aliascandidate
     end
     aliascandidate = Symbol("$aliashint$(count + 1)")
     getaliasactual(env, aliashint, aliascandidate, count + 1)
-end
-
-function nextenv2(env, node::SelectQuery)
-    plan = ReferredTableLocationPlan2(env)
-    write!(plan, node.from)
-    write!(plan, node.result)
-    write!(plan, node.filter)
-    write!(plan, node.group)
-    write!(plan, node.groupfilter)
-    write!(plan, node.order)
-    nextnode = with_from(node, plan.tableitem)
-    env = plan.env
-    env, nextnode
 end
 
 function nextenv(env, table::TableItem)

@@ -25,20 +25,24 @@ printpsql_fieldalias(io::IO, field::TableItemFieldRef, alias) = Symbol(alias) ==
 printpsql(io, node, env) = error("please implement 'printpsql(::IO, ::Any, ::AbstractPrintEnvironment)' for $(typeof(node))")
 
 
-function printpsql(io::IO, arg::SelectQuery, parentenv)
-    (env, nextNode) = nextenv2(parentenv, arg)
-    arg = nextNode
+function printpsql(io::IO, node::SelectQuery, env)
+    builder = SelectQueryTableItemBuilder(env)
+    nextnode = build(builder, node)
+    expanded_printpsql(io, nextnode, builder.env)
+end
+
+function expanded_printpsql(io::IO, node::SelectQuery, env)
     print(io, "SELECT ")
-    printpsql_result(io, arg.result, env)
+    printpsql_result(io, node.result, env)
     print(io, " FROM ")
-    printpsql_fromitem_in_environment(io, arg.from, env)
-    printpsql_filter(io, arg.filter, env; prefix=" WHERE ")
-    if !isempty(arg.group)
-        printpsql_fieldlist(io, arg.group, env; prefix=" GROUP BY ")
-        printpsql_filter(io, arg.groupfilter, env; prefix=" HAVING ")
+    printpsql_fromitem_in_environment(io, node.from, env)
+    printpsql_filter(io, node.filter, env; prefix=" WHERE ")
+    if !isempty(node.group)
+        printpsql_fieldlist(io, node.group, env; prefix=" GROUP BY ")
+        printpsql_filter(io, node.groupfilter, env; prefix=" HAVING ")
     end
-    printpsql_fieldlist(io, arg.order, env; prefix=" ORDER BY ")
-    printpsql(io, arg.range, env)
+    printpsql_fieldlist(io, node.order, env; prefix=" ORDER BY ")
+    printpsql(io, node.range, env)
 end
 
 function printpsql(io::IO, arg::SelectWithoutFromQuery, env)

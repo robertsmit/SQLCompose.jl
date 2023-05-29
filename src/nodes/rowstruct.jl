@@ -29,12 +29,6 @@ function mapfields(f::Function, result::T; alias=nothing) where {T<:RowStruct}
     T((mapfields(f, fieldvalue; alias=join_alias(alias, fieldname)) for (fieldname, fieldvalue) in pairs(result))...)
 end
 
-function write!(plan::ReferredTableLocationPlan2, node::T, tableitem) where {T<:RowStruct}
-    for each in node
-        write!(plan, each, tableitem)
-    end
-end
-
 function reference(to::Type{<:RowStruct}, primarykeys::Tuple, foreignkeys::Tuple, isnullable=false)
     ref = ReferredTableItemRef(name(to), primarykeys, foreignkeys, isnullable)
     to((TableItemFieldRef(fname, ftype, ref) for (fname, ftype) in field_pairs(to))...)
