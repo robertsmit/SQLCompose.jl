@@ -1,22 +1,5 @@
 abstract type SQLNode end
 
-@generated function Base.iterate(node::T, state=1) where T <: SQLNode
-    fnames = fieldnames(T)
-    statements = (
-        quote
-            if state == $i
-                return (node.$f, $(i + 1))
-            end
-        end for (i, f) in pairs(fnames)
-    )
-    quote
-        if state > $(length(fnames))
-            return nothing
-        end
-        $(statements...)
-    end
-end
-
 include("./types/base.jl")
 
 struct Asterisk <: SQLNode end

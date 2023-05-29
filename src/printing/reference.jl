@@ -59,7 +59,7 @@ function write!(plan::ReferredTableExpander, node::ReferredTableItemRef)
     push_referred!(plan, node)
 end
 
-function write!(plan::ReferredTableExpander, node::Union{NodeList,AbstractVector,SQLNode})
+function write!(plan::ReferredTableExpander, node::Union{NodeList,AbstractVector})
     for each in node
         write!(plan, each)
     end
@@ -68,6 +68,13 @@ end
 function write!(plan::ReferredTableExpander, node::T) where {T<:RowStruct}
     for each in node
         write!(plan, each)
+    end
+end
+
+@generated function write!(plan::ReferredTableExpander, node::T) where {T<:SQLNode}
+    statements = (:(write!(plan, node.$field)) for field in fieldnames(T))
+    quote
+        $(statements...)
     end
 end
 
