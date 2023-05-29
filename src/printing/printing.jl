@@ -25,17 +25,14 @@ printpsql_fieldalias(io::IO, field::TableItemFieldRef, alias) = Symbol(alias) ==
 printpsql(io, node, env) = error("please implement 'printpsql(::IO, ::Any, ::AbstractPrintEnvironment)' for $(typeof(node))")
 
 
-function printpsql(io::IO, node::SelectQuery, env)
-    expander = SelectQueryReferredTableExpander(env)
-    nextnode = expand(expander, node)
-    expanded_printpsql(io, nextnode, expander.env)
-end
-
-function expanded_printpsql(io::IO, node::SelectQuery, env)
+function printpsql(io::IO, raw_node::SelectQuery, parent_env)
+    expander = SelectQueryReferredTableExpander(parent_env)
+    node = expand(expander, raw_node)
+    env = expander.env
     print(io, "SELECT ")
     printpsql_result(io, node.result, env)
     print(io, " FROM ")
-    printpsql_fromitem(io, node.from, env)
+    printpsql(io, node.from, env)
     printpsql_filter(io, node.filter, env; prefix=" WHERE ")
     if !isempty(node.group)
         printpsql_fieldlist(io, node.group, env; prefix=" GROUP BY ")
@@ -65,7 +62,6 @@ function printpsql(io::IO, node::CaseExpression, env)
     print(io, " END")
 end
 
-printpsql_filter(io, ::Nothing, env; prefix="") = nothing
 function printpsql_filter(io, expr::BooleanExpression, env; prefix="", postfix="")
     if expr === SQLConstant(true)
         return
@@ -159,21 +155,21 @@ printpsql(io::IO, node::SubqueryExpression, env) = begin
     print(io, ")")
 end
 
-function printpsql_fromitem(io::IO, node::SubqueryTableItem, env)
+function printpsql(io::IO, node::SubqueryTableItem, env)
     print(io, "(")
     printpsql(io, node.query, env.parent)
     alias = getalias(env, node)
     print(io, ") $alias")
 end
 
-function printpsql_fromitem(io::IO, node::DefinedTableItem, env::TablePrintEnvironment)
+function printpsql(io::IO, node::DefinedTableItem, env::TablePrintEnvironment)
     tablename = node.name
     print(io, tablename)
     alias = env.alias
     alias !== tablename && print(io, " $alias")
 end
 
-function printpsql_fromitem(io::IO, node::SetReturningFunctionTableItem, env::TablePrintEnvironment)
+function printpsql(io::IO, node::SetReturningFunctionTableItem, env::TablePrintEnvironment)
     printpsql(io, node.f, env.parent)
     alias = env.alias
     print(io, " $alias")
@@ -187,11 +183,11 @@ function printpsql_fromitem(io::IO, node::SetReturningFunctionTableItem, env::Ta
     end
 end
 
-function printpsql_fromitem(io::IO, node::RefTableItem, env::TablePrintEnvironment)
+function printpsql(io::IO, node::RefTableItem, env::TablePrintEnvironment)
     print(io, getalias(env, node))
 end
 
-function printpsql_fromitem(io::IO, node::ValuesTableItem, env::TablePrintEnvironment)
+function printpsql(io::IO, node::ValuesTableItem, env::TablePrintEnvironment)
     print(io, "(VALUES ")
     for (rowindex, row) in enumerate(node.values)
         rowindex != 1 && print(io, ", ")
@@ -215,12 +211,12 @@ function printpsql_fromitem(io::IO, node::ValuesTableItem, env::TablePrintEnviro
     print(io, ")")
 end
 
-function printpsql_fromitem(io::IO, node::JoinItem, env)
+function printpsql(io::IO, node::JoinItem, env)
     env_left = unwind(env, node.left)
-    printpsql_fromitem(io, node.left, env_left)
+    printpsql(io, node.left, env_left)
     printpsql_join(io, node.join)
     env_right = unwind(env, node.right)
-    printpsql_fromitem(io, node.right, env_right)
+    printpsql(io, node.right, env_right)
     print(io, " ON ")
     printpsql(io, node.join.condition, env_right)
 end
