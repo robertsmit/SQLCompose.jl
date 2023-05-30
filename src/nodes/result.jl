@@ -2,7 +2,7 @@ field_alias(field::TableItemFieldRef; alias) = something(alias, field.name)
 field_alias(::Any; alias) = something(alias, "elem1")
 
 join_alias(::Missing, ::Any) = missing
-join_alias(::Nothing, s::Symbol) = s
+join_alias(::Nothing, s::Symbol) = string(s)
 join_alias(::Nothing, i::Integer) = "elem$i"
 join_alias(s1, s2) = "$(s1)_$(s2)"
 
