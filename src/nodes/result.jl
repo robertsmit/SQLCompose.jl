@@ -1,15 +1,10 @@
-Alias = Union{Symbol,String}
-
-# field alias for alias
-field_alias(field, ::Nothing) = "elem1"
-field_alias(field::TableItemFieldRef, ::Nothing) = field.name
-field_alias(field, alias) = alias
-field_alias(field, ::Missing) = missing
+field_alias(field::TableItemFieldRef; alias) = something(alias, field.name)
+field_alias(::Any; alias) = something(alias, "elem1")
 
 join_alias(::Missing, ::Any) = missing
 join_alias(::Nothing, s::Symbol) = s
 join_alias(::Nothing, i::Integer) = "elem$i"
-join_alias(s1::Alias, s2::Union{Symbol,Integer}) = "$(s1)_$(s2)"
+join_alias(s1, s2) = "$(s1)_$(s2)"
 
 
 #iterates each field
@@ -18,7 +13,7 @@ foreach_field(f::Function, result::T; index=0, alias=nothing) where {T} =
 
 function foreach_field(f::Function, field, ::NodeElement; index, alias)
     fieldindex = index + 1
-    ismissing(alias) ? f(field, fieldindex) : f(field, field_alias(field, alias), fieldindex)
+    ismissing(alias) ? f(field, fieldindex) : f(field, field_alias(field; alias), fieldindex)
     fieldindex
 end
 
@@ -32,7 +27,7 @@ end
 #maps result in same structure 
 mapfields(f::Function, result::T; alias=nothing) where {T} =
     mapfields(f::Function, result, NodeCompositionStyle(T); alias)
-mapfields(f::Function, field, ::NodeElement; alias) = ismissing(alias) ? f(field) : f(field, field_alias(field, alias))
+mapfields(f::Function, field, ::NodeElement; alias) = ismissing(alias) ? f(field) : f(field, field_alias(field; alias))
 mapfields(::Function, result, ::NodeStructure; alias) = error("Please implement mapfields function for", typeof(result))
 
 mapfields(f::Function, result::T; alias=nothing) where {T<:NodeList} = Tuple(mapfields(f, x; alias=join_alias(alias, i)) for (i, x) in pairs(result))
