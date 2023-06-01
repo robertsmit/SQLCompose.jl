@@ -204,3 +204,35 @@ end),
     ELSE CONCAT(a.first_name, ' ', a.last_name) END AS elem1 
 FROM actor a 
 WHERE (a.last_name LIKE '%PEN%') OR (a.first_name LIKE '%PEN%')"
+
+#Let's say we want to retrieve the list of all actors that acted in films longer than 180 minutes, film language is 'English' 
+#and film category is not 'Action'.
+@testsql begin
+    all_film_of(a::Pagila.Actor)::Pagila.Film = a |> Pagila.all_film_actor_of |> Pagila.film_of
+    all_category_of(f::Pagila.Film)::Pagila.Category = f |> Pagila.all_film_category_of |> Pagila.category_of
+    @query Pagila.Actor begin
+        map(_) do a
+            let film = all_film_of(a)
+                language = Pagila.language_of(film)
+                category = all_category_of(film)
+                (actor=a, film, category, language)
+            end
+        end
+        sort(r -> (r.actor.actor_id, r.film.film_id), _)
+        filter(r -> r.language.name == "English" && r.category.name != "Action" && r.film.length > 180, _)
+        map(r -> r.actor, _)
+    end
+end,
+"""
+SELECT a.actor_id, a.first_name, a.last_name, a.last_update
+FROM actor a
+         INNER JOIN film_actor ref_film_actor ON a.actor_id = ref_film_actor.actor_id
+         INNER JOIN film ref_film ON ref_film_actor.film_id = ref_film.film_id
+         INNER JOIN language ref_language ON ref_film.language_id = ref_language.language_id
+         INNER JOIN film_category ref_film_category ON ref_film.film_id = ref_film_category.film_id
+         INNER JOIN category ref_category ON ref_film_category.category_id = ref_category.category_id
+WHERE (ref_language.name = 'English')
+  AND (ref_category.name <> 'Action')
+  AND (ref_film.length > 180)
+ORDER BY a.actor_id, ref_film.film_id
+"""
