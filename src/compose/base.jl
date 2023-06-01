@@ -51,9 +51,6 @@ function filter(f::Function, q::SelectQuery)
     with_filter(q, f)
 end
 filter(f::Function, q::QuerySet) = QuerySet(filter(f, q.query), q.executor)
-filter(f::Function) = (q) -> filter(f, q)
-
-
 
 map(f::Function, node::Queryable) = map(f, SelectQuery(node))
 map(f::Function, q::SelectQuery) = with_result(q, convert_fields(SQLExpression, f(resultargs(q.result)...)))
@@ -77,7 +74,6 @@ function map(base::Queryable; kwargs...)
     end
 end
 
-map(f::Function) = node -> map(f, node)
 
 joinable(::SelectQuery{UnmergedResult}) = error("cannot right join unmerged results")
 joinable(q::SelectQuery) = joinable(q, q.from)
@@ -172,7 +168,6 @@ function having(f::Function, q::SelectQuery)
     with_groupfilter(q, f)
 end
 having(f::Function, q::QuerySet) = QuerySet(having(f, q.query), q.executor)
-having(f::Function) = (q) -> having(f, q)
 
 sort(f::Function, node::Queryable) = sort(f, convert(SelectQuery, node))
 sort(f::Function, q::SelectQuery) =
@@ -186,7 +181,7 @@ function sort(node::Queryable, field::Symbol, morefields::Symbol...)
         sort(f, node)
     end
 end
-sort(f::Function) = q -> sort(f, q)
+
 sort(field::Symbol, morefields::Symbol...) = q -> sort(q, field, morefields...)
 
 function with(f::Function, commons::Queryable...)

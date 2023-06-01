@@ -6,6 +6,9 @@ mutable struct SelectQueryReferredTableExpander <: ReferredTableExpander
     env::Any
 end
 
+SelectQueryReferredTableExpander(env) = SelectQueryReferredTableExpander(nothing, env)
+SelectQueryReferredTableExpander() = SelectQueryReferredTableExpander(NullPrintEnvironment())
+
 function expand(plan::SelectQueryReferredTableExpander, query::SelectQuery)
     write!(plan, query.from)
     write!(plan, query.result)
@@ -15,8 +18,6 @@ function expand(plan::SelectQueryReferredTableExpander, query::SelectQuery)
     write!(plan, query.order)
     with_from(query, plan.tableitem)
 end
-
-SelectQueryReferredTableExpander(env) = SelectQueryReferredTableExpander(nothing, env)
 
 function push_referred!(plan::SelectQueryReferredTableExpander, ref::ReferredTableItemRef)
     condition = reduce(zip(ref.foreignkeys, ref.primarykeys), init=true) do acc, (foreign, prim)

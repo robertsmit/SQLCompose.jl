@@ -18,7 +18,6 @@ printpsql_field(io::IO, arg::Query, env) = printpsql_parenthesized(io, arg, env)
 
 
 printpsql_alias(io::IO, alias) = print(io, " AS $alias")
-printpsql_alias(io::IO, ::Nothing) = nothing
 printpsql_fieldalias(io::IO, _, alias) = printpsql_alias(io, alias)
 printpsql_fieldalias(io::IO, field::TableItemFieldRef, alias) = Symbol(alias) == field.name || printpsql_alias(io, alias)
 
@@ -91,9 +90,6 @@ function printpsql_elements(io, arg::AbstractVector, env)
         printpsql(io, arg[i], env)
     end
 end
-
-printpsql(io::IO, ::Nothing, env) = nothing
-printpsql(io::IO, ::Nothing) = nothing
 
 printpsql(io::IO, node::TableItemFieldRef, env) = (print(io, getalias(env, node.table)); print(io, "."); print(io, node.name))
 function printpsql(io::IO, node::TableRange, env)
