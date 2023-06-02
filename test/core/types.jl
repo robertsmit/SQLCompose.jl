@@ -7,7 +7,7 @@ ast:
 
 @info "Running Types tests"
 
-import SQLCompose: sqltypeclassof, psqlstring
+import SQLCompose: sqltypeclassof
 
 @testset "Types" begin
     @test sqltypeclassof(1) === SQLCompose.Int8Type

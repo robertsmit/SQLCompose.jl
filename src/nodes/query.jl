@@ -1,11 +1,3 @@
-#=
-query:
-- Julia version: 
-- Author: Rob
-- Date: 2022-04-25
-=#
-export desc, asc
-
 abstract type Query <: SQLNode end
 result(q::Query) = error("Please implement result for", typeof(q))
 
@@ -65,14 +57,9 @@ with_group(query::SelectQuery, value) = SelectQuery(query; group=nodelist(value)
 with_groupfilter(query::SelectQuery, value) = SelectQuery(query; groupfilter=value)
 with_range(query::SelectQuery, value) = SelectQuery(query; range=value)
 
-tableresult(ref::TableItemRef, fnames, ftypes) =
-    NamedTuple{fnames}(TableItemFieldRef(name, type, ref) for (name, type) in zip(fnames, ftypes))
-tableresult(ref::TableItemRef, type::Type{<:RowType}) = tableresult(ref, field_names(type), field_types(type))
-
 function SelectQuery(table::TableSource)
-    ref = TableItemRef()
-    result = tableresult(ref, table.type)
-    from = DefinedTableItem(ref, name(table), table.aliashint)
+    from = DefinedTableItem(table)
+    result = tableresult(from.ref, table.type)
     SelectQuery(result, from)
 end
 
@@ -93,7 +80,7 @@ begin
         SelectQuery(tableresult(ref, T), from)
     end
 
-    function SelectQuery(f::SetReturningFunctionCall{T}, fnames::Tuple, ftypes::Tuple) where {T}
+    function SelectQuery(f::SetReturningFunctionCall{T}, fnames::Tuple, ftypes::Tuple) where {T}    
         ref = TableItemRef()
         from = SetReturningFunctionTableItem(ref, fnames, f)
         result = tableresult(from.ref, fnames, ftypes)

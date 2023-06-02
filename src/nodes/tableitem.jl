@@ -48,16 +48,20 @@ struct DefinedTableItem <: TableItem
     name::Symbol
     aliashint::Symbol
 end
+
 aliashint(item::DefinedTableItem) = item.aliashint
+
+function DefinedTableItem(table::TableSource)
+    ref = TableItemRef()
+    DefinedTableItem(ref, name(table), table.aliashint)
+end
 
 struct SetReturningFunctionTableItem{T} <: TableItem
     ref::TableItemRef
     fieldnames::Tuple
-    f::SetReturningFunctionCall{T}
+    func::SetReturningFunctionCall{T}
 end
-
-aliashint(ref::SetReturningFunctionTableItem) = aliashintdefault(ref.f.name)
-
+aliashint(item::SetReturningFunctionTableItem) = aliashintdefault(item.func.name)
 
 struct RefTableItem <: TableItem
     ref::TableItemRef
@@ -78,3 +82,54 @@ function ValuesTableItem(values::AbstractVector{T}, fieldnames::Tuple, aliashint
     ref = TableItemRef()
     ValuesTableItem(ref, fieldnames, values, aliashint)
 end
+
+
+abstract type Join <: SQLNode end
+
+struct JoinItem <: FromItem
+    left::FromItem
+    right::TableItem
+    join::Join
+end
+
+abstract type JoinType end
+struct InnerJoin <: JoinType end
+struct LeftJoin <: JoinType end
+struct RightJoin <: JoinType end
+struct FullJoin <: JoinType end
+
+struct EquiJoin <: Join
+    type::JoinType
+    condition::BooleanExpression
+end
+
+struct LateralJoin <: Join
+    type::JoinType
+    condition::BooleanExpression
+end
+
+struct ReferredTableItemRef <: TableItemRef
+    tablename::Symbol
+    primarykeys
+    foreignkeys
+    isnullable::Bool
+end
+
+DefinedTableItem(ref) = DefinedTableItem(ref, ref.tablename, Symbol("ref_", ref.tablename))
+
+function reference(table::TableSource, primarykeys::Tuple, foreignkeys, isnullable=false)
+    ref = ReferredTableItemRef(name(table), primarykeys, foreignkeys, isnullable)
+    tableresult(ref, table.type)
+end
+
+reference(table::TableSource, primarykey::Symbol, foreignkey, isnullable=false) =
+    reference(table, Tuple(primarykey), Tuple(foreignkey), isnullable)
+
+
+struct UnmergedResult
+    results::Tuple
+end
+
+tableresult(ref::TableItemRef, fnames, ftypes) =
+    NamedTuple{fnames}(TableItemFieldRef(name, type, ref) for (name, type) in zip(fnames, ftypes))
+tableresult(ref::TableItemRef, type::Type{<:RowType}) = tableresult(ref, field_names(type), field_types(type))

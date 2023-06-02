@@ -14,6 +14,6 @@ Base.close(executor::ConnectedQueryExecutor) = Base.close(executor.connection)
 
 execute(executor::ConnectedQueryExecutor, query::Query) =
     let connection = executor.connection
-        query = psqlstring(query)
+        query = string(query)
         Tables.rows(LibPQ.execute(connection, query))
     end

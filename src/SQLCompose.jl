@@ -8,6 +8,7 @@ export TableSource, reference
 # composition
 export query, groupby, join, with, join_lateral, having, left_join_lateral
 export InnerJoin, LeftJoin, RightJoin, FullJoin
+export desc, asc
 # operators
 export between, avg, unnest, case, @eager, @query
 #comparing

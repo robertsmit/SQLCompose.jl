@@ -1,6 +1,6 @@
 # update(source, others::) = UpdateStatement(source)
 
-update(f::Function, ::Query) = 1
+update(f::Function, source::TableSource) = 
 
 
 
@@ -18,5 +18,5 @@ end
 
 UpdateStatement(source::Queryable) = query(source)
 function UpdateStatement(source::SelectQuery)
-    
+
 end

@@ -166,7 +166,7 @@ function printpsql(io::IO, node::DefinedTableItem, env::TablePrintEnvironment)
 end
 
 function printpsql(io::IO, node::SetReturningFunctionTableItem, env::TablePrintEnvironment)
-    printpsql(io, node.f, env.parent)
+    printpsql(io, node.func, env.parent)
     alias = env.alias
     print(io, " $alias")
     if !isempty(node.fieldnames)
