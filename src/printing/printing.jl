@@ -46,6 +46,27 @@ function printpsql(io::IO, arg::SelectWithoutFromQuery, env)
     printpsql_result(io, arg.result, env)
 end
 
+function printpsql(io::IO, arg::UpdateStatement, parent_env)
+    env = nextenv(parent_env, arg.sourceItem)
+    env = reduce(arg.fromItems; init=env) do acc, next
+        nextenv(acc, next)
+    end
+    print(io, "UPDATE ")
+
+    printpsql(io, arg.sourceItem, env)
+
+    print(io, " SET ")
+    for (i, (name, value)) in enumerate(pairs(arg.changes))
+        i > 1 && print(io, ", ")
+        print(io, name)
+        print(io, " = ")
+        printpsql(io, value, env)
+    end
+    printpsql_fieldlist(io, arg.fromItems, env; prefix=" FROM ")
+    printpsql_filter(io, arg.filter, env; prefix=" WHERE ")
+    
+end
+
 function printpsql(io::IO, node::CaseExpression, env)
     print(io, "CASE")
     for clause in node.clauses
@@ -161,13 +182,13 @@ end
 function printpsql(io::IO, node::DefinedTableItem, env::TablePrintEnvironment)
     tablename = node.name
     print(io, tablename)
-    alias = env.alias
+    alias = getalias(env, node)
     alias !== tablename && print(io, " $alias")
 end
 
 function printpsql(io::IO, node::SetReturningFunctionTableItem, env::TablePrintEnvironment)
     printpsql(io, node.func, env.parent)
-    alias = env.alias
+    alias = getalias(env, node)
     print(io, " $alias")
     if !isempty(node.fieldnames)
         print(io, " (")

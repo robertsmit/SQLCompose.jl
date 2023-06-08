@@ -6,6 +6,7 @@ struct Asterisk <: SQLNode end
 const All = Asterisk()
 
 abstract type SQLExpression{T<:SQLType} <: SQLNode end
+abstract type SQLCommand <: SQLNode end
 
 struct SQLConstant{T} <: SQLExpression{T}
     value
@@ -43,5 +44,4 @@ include("arithmetic.jl")
 include("concat.jl")
 include("rowstruct.jl")
 include("aggregates.jl")
-
-
+include("update.jl")

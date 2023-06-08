@@ -9,6 +9,13 @@ macro query(args...)
     esc(:(Chain.@chain convert(SQLCompose.Query, $base) $(rest...)))
 end
 
+macro update(args...)
+    base, rest... = map(args) do arg
+        rewrite_for_query(__module__, arg)
+    end
+    esc(:(Chain.@chain update($base) $(rest...)))
+end
+
 rewrite_for_query(m::Module, expr) = expr
 function rewrite_for_query(m::Module, expr::Expr)
     newargs = (rewrite_for_query(m, arg) for arg in expr.args)

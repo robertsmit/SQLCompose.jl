@@ -1,4 +1,4 @@
-abstract type Query <: SQLNode end
+abstract type Query <: SQLCommand end
 result(q::Query) = error("Please implement result for", typeof(q))
 
 struct SelectWithoutFromQuery{T} <: Query
@@ -59,7 +59,7 @@ with_range(query::SelectQuery, value) = SelectQuery(query; range=value)
 
 function SelectQuery(table::TableSource)
     from = DefinedTableItem(table)
-    result = tableresult(from.ref, table.type)
+    result = tableresult(from.ref, table)
     SelectQuery(result, from)
 end
 

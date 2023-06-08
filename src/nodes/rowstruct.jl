@@ -39,10 +39,10 @@ reference(to::Type{<:RowStruct}, primarykey, foreignkey, isnullable=false) = ref
 function Base.show(io::IO, node::RowStruct)
     print(io, "(")
     foreach_field(node) do field, alias, index
-        index == 1 || print(io, ", ")
+        index == 1 || print(io, ", \n\t")
         print(io, alias)
         print(io, " = ")
-        print(io, string(field))
+        show(io, field)
     end
     print(io, ")")
 end

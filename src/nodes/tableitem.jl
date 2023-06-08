@@ -29,6 +29,7 @@ struct TableSource
 end
 
 TableSource(type) = TableSource(type, aliashintdefault(name(type)))
+TableSource(source::TableSource) = source
 aliashint(source::TableSource) = source.aliashint
 
 TableSource(name::Symbol, names_types::Pair...; aliashint=aliashintdefault(name)) =
@@ -53,7 +54,7 @@ aliashint(item::DefinedTableItem) = item.aliashint
 
 function DefinedTableItem(table::TableSource)
     ref = TableItemRef()
-    DefinedTableItem(ref, name(table), table.aliashint)
+    DefinedTableItem(ref, name(table), aliashint(table))
 end
 
 struct SetReturningFunctionTableItem{T} <: TableItem
@@ -119,7 +120,7 @@ DefinedTableItem(ref) = DefinedTableItem(ref, ref.tablename, Symbol("ref_", ref.
 
 function reference(table::TableSource, primarykeys::Tuple, foreignkeys, isnullable=false)
     ref = ReferredTableItemRef(name(table), primarykeys, foreignkeys, isnullable)
-    tableresult(ref, table.type)
+    tableresult(ref, table)
 end
 
 reference(table::TableSource, primarykey::Symbol, foreignkey, isnullable=false) =
@@ -133,3 +134,4 @@ end
 tableresult(ref::TableItemRef, fnames, ftypes) =
     NamedTuple{fnames}(TableItemFieldRef(name, type, ref) for (name, type) in zip(fnames, ftypes))
 tableresult(ref::TableItemRef, type::Type{<:RowType}) = tableresult(ref, field_names(type), field_types(type))
+tableresult(ref::TableItemRef, source::TableSource) = tableresult(ref, source.type)

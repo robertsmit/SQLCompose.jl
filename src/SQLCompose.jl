@@ -6,11 +6,11 @@ import Base: ImmutableDict
 export →
 export TableSource, reference
 # composition
-export query, groupby, join, with, join_lateral, having, left_join_lateral
+export query, groupby, join, with, join_lateral, having, left_join_lateral, update, set
 export InnerJoin, LeftJoin, RightJoin, FullJoin
 export desc, asc
 # operators
-export between, avg, unnest, case, @eager, @query
+export between, avg, unnest, case, @eager, @query, @update
 #comparing
 export @like_str, @ilike_str, @similarto_str, like, similarto, matching
 #globals

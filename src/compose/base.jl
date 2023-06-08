@@ -1,7 +1,11 @@
 import Base: filter, map, sort, join, getindex, iterate
 
+
 QuerySource = Union{Type{<:RowType},Type{<:RowStruct},TableSource}
 Queryable = Union{Query,QuerySet,SetReturningFunctionCall,QuerySource}
+JoinLeft = Union{Queryable, UpdateStatement}
+
+include("update.jl")
 
 Base.convert(::Type{Query}, value::Query) = value
 Base.convert(::Type{Query}, value) = query(value)
@@ -9,9 +13,9 @@ Base.convert(::Type{Query}, value) = query(value)
 commontable(q::Queryable) = SubqueryTableItem(q)
 query_commontable(table::TableItem) = SelectQuery(SelectQuery(table); from=RefTableItem(table.ref))
 
-resultargs(arg) = (arg,)
-resultargs(arg::UnmergedResult) = arg.results
-resultargs(a, b) = (resultargs(a)..., resultargs(b)...)
+result_args(arg) = (arg,)
+result_args(arg::UnmergedResult) = arg.results
+result_args(a, b) = (result_args(a)..., result_args(b)...)
 
 
 query(from::Queryable) = SelectQuery(from)
@@ -46,14 +50,14 @@ SELECT 1 as elem1, 2 as elem2, 3 as elem3
 query(value) = SelectWithoutFromQuery(value)
 
 filter(f::Function, arg::Queryable) = filter(f, SelectQuery(arg))
-function filter(f::Function, q::SelectQuery)
-    f = q.filter & convert(SQLExpression, f(resultargs(q.result)...))
+function filter(f::Function, q::Union{SelectQuery,UpdateStatement})
+    f = q.filter & convert(SQLExpression, f(result_args(q.result)...))
     with_filter(q, f)
 end
 filter(f::Function, q::QuerySet) = QuerySet(filter(f, q.query), q.executor)
 
 map(f::Function, node::Queryable) = map(f, SelectQuery(node))
-map(f::Function, q::SelectQuery) = with_result(q, convert_fields(SQLExpression, f(resultargs(q.result)...)))
+map(f::Function, q::SelectQuery) = with_result(q, convert_fields(SQLExpression, f(result_args(q.result)...)))
 map(f::Function, q::QuerySet) = QuerySet(map(f, q.query), q.executor)
 map(f::Function, q::CommonTableExpressionQuery) = CommonTableExpressionQuery(map(f, q.query), q.commontables...)
 map(f::Function, q::SelectWithoutFromQuery) = SelectWithoutFromQuery(f(q.result))
@@ -75,21 +79,33 @@ function map(base::Queryable; kwargs...)
 end
 
 
-joinable(::SelectQuery{UnmergedResult}) = error("cannot right join unmerged results")
-joinable(q::SelectQuery) = joinable(q, q.from)
-joinable(q::SelectQuery, ::JoinItem) = query(q)
-joinable(q::SelectQuery, ::TableItem) = isgrouped(q) || ispaged(q) ? query(q) : q
+joinable_right(::SelectQuery{UnmergedResult}) = error("cannot right join unmerged results")
+joinable_right(q::SelectQuery) = joinable_right(q, q.from)
+joinable_right(q::SelectQuery, ::JoinItem) = query(q)
+joinable_right(q::SelectQuery, ::TableItem) = isgrouped(q) || ispaged(q) ? query(q) : q
+joinable_right(q::Queryable) = joinable_right(convert(SelectQuery, q))
+joinable_left(q::Queryable) = SelectQuery(q)
+joinable_left(q::SelectQuery) = q
+joinable_left(q::UpdateStatement) = q
 
 
 function join(f::Function, left::Queryable, right::Queryable; type::JoinType=InnerJoin())
-    left = convert(SelectQuery, left)
-    right = joinable(convert(SelectQuery, right))
-    args = resultargs(left.result, right.result)
-    condition = convert(SQLExpression, f(args...))
+    left = joinable_left(left)
+    right = joinable_right(right)
+    args = result_args(left.result, right.result)
+    condition = convert(BooleanExpression, f(args...))
+    filter = left.filter & right.filter
+    result = result=UnmergedResult(args)
+
     joinvalue = EquiJoin(type, condition)
     joinitem = JoinItem(left.from, right.from, joinvalue)
-    filter = left.filter & right.filter
-    SelectQuery(left; filter, from=joinitem, result=UnmergedResult(args))
+    SelectQuery(left; filter, from=joinitem, result)
+end
+
+function join(left::SelectQuery, right::FromItem; condition, result, filter, type) 
+    joinvalue = EquiJoin(type, condition)
+    joinitem = JoinItem(left.from, right, joinvalue)
+    SelectQuery(left; filter, from=joinitem, result)
 end
 
 function join(f::Function, left::QuerySet, right::Queryable; type::JoinType=InnerJoin())
@@ -124,15 +140,11 @@ function join(left::Queryable, right::Queryable, field::Symbol, morefields::Symb
     end
 end
 
-join(f::Function, right::Queryable) = (left::Queryable) -> join(f, left, right)
-join(right::Queryable, field::Symbol, morefields::Symbol...) = (left::Queryable) -> join(left, right, field, morefields...)
-
-
 function join_lateral(rightf::Function, left::Queryable; on=(args...) -> true, type::JoinType=InnerJoin())
     left = convert(SelectQuery, left)
-    right = rightf(resultargs(left.result)...)
+    right = rightf(result_args(left.result)...)
     right = query(right)
-    results = resultargs(left.result, result(right))
+    results = result_args(left.result, result(right))
     condition = convert(SQLExpression, on(results...))
     joinvalue = LateralJoin(type, condition)
     joinitem = JoinItem(left.from, right.from, joinvalue)
@@ -150,7 +162,7 @@ join_lateral(rightf::Function; kwargs...) = (left) -> join_lateral(rightf, left;
 
 groupby(f, node::Queryable) = groupby(f, convert(SelectQuery, node))
 groupby(f::Function, q::SelectQuery) =
-    let groupval = f(resultargs(q.result)...)
+    let groupval = f(result_args(q.result)...)
         with_group(q, convert_fields(SQLExpression, groupval))
     end
 groupby(f::Function, q::QuerySet) = QuerySet(groupby(f, q.query), q.executor)
@@ -164,15 +176,15 @@ groupby(field::Symbol, morefields::Symbol...) = (q::Queryable) -> groupby(q, fie
 
 having(f::Function, arg::Queryable) = having(f, convert(SelectQuery, node))
 function having(f::Function, q::SelectQuery)
-    f = q.groupfilter & convert(SQLExpression, f(resultargs(q.result)...))
+    f = q.groupfilter & convert(SQLExpression, f(result_args(q.result)...))
     with_groupfilter(q, f)
 end
 having(f::Function, q::QuerySet) = QuerySet(having(f, q.query), q.executor)
 
 sort(f::Function, node::Queryable) = sort(f, convert(SelectQuery, node))
 sort(f::Function, q::SelectQuery) =
-    let sortvalue = f(resultargs(q.result)...)
-        with_order(q, convert_fields(Union{SQLExpression, DescOrder}, sortvalue))
+    let sortvalue = f(result_args(q.result)...)
+        with_order(q, convert_fields(Union{SQLExpression,DescOrder}, sortvalue))
     end
 sort(f::Function, q::QuerySet) = QuerySet(sort(f, q.query), q.executor)
 function sort(node::Queryable, field::Symbol, morefields::Symbol...)
