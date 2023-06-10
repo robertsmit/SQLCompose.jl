@@ -3,7 +3,6 @@ import Base: filter, map, sort, join, getindex, iterate
 
 QuerySource = Union{Type{<:RowType},Type{<:RowStruct},TableSource}
 Queryable = Union{Query,QuerySet,SetReturningFunctionCall,QuerySource}
-JoinLeft = Union{Queryable, UpdateStatement}
 
 include("update.jl")
 
@@ -78,51 +77,66 @@ function map(base::Queryable; kwargs...)
     end
 end
 
-
+JoinableLeft = Union{Queryable, UpdateStatement}
+joinable_left(q::Queryable) = SelectQuery(q)
+joinable_left(q::SelectQuery) = q
+joinable_left(q::SQLCommand) = q
+JoinableRight = Queryable
 joinable_right(::SelectQuery{UnmergedResult}) = error("cannot right join unmerged results")
 joinable_right(q::SelectQuery) = joinable_right(q, q.from)
 joinable_right(q::SelectQuery, ::JoinItem) = query(q)
 joinable_right(q::SelectQuery, ::TableItem) = isgrouped(q) || ispaged(q) ? query(q) : q
 joinable_right(q::Queryable) = joinable_right(convert(SelectQuery, q))
-joinable_left(q::Queryable) = SelectQuery(q)
-joinable_left(q::SelectQuery) = q
-joinable_left(q::UpdateStatement) = q
 
 
-function join(f::Function, left::Queryable, right::Queryable; type::JoinType=InnerJoin())
+function join(f::Function, left::JoinableLeft, right::JoinableRight; type::JoinType=InnerJoin())
     left = joinable_left(left)
     right = joinable_right(right)
     args = result_args(left.result, right.result)
     condition = convert(BooleanExpression, f(args...))
     filter = left.filter & right.filter
     result = result=UnmergedResult(args)
-
-    joinvalue = EquiJoin(type, condition)
-    joinitem = JoinItem(left.from, right.from, joinvalue)
-    SelectQuery(left; filter, from=joinitem, result)
+    make_join(left; right = right.from, condition, result, filter, type)
 end
 
-function join(left::SelectQuery, right::FromItem; condition, result, filter, type) 
+function make_join(left::SelectQuery; right, condition, result, filter, type) 
     joinvalue = EquiJoin(type, condition)
     joinitem = JoinItem(left.from, right, joinvalue)
     SelectQuery(left; filter, from=joinitem, result)
 end
 
-function join(f::Function, left::QuerySet, right::Queryable; type::JoinType=InnerJoin())
+function make_join(left::UpdateStatement; right, condition, result, filter, type) 
+    make_join(left, left.from, type; rigth ,condition, result, filter)
+end
+
+function make_join(left::UpdateStatement, ::Nothing, ::InnerJoin; right, condition, result, filter) 
+
+end
+
+function make_join(left::UpdateStatement, ::Nothing, type::JoinType; right, condition, result, filter) 
+    error("Only inner joins are valid")
+end
+
+function make_join(left::UpdateStatement, rigth::FromItem, type::JoinType; right, condition, result, filter) 
+    joinvalue = EquiJoin(type, condition)
+    joinitem = JoinItem(left.from, right, joinvalue)
+end
+
+function join(f::Function, left::QuerySet, right::JoinableRight; type::JoinType=InnerJoin())
     QuerySet(join(f, left.query, right; type), left.executor)
 end
 
-function join(f::Function, left::CommonTableExpressionQuery, right::Queryable; type::JoinType=InnerJoin())
+function join(f::Function, left::CommonTableExpressionQuery, right::JoinableRight; type::JoinType=InnerJoin())
     let query = join(f, left.query, right; type)
         CommonTableExpressionQuery(query, left.commontables...)
     end
 end
 
-function join(left::Queryable, right::Queryable)
+function join(left::JoinableLeft, right::JoinableRight)
     join((args...) -> true, left, right)
 end
 
-function join(left::Queryable, right::Queryable, pair::Pair{Symbol,Symbol}, morepairs::Pair{Symbol,Symbol}...)
+function join(left::JoinableLeft, right::JoinableRight, pair::Pair{Symbol,Symbol}, morepairs::Pair{Symbol,Symbol}...)
     pairs = (pair, morepairs...)
     let f = (left, right) -> reduce(pairs; init=true) do acc, (lfield, rfield)
             acc & (getfield(left, lfield) == getfield(right, rfield))
@@ -131,7 +145,7 @@ function join(left::Queryable, right::Queryable, pair::Pair{Symbol,Symbol}, more
     end
 end
 
-function join(left::Queryable, right::Queryable, field::Symbol, morefields::Symbol...)
+function join(left::JoinableLeft, right::JoinableRight, field::Symbol, morefields::Symbol...)
     fields = (field, morefields...)
     let f = (left, right) -> reduce(fields; init=true) do acc, field
             acc & (getfield(left, field) == getfield(right, field))
