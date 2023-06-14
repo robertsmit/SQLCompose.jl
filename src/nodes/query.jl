@@ -28,7 +28,7 @@ asc(arg) = arg
 asc(arg::NodeList) = map(arc, arg)
 asc(arg::DescOrder) = arg.expr
 
-struct SelectQuery{T} <: Query
+@value struct SelectQuery{T} <: Query
     result::T
     from::FromItem
     filter::BooleanExpression
@@ -40,22 +40,11 @@ end
 
 SelectQuery(result::T, from, filter=true, group=(), groupfilter=true, order=(), range=fullrange()) where {T} =
     SelectQuery{T}(result, from, filter, group, groupfilter, order, range)
-SelectQuery(other::SelectQuery;
-    result=other.result, from=other.from, filter=other.filter, group=other.group, groupfilter=other.groupfilter, order=other.order, range=other.range) =
-    SelectQuery(result, from, filter, group, groupfilter, order, range)
 
 isgrouped(query::SelectQuery) = !isempty(query.group)
 ispaged(query::SelectQuery) = query.range !== fullrange()
 isordered(query::SelectQuery) = !isempty(query.order)
 result(q::SelectQuery) = q.result
-
-with_result(query::SelectQuery, arg) = SelectQuery(query; result=arg)
-with_from(query::SelectQuery, arg) = query.from != arg ? SelectQuery(query; from=arg) : query
-with_filter(query::SelectQuery, arg) = SelectQuery(query; filter=arg)
-with_order(query::SelectQuery, value) = SelectQuery(query; order=nodelist(value))
-with_group(query::SelectQuery, value) = SelectQuery(query; group=nodelist(value))
-with_groupfilter(query::SelectQuery, value) = SelectQuery(query; groupfilter=value)
-with_range(query::SelectQuery, value) = SelectQuery(query; range=value)
 
 function SelectQuery(table::TableSource)
     from = DefinedTableItem(table)

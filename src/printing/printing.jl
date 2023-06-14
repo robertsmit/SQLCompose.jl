@@ -45,15 +45,13 @@ function printpsql(io::IO, arg::SelectWithoutFromQuery, env)
     print(io, "SELECT ")
     printpsql_result(io, arg.result, env)
 end
-
+global i = 0
 function printpsql(io::IO, arg::UpdateStatement, parent_env)
-    env = nextenv(parent_env, arg.sourceItem)
-    env = reduce(arg.fromItems; init=env) do acc, next
-        nextenv(acc, next)
-    end
+    env = nextenv(parent_env, arg.item)
+    env = isnothing(arg.from) ? env : nextenv(env, arg.from)
     print(io, "UPDATE ")
 
-    printpsql(io, arg.sourceItem, env)
+    printpsql(io, arg.item, env)
 
     print(io, " SET ")
     for (i, (name, value)) in enumerate(pairs(arg.changes))
@@ -62,9 +60,12 @@ function printpsql(io::IO, arg::UpdateStatement, parent_env)
         print(io, " = ")
         printpsql(io, value, env)
     end
-    printpsql_fieldlist(io, arg.fromItems, env; prefix=" FROM ")
+    if !isnothing(arg.from)
+        print(io, " FROM ")
+        printpsql(io, arg.from, env)
+    end
     printpsql_filter(io, arg.filter, env; prefix=" WHERE ")
-    
+
 end
 
 function printpsql(io::IO, node::CaseExpression, env)

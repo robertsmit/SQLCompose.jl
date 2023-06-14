@@ -502,5 +502,5 @@ begin
             #= c:\Users\Rob\.julia\dev\SQLCompose\src\generate\generate.jl:98 =#
             SQLCompose.reference(Store, (:address_id,), (address.address_id,))
         end
-end
+    end
 end

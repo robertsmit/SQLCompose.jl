@@ -36,6 +36,7 @@ function runtests()
         include("./compose/reference.jl")
         include("./compose/aggregates.jl")
         include("./compose/srf.jl")
+        include("./compose/update.jl")
     end
     return nothing
 end

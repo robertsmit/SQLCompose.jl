@@ -77,7 +77,7 @@ function map(base::Queryable; kwargs...)
     end
 end
 
-JoinableLeft = Union{Queryable, UpdateStatement}
+JoinableLeft = Union{Queryable,UpdateStatement}
 joinable_left(q::Queryable) = SelectQuery(q)
 joinable_left(q::SelectQuery) = q
 joinable_left(q::SQLCommand) = q
@@ -95,29 +95,29 @@ function join(f::Function, left::JoinableLeft, right::JoinableRight; type::JoinT
     args = result_args(left.result, right.result)
     condition = convert(BooleanExpression, f(args...))
     filter = left.filter & right.filter
-    result = result=UnmergedResult(args)
-    make_join(left; right = right.from, condition, result, filter, type)
+    result = result = UnmergedResult(args)
+    make_join(left; right=right.from, condition, result, filter, type)
 end
 
-function make_join(left::SelectQuery; right, condition, result, filter, type) 
+function make_join(left::SelectQuery; right, condition, result, filter, type)
     joinvalue = EquiJoin(type, condition)
     joinitem = JoinItem(left.from, right, joinvalue)
     SelectQuery(left; filter, from=joinitem, result)
 end
 
-function make_join(left::UpdateStatement; right, condition, result, filter, type) 
-    make_join(left, left.from, type; rigth ,condition, result, filter)
+function make_join(left::UpdateStatement; right, condition, result, filter, type)
+    make_join(left, left.from, type; right, condition, result, filter)
 end
 
-function make_join(left::UpdateStatement, ::Nothing, ::InnerJoin; right, condition, result, filter) 
-
+function make_join(left::UpdateStatement, ::Nothing, ::InnerJoin; right, condition, result, filter)
+    UpdateStatement(left; from=right, filter=filter & condition, result)
 end
 
-function make_join(left::UpdateStatement, ::Nothing, type::JoinType; right, condition, result, filter) 
+function make_join(left::UpdateStatement, ::Nothing, type::JoinType; right, condition, result, filter)
     error("Only inner joins are valid")
 end
 
-function make_join(left::UpdateStatement, rigth::FromItem, type::JoinType; right, condition, result, filter) 
+function make_join(left::UpdateStatement, rigth::FromItem, type::JoinType; right, condition, result, filter)
     joinvalue = EquiJoin(type, condition)
     joinitem = JoinItem(left.from, right, joinvalue)
 end
@@ -177,7 +177,7 @@ join_lateral(rightf::Function; kwargs...) = (left) -> join_lateral(rightf, left;
 groupby(f, node::Queryable) = groupby(f, convert(SelectQuery, node))
 groupby(f::Function, q::SelectQuery) =
     let groupval = f(result_args(q.result)...)
-        with_group(q, convert_fields(SQLExpression, groupval))
+        with_group(q, convert_fields(SQLExpression, groupval) |> nodelist)
     end
 groupby(f::Function, q::QuerySet) = QuerySet(groupby(f, q.query), q.executor)
 groupby(q::Queryable, field::Symbol, morefields::Symbol...) =
@@ -198,7 +198,7 @@ having(f::Function, q::QuerySet) = QuerySet(having(f, q.query), q.executor)
 sort(f::Function, node::Queryable) = sort(f, convert(SelectQuery, node))
 sort(f::Function, q::SelectQuery) =
     let sortvalue = f(result_args(q.result)...)
-        with_order(q, convert_fields(Union{SQLExpression,DescOrder}, sortvalue))
+        with_order(q, convert_fields(Union{SQLExpression,DescOrder}, sortvalue) |> nodelist)
     end
 sort(f::Function, q::QuerySet) = QuerySet(sort(f, q.query), q.executor)
 function sort(node::Queryable, field::Symbol, morefields::Symbol...)
