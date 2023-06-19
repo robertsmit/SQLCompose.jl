@@ -264,6 +264,16 @@ end
 
 printpsql(io::IO, n::Number, env) = print(io, n)
 printpsql(io::IO, b::Bool, env) = print(io, b)
+printpsql(io::IO, b::Missing, env) = print(io, "NULL")
+function printpsql(io::IO, b::Date, env) 
+    print(io, "'")
+    print(io, year(b))
+    print(io, '-')
+    print(io, month(b))
+    print(io, '-')
+    print(io, day(b))
+    print(io, "'::date")
+end
 printpsql(io::IO, v::String, env) = (print(io, "\'"); print(io, v); print(io, "\'"))
 printpsql(io::IO, c::SQLConstant, env) = begin
     printpsql(io, c.value, env)

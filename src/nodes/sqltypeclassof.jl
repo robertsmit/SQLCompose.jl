@@ -12,3 +12,5 @@ sqltypeclassof(::Type{Float32}) = Float4Type
 sqltypeclassof(::Type{Float64}) = Float8Type
 sqltypeclassof(::Type{String}) = TextType
 sqltypeclassof(::Type{UUID}) = UUIDType
+sqltypeclassof(::Type{Missing}) = UnknownType
+sqltypeclassof(::Type{Date}) = DateType

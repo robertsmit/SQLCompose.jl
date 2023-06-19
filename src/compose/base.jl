@@ -100,8 +100,7 @@ function join(f::Function, left::JoinableLeft, right::JoinableRight; type::JoinT
 end
 
 function make_join(left::SelectQuery; right, condition, result, filter, type)
-    joinvalue = EquiJoin(type, condition)
-    joinitem = JoinItem(left.from, right, joinvalue)
+    joinitem = JoinItem(left.from, right, EquiJoin(type, condition))
     SelectQuery(left; filter, from=joinitem, result)
 end
 
@@ -117,9 +116,9 @@ function make_join(left::UpdateStatement, ::Nothing, type::JoinType; right, cond
     error("Only inner joins are valid")
 end
 
-function make_join(left::UpdateStatement, rigth::FromItem, type::JoinType; right, condition, result, filter)
-    joinvalue = EquiJoin(type, condition)
-    joinitem = JoinItem(left.from, right, joinvalue)
+function make_join(stmnt::UpdateStatement, left::FromItem, type::JoinType; right, condition, result, filter)
+    joinitem = JoinItem(left, right, EquiJoin(type, condition))
+    UpdateStatement(stmnt; from=joinitem, filter, result)
 end
 
 function join(f::Function, left::QuerySet, right::JoinableRight; type::JoinType=InnerJoin())

@@ -1,11 +1,15 @@
 import Base.convert
 
-convert(::Type{T}, value::SQLExpression) where T <: SQLExpression  = value
+convert(::Type{<:SQLExpression}, value::SQLExpression) = value
 
-function convert(::Type{T}, value::Query) where T <: SQLExpression 
+function convert(::Type{<:SQLExpression}, value::Query)
     SubqueryExpression(value)
 end
 
 convert(type::SQLType, value::SQLExpression) = Cast(value, type)
 
-convert(::Type{T}, value) where T <: SQLExpression = SQLConstant(value)
+convert(::Type{<:SQLExpression}, value)   = SQLConstant(value)
+convert(::Type{<:SQLExpression{T}}, value) where {T}  = SQLConstant(value, T)
+
+
+

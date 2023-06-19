@@ -1,5 +1,5 @@
 module SQLCompose
-using LibPQ, Tables, StaticArrays
+using LibPQ, Tables, StaticArrays, Dates, Chain
 import UUIDs: UUID
 import Base: ImmutableDict
 

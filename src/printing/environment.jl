@@ -39,6 +39,10 @@ function nextenv(env, table::TableItem)
     nextenv = TablePrintEnvironment(ref(table), aliasactual, env)
 end
 
+function nextenv(env, table::JoinItem)
+    nextenv(nextenv(env, table.left), table.right)
+end
+
 function nextenv(env, table::RefTableItem)
     definition_env = unwind(env, table)
     (;ref, alias) = definition_env

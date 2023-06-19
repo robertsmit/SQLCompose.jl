@@ -6,6 +6,8 @@ struct Asterisk <: SQLNode end
 const All = Asterisk()
 
 abstract type SQLExpression{T<:SQLType} <: SQLNode end
+sqltypeof(::SQLExpression{T}) where {T} = T
+
 abstract type SQLCommand <: SQLNode end
 
 struct SQLConstant{T} <: SQLExpression{T}

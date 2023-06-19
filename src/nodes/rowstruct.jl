@@ -6,6 +6,7 @@ field_names(::Type{<:RowStruct{T}}) where {T} = field_names(T)
 field_pairs(::Type{<:RowStruct{T}}) where {T} = field_pairs(T)
 field_names(::RowStruct{T}) where {T} = field_names(T)
 name(::Type{<:RowStruct{T}}) where {T} = name(T)
+Base.keys(r::RowStruct) = field_names(r)
 
 tableresult(ref::TableItemRef, rst::Type{<:RowStruct}) =
     rst((TableItemFieldRef(name, type, ref)

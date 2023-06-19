@@ -8,10 +8,10 @@ function update(source::TableSource)
 end
 
 function set(f::Function, stmnt::UpdateStatement)
-    changed = f(result_args(stmnt.result)...)
-    actualchanges = NamedTuple(field => value for (field, value) in pairs(changed) if stmnt.itemresult[field] !== value)
+    changes = f(result_args(stmnt.result)...)
+    actualchanges = NamedTuple(field => convert(SQLExpression{sqltypeof(stmnt.itemresult[field])}, value) for (field, value) in pairs(changes) if stmnt.itemresult[field] !== value)
     if length(actualchanges) == 0
-        error("Nothing changed")
+        return with_changes(stmnt, stmt.itemresult)
     end
     with_changes(stmnt, actualchanges)
 end
