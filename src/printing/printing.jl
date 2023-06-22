@@ -301,7 +301,7 @@ function printpsql(io::IO, node::CommonTableExpressionQuery, env)
         print(io, ")")
     end
     print(io, " ")
-    printpsql(io, node.query, cte_env)
+    printpsql(io, node.expression, cte_env)
 end
 
 function printpsql_commontable(io::IO, table::SubqueryTableItem, env)

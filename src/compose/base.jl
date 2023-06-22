@@ -58,7 +58,7 @@ filter(f::Function, q::QuerySet) = QuerySet(filter(f, q.query), q.executor)
 map(f::Function, node::Queryable) = map(f, SelectQuery(node))
 map(f::Function, q::SelectQuery) = with_result(q, convert_fields(SQLExpression, f(result_args(q.result)...)))
 map(f::Function, q::QuerySet) = QuerySet(map(f, q.query), q.executor)
-map(f::Function, q::CommonTableExpressionQuery) = CommonTableExpressionQuery(map(f, q.query), q.commontables...)
+map(f::Function, q::CommonTableExpressionQuery) = CommonTableExpressionQuery(map(f, q.expression), q.commontables...)
 map(f::Function, q::SelectWithoutFromQuery) = SelectWithoutFromQuery(f(q.result))
 
 function map(q::Queryable, field::Symbol, morefields::Symbol...)
@@ -126,7 +126,7 @@ function join(f::Function, left::QuerySet, right::JoinableRight; type::JoinType=
 end
 
 function join(f::Function, left::CommonTableExpressionQuery, right::JoinableRight; type::JoinType=InnerJoin())
-    let query = join(f, left.query, right; type)
+    let query = join(f, left.expression, right; type)
         CommonTableExpressionQuery(query, left.commontables...)
     end
 end
@@ -216,7 +216,7 @@ function with(f::Function, commons::Queryable...)
 end
 
 function with(f::Function, arg::CommonTableExpressionQuery)
-    next = commontable(arg.query)
+    next = commontable(arg.expression)
     query = f(query_commontable(next))
     CommonTableExpressionQuery(query, arg.commontables..., next)
 end

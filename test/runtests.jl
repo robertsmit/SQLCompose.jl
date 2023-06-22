@@ -2,6 +2,7 @@ using Test: @testset, @test
 using SQLCompose
 using SQLCompose.Generate
 using Chain
+using Dates
 
 include("./testsql.jl")
 include("./data/bookings.jl")
