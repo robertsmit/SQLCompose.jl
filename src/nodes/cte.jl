@@ -9,8 +9,8 @@ CommonTable = Union{SubqueryTableItem,RecursiveCommonTable}
 struct CommonTableExpressionQuery <: Query
     expression
     commontables::Tuple
-    CommonTableExpressionQuery(query::Query, commontables::SubqueryTableItem...) = length(commontables) == 0 ? query : new(query, commontables)
-    CommonTableExpressionQuery(query::Query, rec::RecursiveCommonTable, commontables::SubqueryTableItem...) = new(query, (rec, commontables...))
+    CommonTableExpressionQuery(expression, commontables::SubqueryTableItem...) = length(commontables) == 0 ? expression : new(expression, commontables)
+    CommonTableExpressionQuery(expression, rec::RecursiveCommonTable, commontables::SubqueryTableItem...) = new(expression, (rec, commontables...))
 end
 result(q::CommonTableExpressionQuery) = result(q.expression)
 

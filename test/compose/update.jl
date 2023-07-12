@@ -23,7 +23,7 @@
             fc.category_id == 1 && f.length > 120
         end
         set(_) do r, i, f, fc
-            (return_date = Date("2023-10-6"),)
+            (return_date=Date("2023-10-6"),)
         end
     end),
     "UPDATE rental r 
@@ -31,5 +31,37 @@
         INNER JOIN film f ON i.film_id = f.film_id 
         INNER JOIN film_category f2 ON f.film_id = f2.film_id 
         WHERE (r.inventory_id = i.inventory_id) AND (f2.category_id = 1) AND (f.length > 120)"
+
+    @info "with cte"
+    @testsql (
+        with(map(Pagila.Film, :film_id, :length)) do f
+            @update Pagila.Rental begin
+                join(_, Pagila.Inventory) do r, i
+                    r.inventory_id == i.inventory_id
+                end
+                join(_, f) do r, i, f
+                    i.film_id == f.film_id
+                end
+                filter(_) do r, i, f
+                    f.length > 120
+                end
+                set(_) do r, i, f
+                    (return_date=Date("2023-10-6"),)
+                end
+            end
+        end
+    ),
+    "
+    WITH q AS (SELECT f.film_id, f.length FROM film f) 
+    UPDATE rental r 
+    SET return_date = '2023-10-6'::date 
+    FROM inventory i 
+    INNER JOIN q ON i.film_id = q.film_id 
+    WHERE (r.inventory_id = i.inventory_id) AND (q.length > 120)
+    "
 end
+
+
+
+
 

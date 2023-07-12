@@ -1,23 +1,37 @@
 abstract type ReferredTableExpander end
 
+struct RefJoin
+    tableitem
+    join::EquiJoin
+end
 
 mutable struct SelectQueryReferredTableExpander <: ReferredTableExpander
     tableitem
     env::Any
+    joins::Vector{RefJoin}
 end
 
-SelectQueryReferredTableExpander(env) = SelectQueryReferredTableExpander(nothing, env)
+SelectQueryReferredTableExpander(env) = SelectQueryReferredTableExpander(nothing, env, [])
 SelectQueryReferredTableExpander() = SelectQueryReferredTableExpander(NullPrintEnvironment())
 
-function expand(plan::SelectQueryReferredTableExpander, query::SelectQuery)
-    write!(plan, query.from)
-    write!(plan, query.result)
-    write!(plan, query.filter)
-    write!(plan, query.group)
-    write!(plan, query.groupfilter)
-    write!(plan, query.order)
-    with_from(query, plan.tableitem)
+function expand(expander::SelectQueryReferredTableExpander, query::SelectQuery)
+    write!(expander, query.from)
+    write!(expander, query.result)
+    write!(expander, query.filter)
+    write!(expander, query.group)
+    write!(expander, query.groupfilter)
+    write!(expander, query.order)
+    with_from(query, expander.tableitem)
 end
+
+function expand(expander::SelectQueryReferredTableExpander, stmnt::UpdateStatement)
+    write!(expander, stmnt.from)
+    write!(expander, stmnt.changes)
+    write!(expander, stmnt.returning)
+    write!(expander, stmnt.filter)
+    with_from(query, expander.tableitem)
+end
+
 
 function push_referred!(plan::SelectQueryReferredTableExpander, ref::ReferredTableItemRef)
     condition = reduce(zip(ref.foreignkeys, ref.primarykeys), init=true) do acc, (foreign, prim)
