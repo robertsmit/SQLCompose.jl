@@ -25,7 +25,7 @@ printpsql(io, node, env) = error("please implement 'printpsql(::IO, ::Any, ::Abs
 
 
 function printpsql(io::IO, raw_node::SelectQuery, parent_env)
-    expander = SelectQueryReferredTableExpander(parent_env)
+    expander = ReferredTableExpander(parent_env)
     node = expand(expander, raw_node)
     env = expander.env
     print(io, "SELECT ")
@@ -48,7 +48,7 @@ end
 global i = 0
 function printpsql(io::IO, raw_node::UpdateStatement, parent_env)
     env = nextenv(parent_env, raw_node.item)
-    expander = SelectQueryReferredTableExpander(env)
+    expander = ReferredTableExpander(env)
     arg = expand(expander, raw_node)
     env = expander.env
     print(io, "UPDATE ")
