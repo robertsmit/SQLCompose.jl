@@ -46,9 +46,11 @@ function printpsql(io::IO, arg::SelectWithoutFromQuery, env)
     printpsql_result(io, arg.result, env)
 end
 global i = 0
-function printpsql(io::IO, arg::UpdateStatement, parent_env)
-    env = nextenv(parent_env, arg.item)
-    env = isnothing(arg.from) ? env : nextenv(env, arg.from)
+function printpsql(io::IO, raw_node::UpdateStatement, parent_env)
+    env = nextenv(parent_env, raw_node.item)
+    expander = SelectQueryReferredTableExpander(env)
+    arg = expand(expander, raw_node)
+    env = expander.env
     print(io, "UPDATE ")
 
     printpsql(io, arg.item, env)

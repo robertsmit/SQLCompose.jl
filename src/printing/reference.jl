@@ -6,40 +6,25 @@ struct RefJoin
 end
 
 mutable struct SelectQueryReferredTableExpander <: ReferredTableExpander
-    tableitem
+    tableitem::Union{FromItem, Nothing}
+    filter::BooleanExpression
     env::Any
-    joins::Vector{RefJoin}
 end
 
-SelectQueryReferredTableExpander(env) = SelectQueryReferredTableExpander(nothing, env, [])
+SelectQueryReferredTableExpander(env) = SelectQueryReferredTableExpander(nothing, true, env)
 SelectQueryReferredTableExpander() = SelectQueryReferredTableExpander(NullPrintEnvironment())
 
-function expand(expander::SelectQueryReferredTableExpander, query::SelectQuery)
-    write!(expander, query.from)
-    write!(expander, query.result)
-    write!(expander, query.filter)
-    write!(expander, query.group)
-    write!(expander, query.groupfilter)
-    write!(expander, query.order)
-    with_from(query, expander.tableitem)
+expanded(node::SQLNode, expander::ReferredTableExpander) = @chain node begin
+    with_from(_, expander.tableitem)
+    with_filter(_, node.filter & expander.filter)
 end
-
-function expand(expander::SelectQueryReferredTableExpander, stmnt::UpdateStatement)
-    write!(expander, stmnt.from)
-    write!(expander, stmnt.changes)
-    write!(expander, stmnt.returning)
-    write!(expander, stmnt.filter)
-    with_from(query, expander.tableitem)
-end
-
 
 function push_referred!(plan::SelectQueryReferredTableExpander, ref::ReferredTableItemRef)
     condition = reduce(zip(ref.foreignkeys, ref.primarykeys), init=true) do acc, (foreign, prim)
         acc & (foreign == TableItemFieldRef(prim, UnknownType, ref))
     end
     referred_tableitem = DefinedTableItem(ref)
-    plan.tableitem = JoinItem(plan.tableitem, referred_tableitem, EquiJoin(ref.isnullable ? LeftJoin() : InnerJoin(), condition))
-    plan.env = nextenv(plan.env, referred_tableitem)
+    push_join!(plan, referred_tableitem, EquiJoin(ref.isnullable ? LeftJoin() : InnerJoin(), condition))
 end
 
 function push_tableitem!(plan::SelectQueryReferredTableExpander, tableitem)
@@ -48,8 +33,18 @@ function push_tableitem!(plan::SelectQueryReferredTableExpander, tableitem)
 end
 
 function push_join!(plan::SelectQueryReferredTableExpander, tableitem, join)
-    plan.tableitem = JoinItem(plan.tableitem, tableitem, join)
     plan.env = nextenv(plan.env, tableitem)
+    push_join!(plan, plan.tableitem, tableitem, join)
+end
+
+function push_join!(plan::SelectQueryReferredTableExpander, ::Nothing, right, join)
+    @assert typeof(join) == EquiJoin && join.type == InnerJoin() "Only equi inner joins can be joined to nothing"
+    plan.filter = plan.filter & join.condition
+    plan.tableitem = right
+end
+
+function push_join!(plan::SelectQueryReferredTableExpander, left, right, join)
+    plan.tableitem = JoinItem(left, right, join)
 end
 
 write!(plan::ReferredTableExpander, node::TableItem) = push_tableitem!(plan, node)
@@ -93,3 +88,20 @@ end
     end
 end
 
+function expand(expander::SelectQueryReferredTableExpander, query::SelectQuery)
+    write!(expander, query.from)
+    write!(expander, query.result)
+    write!(expander, query.filter)
+    write!(expander, query.group)
+    write!(expander, query.groupfilter)
+    write!(expander, query.order)
+    expanded(query, expander)
+end
+
+function expand(expander::SelectQueryReferredTableExpander, stmnt::UpdateStatement)
+    write!(expander, stmnt.from)
+    write!(expander, stmnt.changes)
+    write!(expander, stmnt.returning)
+    write!(expander, stmnt.filter)
+    expanded(stmnt, expander)
+end
