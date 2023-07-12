@@ -32,3 +32,4 @@ macro value(expr)
     end
 end
 
+Base.convert(::Type{Dates.Millisecond}, x::Int) = Dates.Millisecond(x)

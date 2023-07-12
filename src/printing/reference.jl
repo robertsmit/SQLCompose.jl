@@ -81,20 +81,22 @@ end
     end
 end
 
-function expand(expander::ReferredTableExpander, query::SelectQuery)
+function expand(query::SelectQuery, env)
+    expander = ReferredTableExpander(env)
     write!(expander, query.from)
     write!(expander, query.result)
     write!(expander, query.filter)
     write!(expander, query.group)
     write!(expander, query.groupfilter)
     write!(expander, query.order)
-    expanded(query, expander)
+    expanded(query, expander), expander.env
 end
 
-function expand(expander::ReferredTableExpander, stmnt::UpdateStatement)
+function expand(stmnt::UpdateStatement, env)
+    expander = ReferredTableExpander(nextenv(env, stmnt.item))
     write!(expander, stmnt.from)
     write!(expander, stmnt.changes)
     write!(expander, stmnt.returning)
     write!(expander, stmnt.filter)
-    expanded(stmnt, expander)
+    expanded(stmnt, expander), expander.env
 end

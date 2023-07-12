@@ -14,3 +14,5 @@ sqltypeclassof(::Type{String}) = TextType
 sqltypeclassof(::Type{UUID}) = UUIDType
 sqltypeclassof(::Type{Missing}) = UnknownType
 sqltypeclassof(::Type{Date}) = DateType
+sqltypeclassof(::Type{DateTime}) = TimestampType
+sqltypeclassof(::Type{<:AbstractRange{T}}) where T = RangeType{sqltypeclassof(T)}

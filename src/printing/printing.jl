@@ -25,9 +25,7 @@ printpsql(io, node, env) = error("please implement 'printpsql(::IO, ::Any, ::Abs
 
 
 function printpsql(io::IO, raw_node::SelectQuery, parent_env)
-    expander = ReferredTableExpander(parent_env)
-    node = expand(expander, raw_node)
-    env = expander.env
+    node, env = expand(raw_node, parent_env)
     print(io, "SELECT ")
     printpsql_result(io, node.result, env)
     print(io, " FROM ")
@@ -47,14 +45,9 @@ function printpsql(io::IO, arg::SelectWithoutFromQuery, env)
 end
 global i = 0
 function printpsql(io::IO, raw_node::UpdateStatement, parent_env)
-    env = nextenv(parent_env, raw_node.item)
-    expander = ReferredTableExpander(env)
-    arg = expand(expander, raw_node)
-    env = expander.env
+    arg, env = expand(raw_node, parent_env)
     print(io, "UPDATE ")
-
     printpsql(io, arg.item, env)
-
     print(io, " SET ")
     for (i, (name, value)) in enumerate(pairs(arg.changes))
         i > 1 && print(io, ", ")
@@ -267,7 +260,7 @@ end
 printpsql(io::IO, n::Number, env) = print(io, n)
 printpsql(io::IO, b::Bool, env) = print(io, b)
 printpsql(io::IO, b::Missing, env) = print(io, "NULL")
-function printpsql(io::IO, b::Date, env) 
+function printpsql(io::IO, b::Date, env)
     print(io, "'")
     print(io, year(b))
     print(io, '-')
@@ -275,6 +268,25 @@ function printpsql(io::IO, b::Date, env)
     print(io, '-')
     print(io, day(b))
     print(io, "'::date")
+end
+function printpsql(io::IO, b::DateTime, env)
+    print(io, "'")
+    print(io, year(b))
+    print(io, '-')
+    print(io, month(b))
+    print(io, '-')
+    print(io, day(b))
+    print(io, " ")
+    print(io, hour(b))
+    print(io, ":")
+    print(io, minute(b))
+    print(io, ":")
+    print(io, second(b))
+    if millisecond(b) > 0
+        print(io, ".")
+        print(io, millisecond(b))
+    end
+    print(io, "'::timestamp")
 end
 printpsql(io::IO, v::String, env) = (print(io, "\'"); print(io, v); print(io, "\'"))
 printpsql(io::IO, c::SQLConstant, env) = begin
