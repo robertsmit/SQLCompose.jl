@@ -46,18 +46,20 @@ end
 
 CaseClause(predicate::BooleanExpression, consequence) = CaseClause(predicate, convert(SQLExpression, consequence))
 
-struct CaseExpression{T <: SQLType} <: BooleanExpression
-	clauses::AbstractVector{CaseClause{T}}
-	otherwise::Union{SQLExpression{T}, Nothing}
+struct CaseExpression{T <: SQLType} <: SQLExpression{T}
+	clauses::AbstractVector{CaseClause{<:T}}
+	otherwise::Union{SQLExpression{<:T}, Nothing}
 	CaseExpression(clauses::AbstractVector{CaseClause{T}}, ::Nothing) where {T} = new{T}(clauses, nothing)
-	CaseExpression(clauses::AbstractVector{CaseClause{T}}, otherwise) where {T} = new{T}(clauses, convert(SQLExpression{T}, otherwise))
+	CaseExpression(clauses::AbstractVector{CaseClause{T1}}, otherwise::SQLExpression{T2}) where {T1, T2} = new{promote_type(T1,T2)}(clauses, otherwise)
 end
 
 CaseExpression(clause::CaseClause, otherwise) = CaseExpression(SA[clause], otherwise)
 
 case(predicate::Bool, consequence, otherwise = nothing) = predicate ? consequence : otherwise
-case(predicate::BooleanExpression, consequence, otherwise = nothing) =
-	CaseExpression(CaseClause(predicate, consequence), otherwise)
+case(predicate::BooleanExpression, consequence, otherwise) =
+	CaseExpression(CaseClause(predicate, consequence), convert(SQLExpression, otherwise))
+case(predicate::BooleanExpression, consequence, ::Nothing = nothing) =
+	CaseExpression(CaseClause(predicate, consequence), nothing)
 case(predicate::BooleanExpression, consequence, otherwise::CaseExpression) =
 	CaseExpression(SA[CaseClause(predicate, consequence), otherwise.clauses...], otherwise.otherwise)
 

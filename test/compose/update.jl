@@ -22,11 +22,11 @@
             fc.category_id == 1 && f.length > 120
         end
         set(_) do r, i, f, fc
-            (return_date=Date("2023-10-6"),)
+            (rental_period=Date("2023-10-6"),)
         end
     end),
     "UPDATE rental r 
-        SET return_date = '2023-10-6'::date 
+        SET rental_period = '2023-10-6'::date 
         FROM inventory i
         INNER JOIN film f ON i.film_id = f.film_id 
         INNER JOIN film_category f2 ON f.film_id = f2.film_id 
@@ -41,11 +41,11 @@
             end            
         end
         set(_) do r
-            (return_date=Date("2023-10-6"),)
+            (rental_period=DateTime("2023-10-6"):DateTime("2023-10-6"),)
         end
     end),
     "UPDATE rental r 
-        SET return_date = '2023-10-6'::date 
+        SET rental_period = tsrange('2023-10-6'::timestamp, '2023-10-6'::timestamp, '[]')
         FROM inventory ref_inventory 
         INNER JOIN film ref_film ON ref_inventory.film_id = ref_film.film_id 
         INNER JOIN film_category ref_film_category ON ref_film.film_id = ref_film_category.film_id 
@@ -65,7 +65,7 @@
                     f.length > 120
                 end
                 set(_) do r, i, f
-                    (return_date=Date("2023-10-6"),)
+                    (rental_period=(DateTime("2023-10-6T9"):DateTime("2023-10-6T10")),)
                 end
             end
         end
@@ -73,7 +73,7 @@
     "
     WITH q AS (SELECT f.film_id, f.length FROM film f) 
     UPDATE rental r 
-    SET return_date = '2023-10-6'::date 
+    SET rental_period = tsrange('2023-10-6 9:0:0'::timestamp, '2023-10-6 10:0:0'::timestamp, '[]')
     FROM inventory i 
     INNER JOIN q ON i.film_id = q.film_id 
     WHERE (r.inventory_id = i.inventory_id) AND (q.length > 120)

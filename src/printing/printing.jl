@@ -21,7 +21,7 @@ printpsql_alias(io::IO, alias) = print(io, " AS $alias")
 printpsql_fieldalias(io::IO, _, alias) = printpsql_alias(io, alias)
 printpsql_fieldalias(io::IO, field::TableItemFieldRef, alias) = Symbol(alias) == field.name || printpsql_alias(io, alias)
 
-printpsql(io, node, env) = error("please implement 'printpsql(::IO, ::Any, ::AbstractPrintEnvironment)' for $(typeof(node))")
+printpsql(io, node, env) = error("please implement 'printpsql(::IO, ::Any, ::AbstractPrintEnvironment)' for $(node)")
 
 
 function printpsql(io::IO, raw_node::SelectQuery, parent_env)
@@ -99,6 +99,16 @@ function printpsql(io::IO, arg::AbstractVector, env)
     print(io, "ARRAY[")
     printpsql_elements(io, arg, env)
     print(io, "]")
+end
+
+function printpsql(io::IO, arg::AbstractRange, env) where {T}
+    type = sqltypeclassof(arg)
+    printpsql(io, type)
+    print(io, "(")
+    printpsql(io, first(arg), env)
+    print(io, ", ")
+    printpsql(io, last(arg), env)
+    print(io, ", '[]')")
 end
 
 function printpsql_elements(io, arg::AbstractVector, env)
@@ -276,15 +286,17 @@ function printpsql(io::IO, b::DateTime, env)
     print(io, month(b))
     print(io, '-')
     print(io, day(b))
-    print(io, " ")
-    print(io, hour(b))
-    print(io, ":")
-    print(io, minute(b))
-    print(io, ":")
-    print(io, second(b))
-    if millisecond(b) > 0
-        print(io, ".")
-        print(io, millisecond(b))
+    if hour(b) != 0 || minute(b) != 0 || second(b) != 0 || millisecond(b) != 0
+        print(io, " ")
+        print(io, hour(b))
+        print(io, ":")
+        print(io, minute(b))
+        print(io, ":")
+        print(io, second(b))
+        if millisecond(b) > 0
+            print(io, ".")
+            print(io, millisecond(b))
+        end
     end
     print(io, "'::timestamp")
 end

@@ -1,6 +1,7 @@
 using SQLCompose.Generate
 
 
+
 function generate_databases()
     root = dirname(@__FILE__)
     path = root
@@ -19,3 +20,5 @@ end
 
 
 generate_databases()
+
+

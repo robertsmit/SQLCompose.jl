@@ -5,9 +5,9 @@ struct Concat <: SQLExpression{TextType}
 end
 
 Concat(args::SQLExpression...) = Concat(args)
-Concat(a::Concat, b::SQLExpression) = Concat((a.expressions..., b))
+Concat(a::Concat, b::TextExpression) = Concat((a.expressions..., b))
 Concat(a::Concat, b::Concat) = Concat((a.expressions..., b.expressions...))
-Concat(a::SQLExpression, b::Concat) = Concat((a, b.expressions...))
+Concat(a::TextExpression, b::Concat) = Concat((a, b.expressions...))
 
 
 

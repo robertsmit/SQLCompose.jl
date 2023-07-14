@@ -68,6 +68,14 @@ begin #Temporal
 
         printpsql(io::IO, i::IntervalType) = (print(io, "interval"); printpsql_intervalfields(io, i.fields); printpsql_typeprecision(io, i.precision))
     end
+
+    begin #RangeType
+        printpsql(io::IO, ::Type{RangeType{TimestampType}}) = print(io, "tsrange")
+        printpsql(io::IO, ::Type{RangeType{DateType}}) = print(io, "daterange")
+        printpsql(io::IO, ::Type{RangeType{Int4Type}}) = print(io, "int4range")
+        printpsql(io::IO, ::Type{RangeType{Int8Type}}) = print(io, "int8range")
+        printpsql(io::IO, ::Type{RangeType{<:NumericType}}) = print(io, "numrange")
+    end
 end
 
 printpsql(io::IO, rt::RowType) = print(io, rt.name)
