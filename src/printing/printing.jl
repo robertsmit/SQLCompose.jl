@@ -61,6 +61,10 @@ function printpsql(io::IO, raw_node::UpdateStatement, parent_env)
     end
     printpsql_filter(io, arg.filter, env; prefix=" WHERE ")
 
+    if !isnothing(arg.returning)
+        print(io, " RETURNING ")
+        printpsql(io, arg.returning, env)
+    end
 end
 
 function printpsql(io::IO, node::CaseExpression, env)
@@ -101,7 +105,7 @@ function printpsql(io::IO, arg::AbstractVector, env)
     print(io, "]")
 end
 
-function printpsql(io::IO, arg::AbstractRange, env) where {T}
+function printpsql(io::IO, arg::AbstractRange, env)
     type = sqltypeclassof(arg)
     printpsql(io, type)
     print(io, "(")

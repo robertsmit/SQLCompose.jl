@@ -16,6 +16,8 @@ function set(f::Function, stmnt::UpdateStatement)
     with_changes(stmnt, actualchanges)
 end
 
+map(f::Function, q::UpdateStatement) = with_returning(q, map_result(f, q.result))
+
 # function join(f::Function, left::UpdateStatement, right::Queryable; type::JoinType=InnerJoin())
 #     right = joinable_right(right)
 #     args = result_args(left.result, right.result)

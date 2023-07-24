@@ -56,10 +56,11 @@ end
 filter(f::Function, q::QuerySet) = QuerySet(filter(f, q.query), q.executor)
 
 map(f::Function, node::Queryable) = map(f, SelectQuery(node))
-map(f::Function, q::SelectQuery) = with_result(q, convert_fields(SQLExpression, f(result_args(q.result)...)))
+map(f::Function, q::SelectQuery) = with_result(q, map_result(f, q.result))
 map(f::Function, q::QuerySet) = QuerySet(map(f, q.query), q.executor)
 map(f::Function, q::CommonTableExpressionQuery) = CommonTableExpressionQuery(map(f, q.expression), q.commontables...)
 map(f::Function, q::SelectWithoutFromQuery) = SelectWithoutFromQuery(f(q.result))
+map_result(f::Function, result) = convert_fields(SQLExpression, f(result_args(result)...))
 
 function map(q::Queryable, field::Symbol, morefields::Symbol...)
     fields = (field, morefields...)

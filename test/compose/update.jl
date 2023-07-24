@@ -78,6 +78,16 @@
     INNER JOIN q ON i.film_id = q.film_id 
     WHERE (r.inventory_id = i.inventory_id) AND (q.length > 120)
     "
+
+    @info "returning"
+    @testsql (@update Pagila.Rental begin       
+        filter(r -> false, _)
+        map(_) do r
+            r.inventory_id
+        end
+    end), "UPDATE rental r 
+    SET rental_id = r.rental_id, inventory_id = r.inventory_id, customer_id = r.customer_id, staff_id = r.staff_id, last_update = r.last_update, rental_period = r.rental_period 
+    WHERE false RETURNING r.inventory_id"
 end
 
 
