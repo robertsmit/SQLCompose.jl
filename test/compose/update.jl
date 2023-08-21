@@ -34,11 +34,11 @@
 
     @info "with refs"
     film_of(r::Pagila.Rental) = Pagila.inventory_of(r) |> Pagila.film_of
-    @testsql (@update Pagila.Rental begin       
+    @testsql (@update Pagila.Rental begin
         filter(_) do r
             let film = film_of(r)
                 Pagila.all_film_category_of(film).category_id == 1 && film.length > 120
-            end            
+            end
         end
         set(_) do r
             (rental_period=DateTime("2023-10-6"):DateTime("2023-10-6"),)
@@ -80,17 +80,53 @@
     "
 
     @info "returning"
-    @testsql (@update Pagila.Rental begin       
+    @testsql (@update Pagila.Rental begin
         filter(r -> false, _)
         map(_) do r
             r.inventory_id
         end
-    end), "UPDATE rental r 
-    SET rental_id = r.rental_id, inventory_id = r.inventory_id, customer_id = r.customer_id, staff_id = r.staff_id, last_update = r.last_update, rental_period = r.rental_period 
-    WHERE false RETURNING r.inventory_id"
+    end),
+    "UPDATE rental r 
+SET rental_id = r.rental_id, inventory_id = r.inventory_id, customer_id = r.customer_id, staff_id = r.staff_id, last_update = r.last_update, rental_period = r.rental_period 
+WHERE false RETURNING r.inventory_id"
 end
 
 
+
+
+@testsql (@update Pagila.Rental begin 
+end),
+"
+UPDATE rental r 
+SET rental_id = r.rental_id, inventory_id = r.inventory_id, customer_id = r.customer_id, staff_id = r.staff_id, last_update = r.last_update, rental_period = r.rental_period"
+
+
+@testsql (@update Pagila.Rental begin 
+set((rental_period=missing,))
+end), "UPDATE rental r SET rental_period = NULL"
+
+
+@testsql (@update Pagila.Rental begin 
+set((rental_period=missing,))
+end), "UPDATE rental r SET rental_period = NULL"
+
+@testsql (@update Pagila.Rental begin 
+set(r -> (rental_period=r.rental_period,), _)
+end), "UPDATE rental r SET rental_period = r.rental_period"
+
+@testsql (@update Pagila.Rental begin 
+set(r -> (rental_period=r.rental_period,), _)
+end), "UPDATE rental r SET rental_period = r.rental_period"
+
+
+@testsql (@update Pagila.Rental begin 
+set(r ->
+    @query Pagila.Inventory begin
+        filter(i -> r.inventory_id == i.inventory_id, _)
+        map(i -> i.inventory_id, _)
+    end
+, _)
+end), "UPDATE rental r SET (inventory_id) = (SELECT i.inventory_id FROM inventory i WHERE r.inventory_id = i.inventory_id)"
 
 
 

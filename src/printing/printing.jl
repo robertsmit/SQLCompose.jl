@@ -45,26 +45,41 @@ function printpsql(io::IO, arg::SelectWithoutFromQuery, env)
 end
 global i = 0
 function printpsql(io::IO, raw_node::UpdateStatement, parent_env)
-    arg, env = expand(raw_node, parent_env)
+    node, env = expand(raw_node, parent_env)
     print(io, "UPDATE ")
-    printpsql(io, arg.item, env)
+    printpsql(io, node.item, env)
+    printpsql_set(io, node.changes, env)
+    if !isnothing(node.from)
+        print(io, " FROM ")
+        printpsql(io, node.from, env)
+    end
+    printpsql_filter(io, node.filter, env; prefix=" WHERE ")
+
+    if !isnothing(node.returning)
+        print(io, " RETURNING ")
+        printpsql(io, node.returning, env)
+    end
+end
+
+function printpsql_set(io::IO, values, env)
     print(io, " SET ")
-    for (i, (name, value)) in enumerate(pairs(arg.changes))
+    for (i, (name, value)) in enumerate(pairs(values))
         i > 1 && print(io, ", ")
         print(io, name)
         print(io, " = ")
         printpsql(io, value, env)
     end
-    if !isnothing(arg.from)
-        print(io, " FROM ")
-        printpsql(io, arg.from, env)
-    end
-    printpsql_filter(io, arg.filter, env; prefix=" WHERE ")
+end
 
-    if !isnothing(arg.returning)
-        print(io, " RETURNING ")
-        printpsql(io, arg.returning, env)
+function printpsql_set(io::IO, q::Query, env)
+    print(io, " SET (")
+    foreach_field(q.result) do _, alias, i
+        i > 1 && print(io, ", ")
+        print(io, alias)
     end
+    print(io, ") = (")
+    printpsql(io::IO, q, env)
+    print(io, ")")
 end
 
 function printpsql(io::IO, node::CaseExpression, env)
@@ -105,7 +120,7 @@ function printpsql(io::IO, arg::AbstractVector, env)
     print(io, "]")
 end
 
-function printpsql(io::IO, arg::AbstractRange, env)
+function printpsql(io::IO, arg::AbstractRange, env) 
     type = sqltypeclassof(arg)
     printpsql(io, type)
     print(io, "(")

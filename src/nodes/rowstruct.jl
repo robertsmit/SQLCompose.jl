@@ -5,6 +5,7 @@ NodeCompositionStyle(::Type{<:RowStruct}) = NodeStructure()
 field_names(::Type{<:RowStruct{T}}) where {T} = field_names(T)
 field_pairs(::Type{<:RowStruct{T}}) where {T} = field_pairs(T)
 field_names(::RowStruct{T}) where {T} = field_names(T)
+Base.haskey(::RowStruct{T}, key::Symbol) where {T} = key in field_names(T)
 name(::Type{<:RowStruct{T}}) where {T} = name(T)
 Base.keys(r::RowStruct) = field_names(r)
 
