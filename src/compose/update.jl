@@ -32,24 +32,3 @@ function get_actualchanges(stmnt::UpdateStatement, changes)
 end
 
 map(f::Function, q::UpdateStatement) = with_returning(q, map_result(f, q.result))
-
-# function join(f::Function, left::UpdateStatement, right::Queryable; type::JoinType=InnerJoin())
-#     right = joinable_right(right)
-#     args = result_args(left.result, right.result)
-#     condition = convert(BooleanExpression, f(args...))
-#     join(left, left.from, right; condition, type)
-# end
-
-# function join(left::UpdateStatement, ::Nothing, right::SelectQuery; condition, type::JoinType=InnerJoin())
-#     @assert type == InnerJoin()
-#     result = with_filter(left, left.filter & condition)
-#     with_from(result, right.from)
-# end
-
-# function join(left::UpdateStatement, leftfrom::FromItem, right::SelectQuery; condition, type::JoinType=InnerJoin())
-#     @assert type == InnerJoin()
-#     result = with_filter(left, left.filter & right.filter)
-#     joinvalue = EquiJoin(type, condition)
-#     joinitem = JoinItem(leftfrom, right.from, joinvalue)
-#     with_from(result, joinitem)
-# end
