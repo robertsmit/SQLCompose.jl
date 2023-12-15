@@ -3,26 +3,21 @@ printpsql(io::IO, child, parent, env) =
     needs_parentheses(child, parent) ? printpsql_parenthesized(io, child, env) : printpsql(io, child, env)
 printpsql(io::IO, node) = printpsql(io, node, PrintEnvironment())
 
-
 printpsql_field(io, field, env) = printpsql(io, field, env)
 printpsql_field(io::IO, arg::Query, env) = printpsql_parenthesized(io, arg, env)
-
 
 printpsql_alias(io::IO, alias) = print(io, " AS $alias")
 printpsql_fieldalias(io::IO, _, alias) = printpsql_alias(io, alias)
 printpsql_fieldalias(io::IO, field::TableItemFieldRef, alias) = Symbol(alias) == field.name || printpsql_alias(io, alias)
 
-
-
 printpsql(io, node, env) = error("please implement 'printpsql(::IO, ::Any, ::AbstractPrintEnvironment)' for $(node)")
-
 
 printpsql_result(io::IO, ::UnmergedResult, env) = print(io, " *")
 function printpsql_result(io::IO, arg, env)
-    singlefield = hassingleton_field(arg)    
+    singlefield = hassingleton_field(arg)
     foreach_field(arg) do field, alias, index
         index == 1 || print(io, ",")
-        singlefield ? print(io, " ") : println(io, indent(env))
+        singlefield ? print(io, " ") : println(io, env)
         printpsql_field(io, field, env)
         printpsql_fieldalias(io, field, alias)
     end
@@ -32,21 +27,21 @@ end
 function printpsql(io::IO, raw_node::SelectQuery, parent_env)
     node, env = expand(raw_node, parent_env)
     print(io, "SELECT")
-    printpsql_result(io, node.result, env)
+    printpsql_result(io, node.result, indent(env))
     println(io, env)
     print(io, "FROM ")
-    printpsql(io, node.from, indent(env))
+    printpsql(io, node.from, env)
     printpsql_filter(io, node.filter, env; prefix=indentedline("WHERE ", env))
     if !isempty(node.group)
-        printpsql_fieldlist(io, node.group, env; prefix=indentedline("GROUP BY ", env))
-        printpsql_filter(io, node.groupfilter, env; prefix=indentedline("HAVING ", env))
+        printpsql_fieldlist(io, node.group, indent(env); prefix=indentedline("GROUP BY ", env))
+        printpsql_filter(io, node.groupfilter, indent(env); prefix=indentedline("HAVING ", env))
     end
-    printpsql_fieldlist(io, node.order, env; prefix=" ORDER BY ")
+    printpsql_fieldlist(io, node.order, indent(env); prefix=indentedline("ORDER BY ", env))
     printpsql(io, node.range, env)
 end
 
 function printpsql(io::IO, arg::SelectWithoutFromQuery, env)
-    print(io, "SELECT ")
+    print(io, "SELECT")
     printpsql_result(io, arg.result, env)
 end
 global i = 0
@@ -113,12 +108,10 @@ function printpsql_filter(io, expr::BooleanExpression, env; prefix="", postfix="
 end
 
 
-function printpsql_fieldlist(io, node, env; prefix="", postfix="", nofix="")
-    issingle = hassingleton_field(node)
-
-    
+function printpsql_fieldlist(io, node, env; prefix="", postfix="", nofix="", multiline=!hassingleton_field(node))
     field_count = foreach_field(node; alias=missing) do f, i
         i == 1 ? print(io, prefix) : print(io, ", ")
+        multiline && println(io, env)
         printpsql_field(io, f, env)
     end
     field_count > 0 ? print(io, postfix) : print(io, nofix)
@@ -130,7 +123,7 @@ function printpsql(io::IO, arg::AbstractVector, env)
     print(io, "]")
 end
 
-function printpsql(io::IO, arg::AbstractRange, env) 
+function printpsql(io::IO, arg::AbstractRange, env)
     type = sqltypeclassof(arg)
     printpsql(io, type)
     print(io, "(")
@@ -151,13 +144,16 @@ printpsql(io::IO, node::TableItemFieldRef, env) = (print(io, getalias(env, node.
 function printpsql(io::IO, node::TableRange, env)
     haslimit = !isnothing(node.limit)
     if haslimit
-        print(io, " LIMIT ")
+        println(io, env)
+        print(io, "LIMIT ")
         print(io, node.limit)
     end
     hasoffset = node.offset > 0
     if hasoffset
         if haslimit
             print(io, " ")
+        else
+            println(io, env)
         end
         print(io, "OFFSET ")
         print(io, node.offset)
@@ -192,12 +188,12 @@ printpsql(io::IO, node::NotExists, env) = (print(io, "NOT EXISTS "); printpsql(i
 function printpsql(io::IO, node::FunctionCall, env)
     print(io, node.name)
     print(io, "(")
-    printpsql_fieldlist(io, node.operands, env)
+    printpsql_fieldlist(io, node.operands, env; multiline=false)
     print(io, ")")
 end
 function printpsql(io::IO, node::Concat, env)
     print(io, "CONCAT(")
-    printpsql_fieldlist(io, node.expressions, env)
+    printpsql_fieldlist(io, node.expressions, env; multiline=false)
     print(io, ")")
 end
 
@@ -209,7 +205,7 @@ end
 
 function printpsql(io::IO, node::SubqueryTableItem, env)
     print(io, "(")
-    printpsql(io, node.query, unwind(env))
+    printpsql(io, node.query, indent(unwind(env)))
     alias = getalias(env, node)
     print(io, ") $alias")
 end
@@ -266,11 +262,16 @@ end
 function printpsql(io::IO, node::JoinItem, env)
     env_left = unwind(env, node.left)
     printpsql(io, node.left, env_left)
+    println(io, env)
     printpsql_join(io, node.join)
     env_right = unwind(env, node.right)
     printpsql(io, node.right, env_right)
-    print(io, " ON ")
-    printpsql(io, node.join.condition, env_right)
+    printpsql_join_condition(io, node.join.condition, indent(env_right))
+end
+
+function printpsql_join_condition(io::IO, condition, env) 
+    print(io, indentedline("ON ", env))
+    printpsql(io, condition, indent(env))
 end
 
 function printpsql_join(io::IO, node::LateralJoin)
@@ -278,10 +279,10 @@ function printpsql_join(io::IO, node::LateralJoin)
     print(io, "LATERAL ")
 end
 printpsql_join(io::IO, node::Join) = printpsql_join(io, node.type)
-printpsql_join(io::IO, ::InnerJoin) = print(io, " INNER JOIN ")
-printpsql_join(io::IO, ::LeftJoin) = print(io, " LEFT JOIN ")
-printpsql_join(io::IO, ::RightJoin) = print(io, " RIGHT JOIN ")
-printpsql_join(io::IO, ::FullJoin) = print(io, " FULL JOIN ")
+printpsql_join(io::IO, ::InnerJoin) = print(io, "INNER JOIN ")
+printpsql_join(io::IO, ::LeftJoin) = print(io, "LEFT JOIN ")
+printpsql_join(io::IO, ::RightJoin) = print(io, "RIGHT JOIN ")
+printpsql_join(io::IO, ::FullJoin) = print(io, "FULL JOIN ")
 
 printpsql_infix(io::IO, node::SQLNode, operator, env) = printpsql_infix(io, node.left, operator, node.right, node, env)
 function printpsql_infix(io::IO, left::SQLNode, operator, right::SQLNode, parent::SQLNode, env)
@@ -350,12 +351,14 @@ function printpsql(io::IO, node::CommonTableExpressionQuery, env)
     cte_env = env
     print(io, "WITH ")
     for (index, table) in enumerate(node.commontables)
-        index == 1 || print(io, ", ")
+        index == 1 || print(io, ",")
+        println(io, cte_env)
+       
         # each table has the name of the former in scope
         cte_env = printpsql_commontable(io, table, cte_env)
         print(io, ")")
     end
-    print(io, " ")
+    println(io, cte_env)
     printpsql(io, node.expression, cte_env)
 end
 
@@ -363,7 +366,9 @@ function printpsql_commontable(io::IO, table::SubqueryTableItem, env)
     cte_nextenv = nextenv(env, table)
     alias = getalias(cte_nextenv, table.ref)
     print(io, "$alias AS (")
-    printpsql(io, table.query, env)
+    ienv = indent(env)
+    println(io, ienv)
+    printpsql(io, table.query, ienv)
     cte_nextenv
 end
 
@@ -382,10 +387,11 @@ function printpsql(io::IO, node::AggregateExpression, env)
     if node.distinct
         print(io, " DISTINCT ")
     end
-    printpsql_fieldlist(io, node.operands, env; nofix="*")
-    printpsql_fieldlist(io, node.order, env; prefix=" ORDER BY ")
+    ienv = indent(env)
+    printpsql_fieldlist(io, node.operands, ienv; nofix="*")
+    printpsql_fieldlist(io, node.order, indent(ienv); prefix=indentedline("ORDER BY ", ienv))
     print(io, ")")
-    printpsql_filter(io, node.filter, env; prefix=" FILTER WHERE(", postfix=")")
+    printpsql_filter(io, node.filter, ienv; prefix=indentedline("FILTER WHERE (", ienv), postfix=")")
 end
 
 function printpsql_parenthesized(io::IO, v, env)

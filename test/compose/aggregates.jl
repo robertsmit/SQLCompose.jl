@@ -2,7 +2,7 @@
 
     #Bigger aircraft have more seats of various travel classes:
     @testsql begin
-        @chain Bookings.Seat begin
+        @query Bookings.Seat begin
             groupby(_, :aircraft_code, :fare_conditions)
             sort(_, :aircraft_code, :fare_conditions)
             map(_) do s
@@ -16,7 +16,7 @@
 
 
     @testsql begin
-        @chain Bookings.Seat begin
+        @query Bookings.Seat begin
             groupby(_, :aircraft_code, :fare_conditions)
             sort(_, :aircraft_code, :fare_conditions)
             map(_) do s
@@ -29,12 +29,9 @@
         end
     end,
     "SELECT s.aircraft_code, s.fare_conditions, 
-        count(s.aircraft_code) FILTER WHERE(s.fare_conditions = 'Business') AS num_bussiness FROM seats s 
+        count(s.aircraft_code) FILTER WHERE (s.fare_conditions = 'Business') AS num_bussiness FROM seats s 
         GROUP BY s.aircraft_code, s.fare_conditions 
         ORDER BY s.aircraft_code, s.fare_conditions"
-
-
-
 
     @testset "array aggregate" begin
         #Return the list of film title and a list of actors for each film:"
@@ -42,18 +39,18 @@
 
         @info "without laterals"
         @testsql begin
-            @chain Pagila.Film begin
+            @query Pagila.Film begin
                 join(_, Pagila.Film_Actor, :film_id)
                 join(_, Pagila.Actor) do f, fa, a
                     a.actor_id == fa.actor_id
                 end
-                map((f, fa, a) -> (; f.title, actors=collect(fullname(a))), _)
+                map((f, fa, a) -> (; f.title, actors=collect(fullname(a); sort=(a.last_name,))), _)
                 groupby(_, :title)
                 sort(_, :title)
 
             end
         end,
-        "SELECT f.title, array_agg(CONCAT(a.first_name, ' ', a.last_name)) AS actors FROM film f 
+        "SELECT f.title, array_agg(CONCAT(a.first_name, ' ', a.last_name) ORDER BY a.last_name) AS actors FROM film f 
             INNER JOIN film_actor f2 ON f.film_id = f2.film_id 
             INNER JOIN actor a ON a.actor_id = f2.actor_id 
             GROUP BY f.title 

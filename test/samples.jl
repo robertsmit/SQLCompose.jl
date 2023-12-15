@@ -148,7 +148,7 @@ end,
     all_actor_of(f::Pagila.Film) = f |> Pagila.all_film_actor_of |> Pagila.actor_of
     all_category_of(f::Pagila.Film) = f |> Pagila.all_film_category_of |> Pagila.category_of
     actor_name(actor) = actor.first_name * " " * actor.last_name
-    @chain Pagila.Film begin
+    @query Pagila.Film begin
         map(_) do film
             let category = all_category_of(film),
                 actor = all_actor_of(film)
@@ -160,7 +160,9 @@ end,
                     price=film.rental_rate,
                     film.length,
                     film.rating,
-                    actors=join(actor_name(actor), ", "),
+                    actors=join(actor_name(actor), ", ";
+                        sort=(actor.last_name, actor.first_name),
+                        filter=!ismissing(actor.last_name)),
                 )
             end
         end
@@ -168,16 +170,39 @@ end,
     end
 end,
 """
-SELECT f.film_id AS fid, f.title, f.description, ref_category.name AS category, f.rental_rate AS price, 
-    f.length, f.rating, string_agg(CONCAT(ref_actor.first_name, ' ', ref_actor.last_name), ', ') AS actors 
-FROM film f 
-INNER JOIN film_category ref_film_category ON f.film_id = ref_film_category.film_id 
-INNER JOIN category ref_category ON ref_film_category.category_id = ref_category.category_id 
-INNER JOIN film_actor ref_film_actor ON f.film_id = ref_film_actor.film_id 
-INNER JOIN actor ref_actor ON ref_film_actor.actor_id = ref_actor.actor_id 
-GROUP BY f.film_id, f.title, f.description, ref_category.name, f.rental_rate, f.length, f.rating
+SELECT
+        f.film_id AS fid,
+        f.title,
+        f.description,
+        ref_category.name AS category,
+        f.rental_rate AS price,
+        f.length,
+        f.rating,
+        string_agg(
+                CONCAT(ref_actor.first_name, ' ', ref_actor.last_name), 
+                ', '
+                ORDER BY 
+                        ref_actor.last_name, 
+                        ref_actor.first_name)
+                FILTER WHERE (ref_actor.last_name IS NOT NULL) AS actors
+FROM film f
+INNER JOIN film_category ref_film_category
+        ON f.film_id = ref_film_category.film_id
+INNER JOIN category ref_category
+        ON ref_film_category.category_id = ref_category.category_id
+INNER JOIN film_actor ref_film_actor
+        ON f.film_id = ref_film_actor.film_id
+INNER JOIN actor ref_actor
+        ON ref_film_actor.actor_id = ref_actor.actor_id
+GROUP BY 
+        f.film_id, 
+        f.title, 
+        f.description, 
+        ref_category.name, 
+        f.rental_rate, 
+        f.length, 
+        f.rating
 """
-
 # query the full name of actors, first_name or last_name or its combination and last_name or first_name contains "PEN"
 @testsql (@query Pagila.Actor begin
     filter(_) do a

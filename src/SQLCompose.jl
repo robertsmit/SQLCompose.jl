@@ -2,6 +2,7 @@ module SQLCompose
 using LibPQ, Tables, StaticArrays, Dates, Chain
 import UUIDs: UUID
 import Base: ImmutableDict, println
+import Base: filter, map, sort, join, getindex, iterate, unique
 
 export →
 export TableSource, reference

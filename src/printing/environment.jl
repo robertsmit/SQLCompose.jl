@@ -24,7 +24,7 @@ unwind(env, table::JoinItem) =  unwind(env, ref(table.right))
 unwind(env, table::TableItem) =  unwind(env, ref(table))
 unwind(::NullPrintEnvironment, ::TableItemRef) = error("should not occur")
 unwind(env::TablePrintEnvironment, ref::TableItemRef) = env.ref == ref ? env : unwind(env.parent, ref)
-unwind(env::IndentationPrintEnvironment, ref::TableItemRef) = unwind(env.parent, ref)
+unwind(env::IndentationPrintEnvironment, ref::TableItemRef) = IndentationPrintEnvironment(env.indentation, unwind(env.parent, ref))
 
 getindentation(::NullPrintEnvironment) = ""
 getindentation(env::TablePrintEnvironment) = getindentation(env.parent)
@@ -66,9 +66,8 @@ function nextenv(env, table::JoinItem)
 end
 
 function nextenv(env, table::RefTableItem)
-    definition_env = unwind(env, table)
-    (;ref, alias) = definition_env
-    TablePrintEnvironment(ref, alias, env)
+    alias = getalias(env, table.ref)
+    TablePrintEnvironment(table.ref, alias, env)
 end
 
 function Base.println(io::IO, env::AbstractPrintEnvironment)

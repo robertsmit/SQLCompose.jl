@@ -41,10 +41,10 @@
         SELECT q2.elem1 FROM (WITH q2 AS (SELECT q.surname AS elem1, p.salary AS elem2 FROM persons_salaries p INNER JOIN q ON p.person_id = q.person_id) SELECT q2.elem1 FROM q2) q2"
 
 
-    result = @chain persons begin
+    result = @query persons begin
         filter(p -> p.surname == "John", _)
         with(_) do p
-            @chain p begin
+            @query p begin
                 join(_, salaries) do a, b
                     a.person_id == b.person_id
                 end

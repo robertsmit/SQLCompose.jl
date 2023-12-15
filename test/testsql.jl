@@ -17,6 +17,6 @@ macro testsql(expr)
 end
 
 function normalize(s::String)
-    normalized = replace(strip(s), "\t" => " ", "\n" => " ", "  " => " ")
+    normalized = replace(strip(s), "\t" => " ", "\n" => " ", "  " => " ", "( " => "(", " )" => ")")
     normalized != s ? normalize(normalized) : normalized
 end

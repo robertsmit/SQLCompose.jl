@@ -1,6 +1,3 @@
-import Base: filter, map, sort, join, getindex, iterate
-
-
 QuerySource = Union{Type{<:RowType},Type{<:RowStruct},TableSource}
 Queryable = Union{Query,QuerySet,SetReturningFunctionCall,QuerySource}
 

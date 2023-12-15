@@ -147,6 +147,7 @@ import SQLCompose: TableSource, ValuesTableItem, TextType, query, Int8Type, Bool
 
         @testsql filter(a -> a.last_name == matching(first(a.first_name, 2)), actors),
         "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.last_name ~ left(a.first_name, 2)"
+        
 
         @testsql filter(a -> occursin(r"JO", a.last_name), actors),
         "SELECT a.actor_id, a.first_name, a.last_name FROM actor a WHERE a.last_name ~ 'JO'"
