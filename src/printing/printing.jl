@@ -204,14 +204,14 @@ function printpsql(io::IO, node::SubqueryTableItem, env)
     print(io, ") $alias")
 end
 
-function printpsql(io::IO, node::DefinedTableItem, env::TablePrintEnvironment)
+function printpsql(io::IO, node::DefinedTableItem, env)
     tablename = node.name
     print(io, tablename)
     alias = getalias(env, node)
     alias !== tablename && print(io, " $alias")
 end
 
-function printpsql(io::IO, node::SetReturningFunctionTableItem, env::TablePrintEnvironment)
+function printpsql(io::IO, node::SetReturningFunctionTableItem, env)
     printpsql(io, node.func, env.parent)
     alias = getalias(env, node)
     print(io, " $alias")
@@ -225,11 +225,11 @@ function printpsql(io::IO, node::SetReturningFunctionTableItem, env::TablePrintE
     end
 end
 
-function printpsql(io::IO, node::RefTableItem, env::TablePrintEnvironment)
+function printpsql(io::IO, node::RefTableItem, env)
     print(io, getalias(env, node))
 end
 
-function printpsql(io::IO, node::ValuesTableItem, env::TablePrintEnvironment)
+function printpsql(io::IO, node::ValuesTableItem, env)
     print(io, "(VALUES ")
     for (rowindex, row) in enumerate(node.values)
         rowindex != 1 && print(io, ", ")
@@ -366,7 +366,7 @@ function printpsql_commontable(io::IO, table::RecursiveCommonTable, env)
     cte_nextenv
 end
 
-function printpsql(io::IO, node::AggregateExpression, env::AbstractPrintEnvironment)
+function printpsql(io::IO, node::AggregateExpression, env)
     print(io, node.name)
     print(io, "(")
     if node.distinct

@@ -15,12 +15,12 @@ end
 result(q::CombinedQuery) = result(q.left)
 
 combinators = (
-    Union = (operator = :vcat, sqloperator = "UNION"),
-    Intersection = (operator = :intersect, sqloperator = "INTERSECT"),
-    Difference = (operator = :setdiff, sqloperator = "EXCEPT")
+    Union=(operator=:vcat, sqloperator="UNION"),
+    Intersection=(operator=:intersect, sqloperator="INTERSECT"),
+    Difference=(operator=:setdiff, sqloperator="EXCEPT")
 )
 
-needs_parentheses(child::CombinedQuery{T}, parent::CombinedQuery{T}) where T <: QueryCombinatorType = false
+needs_parentheses(child::CombinedQuery{T}, parent::CombinedQuery{T}) where {T<:QueryCombinatorType} = false
 needs_parentheses(child::SelectQuery, ::CombinedQuery) = isordered(child) || ispaged(child)
 
 #gen
@@ -29,8 +29,8 @@ for (combinator, (op, sqlop)) in pairs(combinators)
     @eval begin
         struct $combinatortype <: QueryCombinatorType
         end
-        Base.$op(left::Query, right::Query; unique = true) = CombinedQuery(left, right, $combinatortype(), unique)
-        Base.$op(left::Query, right::Query, rest::Query...; unique = true) = Base.$op(left, (Base.$op(right, rest...)))
+        Base.$op(left::Query, right::Query; unique=true) = CombinedQuery(left, right, $combinatortype(), unique)
+        Base.$op(left::Query, right::Query, rest::Query...; unique=true) = Base.$op(left, (Base.$op(right, rest...; unique));unique)
         function printpsql(io::IO, node::CombinedQuery{$combinatortype}, env)
             printpsql(io, node.left, node, env)
             print(io, $(" $sqlop "))
