@@ -31,10 +31,12 @@ for (combinator, (op, sqlop)) in pairs(combinators)
         end
         Base.$op(left::Query, right::Query; unique=true) = CombinedQuery(left, right, $combinatortype(), unique)
         Base.$op(left::Query, right::Query, rest::Query...; unique=true) = Base.$op(left, (Base.$op(right, rest...; unique));unique)
-        function printpsql(io::IO, node::CombinedQuery{$combinatortype}, env)
+        function printpsql(io::IO, node::CombinedQuery{$combinatortype}, env)            
             printpsql(io, node.left, node, env)
-            print(io, $(" $sqlop "))
-            node.unique || print(io, "ALL ")
+            println(io, env)
+            print(io, $sqlop)
+            node.unique || print(io, " ALL")
+            println(io, env)
             printpsql(io, node.right, node, env)
         end
     end

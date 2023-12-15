@@ -3,7 +3,7 @@ abstract type AbstractPrintEnvironment end
 struct NullPrintEnvironment <: AbstractPrintEnvironment end
 
 struct IndentationPrintEnvironment <: AbstractPrintEnvironment
-    indentation::UInt8
+    indentation
     parent::AbstractPrintEnvironment
 end
 
@@ -13,13 +13,24 @@ struct TablePrintEnvironment <: AbstractPrintEnvironment
     parent::AbstractPrintEnvironment
 end
 
+
 PrintEnvironment() = NullPrintEnvironment()
 
+
+unwind(::NullPrintEnvironment) = error("should not occur")
+unwind(env::TablePrintEnvironment) = env.parent
+unwind(env::IndentationPrintEnvironment) = IndentationPrintEnvironment(env.indentation, unwind(env.parent))
 unwind(env, table::JoinItem) =  unwind(env, ref(table.right))
 unwind(env, table::TableItem) =  unwind(env, ref(table))
 unwind(::NullPrintEnvironment, ::TableItemRef) = error("should not occur")
 unwind(env::TablePrintEnvironment, ref::TableItemRef) = env.ref == ref ? env : unwind(env.parent, ref)
 unwind(env::IndentationPrintEnvironment, ref::TableItemRef) = unwind(env.parent, ref)
+
+getindentation(::NullPrintEnvironment) = ""
+getindentation(env::TablePrintEnvironment) = getindentation(env.parent)
+getindentation(env::IndentationPrintEnvironment) = env.indentation
+
+indent(env::AbstractPrintEnvironment) = IndentationPrintEnvironment(getindentation(env) * "\t", env)
 
 hasref(env::NullPrintEnvironment, ref) = false
 hasref(env::TablePrintEnvironment, ref) = env.ref == ref ? true : hasref(env.parent, ref)
@@ -36,7 +47,7 @@ hasalias(env::AbstractPrintEnvironment, alias) = env.alias == alias ? true : has
 
 getaliasactual(env::IndentationPrintEnvironment, aliashint) = getaliasactual(env.parent, aliashint)
 getaliasactual(::NullPrintEnvironment, aliashint) = aliashint
-function getaliasactual(env::AbstractPrintEnvironment, aliashint, aliascandidate = aliashint, count = 1)
+function getaliasactual(env::TablePrintEnvironment, aliashint, aliascandidate = aliashint, count = 1)
     if !hasalias(env, aliascandidate)
         return aliascandidate
     end
@@ -59,3 +70,17 @@ function nextenv(env, table::RefTableItem)
     (;ref, alias) = definition_env
     TablePrintEnvironment(ref, alias, env)
 end
+
+function Base.println(io::IO, env::AbstractPrintEnvironment)
+    indentation = getindentation(env)
+    Base.println(io)
+    Base.print(io, indentation)
+end
+
+function Base.println(io::IO, val, env::AbstractPrintEnvironment)
+    print(io, val)
+    println(io, env)
+end
+
+indented(value::String, env::AbstractPrintEnvironment) = getindentation(env) * value
+indentedline(value, env::AbstractPrintEnvironment) = "\n" * getindentation(env) * value

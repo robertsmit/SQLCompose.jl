@@ -21,7 +21,7 @@ end
 @testset "arithmetic operators" begin
     table = TableSource(:person_salaries, :person_id => UUIDType, :surname => TextType, :salary => Int8Type)
     @info "multiplication"
-    @test string(map(t -> t.salary * 50000, table)) === "SELECT p.salary * 50000 AS elem1 FROM person_salaries p"
-    @test string(map(t -> (t.salary - 50000 + 5) * 8 % t.salary^4, table)) === "SELECT (p.salary - 50000 + 5) * 8 % p.salary ^ 4 AS elem1 FROM person_salaries p"
+    @testsql map(t -> t.salary * 50000, table) "SELECT p.salary * 50000 AS elem1 FROM person_salaries p"
+    @testsql map(t -> (t.salary - 50000 + 5) * 8 % t.salary^4, table) "SELECT (p.salary - 50000 + 5) * 8 % p.salary ^ 4 AS elem1 FROM person_salaries p"
 end
 

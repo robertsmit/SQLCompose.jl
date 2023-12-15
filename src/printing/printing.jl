@@ -3,15 +3,6 @@ printpsql(io::IO, child, parent, env) =
     needs_parentheses(child, parent) ? printpsql_parenthesized(io, child, env) : printpsql(io, child, env)
 printpsql(io::IO, node) = printpsql(io, node, PrintEnvironment())
 
-printpsql_result(io::IO, ::UnmergedResult, env) = print(io, "*")
-printpsql_result(io::IO, arg::TableItemFieldRef, env) = printpsql(io, arg, env)
-function printpsql_result(io::IO, arg, env)
-    foreach_field(arg) do field, alias, index
-        index == 1 || print(io, ", ")
-        printpsql_field(io, field, env)
-        printpsql_fieldalias(io, field, alias)
-    end
-end
 
 printpsql_field(io, field, env) = printpsql(io, field, env)
 printpsql_field(io::IO, arg::Query, env) = printpsql_parenthesized(io, arg, env)
@@ -21,19 +12,34 @@ printpsql_alias(io::IO, alias) = print(io, " AS $alias")
 printpsql_fieldalias(io::IO, _, alias) = printpsql_alias(io, alias)
 printpsql_fieldalias(io::IO, field::TableItemFieldRef, alias) = Symbol(alias) == field.name || printpsql_alias(io, alias)
 
+
+
 printpsql(io, node, env) = error("please implement 'printpsql(::IO, ::Any, ::AbstractPrintEnvironment)' for $(node)")
+
+
+printpsql_result(io::IO, ::UnmergedResult, env) = print(io, " *")
+function printpsql_result(io::IO, arg, env)
+    singlefield = hassingleton_field(arg)    
+    foreach_field(arg) do field, alias, index
+        index == 1 || print(io, ",")
+        singlefield ? print(io, " ") : println(io, indent(env))
+        printpsql_field(io, field, env)
+        printpsql_fieldalias(io, field, alias)
+    end
+end
 
 
 function printpsql(io::IO, raw_node::SelectQuery, parent_env)
     node, env = expand(raw_node, parent_env)
-    print(io, "SELECT ")
+    print(io, "SELECT")
     printpsql_result(io, node.result, env)
-    print(io, " FROM ")
-    printpsql(io, node.from, env)
-    printpsql_filter(io, node.filter, env; prefix=" WHERE ")
+    println(io, env)
+    print(io, "FROM ")
+    printpsql(io, node.from, indent(env))
+    printpsql_filter(io, node.filter, env; prefix=indentedline("WHERE ", env))
     if !isempty(node.group)
-        printpsql_fieldlist(io, node.group, env; prefix=" GROUP BY ")
-        printpsql_filter(io, node.groupfilter, env; prefix=" HAVING ")
+        printpsql_fieldlist(io, node.group, env; prefix=indentedline("GROUP BY ", env))
+        printpsql_filter(io, node.groupfilter, env; prefix=indentedline("HAVING ", env))
     end
     printpsql_fieldlist(io, node.order, env; prefix=" ORDER BY ")
     printpsql(io, node.range, env)
@@ -106,7 +112,11 @@ function printpsql_filter(io, expr::BooleanExpression, env; prefix="", postfix="
     print(io, postfix)
 end
 
+
 function printpsql_fieldlist(io, node, env; prefix="", postfix="", nofix="")
+    issingle = hassingleton_field(node)
+
+    
     field_count = foreach_field(node; alias=missing) do f, i
         i == 1 ? print(io, prefix) : print(io, ", ")
         printpsql_field(io, f, env)
@@ -199,7 +209,7 @@ end
 
 function printpsql(io::IO, node::SubqueryTableItem, env)
     print(io, "(")
-    printpsql(io, node.query, env.parent)
+    printpsql(io, node.query, unwind(env))
     alias = getalias(env, node)
     print(io, ") $alias")
 end

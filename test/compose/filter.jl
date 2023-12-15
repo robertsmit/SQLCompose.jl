@@ -37,8 +37,9 @@ import SQLCompose: TableSource, ValuesTableItem, TextType, query, Int8Type, Bool
             q = filter(table) do t
                 t.surname == map(t2 -> t2.surname, filter(t2 -> (t2.surname == t.surname) & (t2.id != t.id), table))
             end
-            @test string(q) == "SELECT per.id, per.surname FROM persons per WHERE per.surname = " *
-                               "(SELECT per2.surname FROM persons per2 WHERE (per2.surname = per.surname) AND (per2.id <> per.id))"
+            @testsql q,
+            "SELECT per.id, per.surname FROM persons per WHERE per.surname = 
+            (SELECT per2.surname FROM persons per2 WHERE (per2.surname = per.surname) AND (per2.id <> per.id))"
         end
 
         @info "semi-join / anti-join"
@@ -49,13 +50,14 @@ import SQLCompose: TableSource, ValuesTableItem, TextType, query, Int8Type, Bool
                 subquery = filter(t2 -> (t2.id != t1.id) & (t2.surname == t1.surname), table → :other)
                 !isempty(subquery)
             end
-            @test string(q) == "SELECT per.id, per.surname FROM persons per WHERE EXISTS (SELECT 1 AS elem1 FROM persons other WHERE (other.id <> per.id) AND (other.surname = per.surname))"
+            @testsql q,
+            "SELECT per.id, per.surname FROM persons per WHERE EXISTS (SELECT 1 AS elem1 FROM persons other WHERE (other.id <> per.id) AND (other.surname = per.surname))"
             # persons with unique surname
             q2 = filter(table → :source) do t1
                 subquery = filter(t2 -> !(t2.id == t1.id) & (t2.surname == t1.surname), table → :other)
                 isempty(subquery)
             end
-            @test string(q2) == "SELECT source.id, source.surname FROM persons source WHERE NOT EXISTS (SELECT 1 AS elem1 FROM persons other WHERE (other.id <> source.id) AND (other.surname = source.surname))"
+            @testsql q2 "SELECT source.id, source.surname FROM persons source WHERE NOT EXISTS (SELECT 1 AS elem1 FROM persons other WHERE (other.id <> source.id) AND (other.surname = source.surname))"
         end
 
         @info "is null / is not null"
@@ -63,10 +65,10 @@ import SQLCompose: TableSource, ValuesTableItem, TextType, query, Int8Type, Bool
             table = TableSource(:persons, :id => Int8Type, :surname => TextType; aliashint=:per)
             # persons with missing surname
             q = filter(t -> ismissing(t.surname), table)
-            @test string(q) == "SELECT per.id, per.surname FROM persons per WHERE per.surname IS NULL"
+            @testsql q "SELECT per.id, per.surname FROM persons per WHERE per.surname IS NULL"
             # persons with known surname
             q = filter(t -> !ismissing(t.surname), table)
-            @test string(q) == "SELECT per.id, per.surname FROM persons per WHERE per.surname IS NOT NULL"
+            @testsql q  "SELECT per.id, per.surname FROM persons per WHERE per.surname IS NOT NULL"
         end
 
         @info "function call"
@@ -97,23 +99,23 @@ import SQLCompose: TableSource, ValuesTableItem, TextType, query, Int8Type, Bool
     table = TableSource(:employments, :id => Int8Type, :is_male => BooleanType, :surname => TextType; aliashint=:employments)
     q = query(table)
     qTrue = filter(e -> true, q)
-    @test string(qTrue) === "SELECT employments.id, employments.is_male, employments.surname FROM employments"
+    @testsql qTrue "SELECT employments.id, employments.is_male, employments.surname FROM employments"
     qFalse = filter(e -> false, q)
-    @test string(qFalse) === "SELECT employments.id, employments.is_male, employments.surname FROM employments WHERE false"
+    @testsql qFalse, "SELECT employments.id, employments.is_male, employments.surname FROM employments WHERE false"
     qMale = filter(e -> e.is_male, q)
-    @test string(qMale) === "SELECT employments.id, employments.is_male, employments.surname FROM employments WHERE employments.is_male"
+    @testsql qMale  "SELECT employments.id, employments.is_male, employments.surname FROM employments WHERE employments.is_male"
     qNotMale = filter(e -> !e.is_male, q)
-    @test string(qNotMale) === "SELECT employments.id, employments.is_male, employments.surname FROM employments WHERE NOT employments.is_male"
+    @testsql qNotMale "SELECT employments.id, employments.is_male, employments.surname FROM employments WHERE NOT employments.is_male"
     qSurname = filter(e -> e.surname == "banana", q)
-    @test string(qSurname) === "SELECT employments.id, employments.is_male, employments.surname FROM employments WHERE employments.surname = 'banana'"
+    @testsql qSurname "SELECT employments.id, employments.is_male, employments.surname FROM employments WHERE employments.surname = 'banana'"
     qSurnameReverse = filter(e -> "banana" == e.surname, q)
-    @test string(qSurnameReverse) === "SELECT employments.id, employments.is_male, employments.surname FROM employments WHERE 'banana' = employments.surname"
+    @testsql qSurnameReverse "SELECT employments.id, employments.is_male, employments.surname FROM employments WHERE 'banana' = employments.surname"
     qSurnameOrMale = filter(e -> e.is_male, qSurname)
-    @test string(qSurnameOrMale) === "SELECT employments.id, employments.is_male, employments.surname FROM employments WHERE (employments.surname = 'banana') AND employments.is_male"
+    @testsql qSurnameOrMale "SELECT employments.id, employments.is_male, employments.surname FROM employments WHERE (employments.surname = 'banana') AND employments.is_male"
     qSurnameAnyOrMale = filter(e -> ((e.surname == "Smith") | (e.surname == "Adams")) & e.is_male, q)
-    @test string(qSurnameAnyOrMale) === "SELECT employments.id, employments.is_male, employments.surname FROM employments WHERE ((employments.surname = 'Smith') OR (employments.surname = 'Adams')) AND employments.is_male"
+    @testsql qSurnameAnyOrMale "SELECT employments.id, employments.is_male, employments.surname FROM employments WHERE ((employments.surname = 'Smith') OR (employments.surname = 'Adams')) AND employments.is_male"
     qMaleCast = filter(e -> !(convert(Int8Type(), e.is_male) == 0), q)
-    @test string(qMaleCast) === "SELECT employments.id, employments.is_male, employments.surname FROM employments WHERE employments.is_male::bigint <> 0"
+    @testsql qMaleCast "SELECT employments.id, employments.is_male, employments.surname FROM employments WHERE employments.is_male::bigint <> 0"
 
 
     @testset "Pattern match" begin

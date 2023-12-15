@@ -24,6 +24,10 @@ function foreach_field(f::Function, result, ::NodeStructure; index, alias)
     index
 end
 
+hassingleton_field(result::T) where {T} = hassingleton_field(result, NodeCompositionStyle(T))
+hassingleton_field(result, ::NodeElement) = true
+hassingleton_field(result, ::NodeStructure) = length(result) == 1
+
 #maps result in same structure 
 mapfields(f::Function, result::T; alias=nothing) where {T} =
     mapfields(f::Function, result, NodeCompositionStyle(T); alias)
