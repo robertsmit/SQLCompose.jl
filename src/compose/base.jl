@@ -182,8 +182,6 @@ groupby(q::Queryable, field::Symbol, morefields::Symbol...) =
         f = row -> map(field -> getfield(row, field), fields)
         groupby(f, q)
     end
-groupby(f::Function) = (q::Queryable) -> groupby(f, q)
-groupby(field::Symbol, morefields::Symbol...) = (q::Queryable) -> groupby(q, field, morefields...)
 
 having(f::Function, arg::Queryable) = having(f, convert(SelectQuery, node))
 function having(f::Function, q::SelectQuery)
@@ -205,7 +203,8 @@ function sort(node::Queryable, field::Symbol, morefields::Symbol...)
     end
 end
 
-sort(field::Symbol, morefields::Symbol...) = q -> sort(q, field, morefields...)
+unique(node::Queryable) = unique(convert(SelectQuery, node))
+unique(q::SelectQuery) = with_unique(q, true)
 
 function with(f::Function, commons::Queryable...)
     commontables = map(commontable, commons)

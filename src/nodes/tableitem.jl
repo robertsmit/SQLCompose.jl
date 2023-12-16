@@ -116,14 +116,17 @@ struct ReferredTableItemRef <: TableItemRef
     isnullable::Bool
 end
 
-DefinedTableItem(ref) = DefinedTableItem(ref, ref.tablename, Symbol("ref_", ref.tablename))
+DefinedTableItem(ref::ReferredTableItemRef) = DefinedTableItem(ref, ref.tablename, Symbol("ref_", ref.tablename))
 
-function reference(table::TableSource, primarykeys::Tuple, foreignkeys, isnullable=false)
+"""
+    Gives the tableresult of referring a table source using the given keys.
+"""
+function reference(table::TableSource, primarykeys::Tuple, foreignkeys, isnullable=false)::NamedTuple
     ref = ReferredTableItemRef(name(table), primarykeys, foreignkeys, isnullable)
     tableresult(ref, table)
 end
 
-reference(table::TableSource, primarykey::Symbol, foreignkey, isnullable=false) =
+reference(table::TableSource, primarykey::Symbol, foreignkey, isnullable=false)::NamedTuple =
     reference(table, Tuple(primarykey), Tuple(foreignkey), isnullable)
 
 

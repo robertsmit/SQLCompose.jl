@@ -27,6 +27,7 @@ end
 function printpsql(io::IO, raw_node::SelectQuery, parent_env)
     node, env = expand(raw_node, parent_env)
     print(io, "SELECT")
+    node.unique && print(io, " DISTINCT")
     printpsql_result(io, node.result, indent(env))
     println(io, env)
     print(io, "FROM ")

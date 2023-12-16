@@ -1,11 +1,11 @@
 abstract type Query <: SQLCommand end
 result(q::Query) = error("Please implement result for", typeof(q))
 
-struct SelectWithoutFromQuery{T} <: Query
+@value struct SelectWithoutFromQuery{T} <: Query
     result::T
 end
+
 result(q::SelectWithoutFromQuery) = q.result
-with_result(::SelectWithoutFromQuery, arg) = SelectWithoutFromQuery(arg)
 
 struct TableRange
     offset::Int
@@ -36,10 +36,11 @@ asc(arg::DescOrder) = arg.expr
     groupfilter::BooleanExpression
     order::Tuple
     range::TableRange
+    unique::Bool
 end
 
-SelectQuery(result::T, from, filter=true, group=(), groupfilter=true, order=(), range=fullrange()) where {T} =
-    SelectQuery{T}(result, from, filter, group, groupfilter, order, range)
+SelectQuery(result::T, from, filter=true, group=(), groupfilter=true, order=(), range=fullrange(), unique=false) where {T} =
+    SelectQuery{T}(result, from, filter, group, groupfilter, order, range, unique)
 
 isgrouped(query::SelectQuery) = !isempty(query.group)
 ispaged(query::SelectQuery) = query.range !== fullrange()
@@ -54,7 +55,7 @@ end
 
 SelectQuery(query::SelectWithoutFromQuery) = SelectQuery(SubqueryTableItem(query))
 
-function SelectQuery(from::ValuesTableItem{T}) where {T<:Tuple}    
+function SelectQuery(from::ValuesTableItem{T}) where {T<:Tuple}
     result = tableresult(from.ref, from.fieldnames, map(sqltypeclassof, T.types))
     SelectQuery(result, from)
 end
@@ -69,7 +70,7 @@ begin
         SelectQuery(tableresult(ref, T), from)
     end
 
-    function SelectQuery(f::SetReturningFunctionCall{T}, fnames::Tuple, ftypes::Tuple) where {T}    
+    function SelectQuery(f::SetReturningFunctionCall{T}, fnames::Tuple, ftypes::Tuple) where {T}
         ref = TableItemRef()
         from = SetReturningFunctionTableItem(ref, fnames, f)
         result = tableresult(from.ref, fnames, ftypes)
