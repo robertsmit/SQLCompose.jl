@@ -30,7 +30,7 @@ getindentation(::NullPrintEnvironment) = ""
 getindentation(env::TablePrintEnvironment) = getindentation(env.parent)
 getindentation(env::IndentationPrintEnvironment) = env.indentation
 
-indent(env::AbstractPrintEnvironment) = IndentationPrintEnvironment(getindentation(env) * "\t", env)
+indent(env::AbstractPrintEnvironment; levels=1) = IndentationPrintEnvironment(getindentation(env) * repeat("\t", levels), env)
 
 hasref(env::NullPrintEnvironment, ref) = false
 hasref(env::TablePrintEnvironment, ref) = env.ref == ref ? true : hasref(env.parent, ref)

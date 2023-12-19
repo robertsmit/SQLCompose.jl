@@ -17,7 +17,7 @@ function printpsql_result(io::IO, arg, env)
     singlefield = hassingleton_field(arg)
     foreach_field(arg) do field, alias, index
         index == 1 || print(io, ",")
-        singlefield ? print(io, " ") : println(io, env)
+         singlefield ? print(io, " ") : println(io, env)
         printpsql_field(io, field, env)
         printpsql_fieldalias(io, field, alias)
     end
@@ -28,6 +28,7 @@ function printpsql(io::IO, raw_node::SelectQuery, parent_env)
     node, env = expand(raw_node, parent_env)
     print(io, "SELECT")
     node.unique && print(io, " DISTINCT")
+    printpsql_fieldlist(io, node.uniquevalues, indent(env; levels=2); prefix=" DISTINCT ON(", postfix=")")
     printpsql_result(io, node.result, indent(env))
     println(io, env)
     print(io, "FROM ")
@@ -113,7 +114,7 @@ function printpsql_fieldlist(io, node, env; prefix="", postfix="", nofix="", mul
     field_count = foreach_field(node; alias=missing) do f, i
         i == 1 ? print(io, prefix) : print(io, ", ")
         multiline && println(io, env)
-        printpsql_field(io, f, env)
+        printpsql_field(io, f, indent(env))
     end
     field_count > 0 ? print(io, postfix) : print(io, nofix)
 end
@@ -270,7 +271,7 @@ function printpsql(io::IO, node::JoinItem, env)
     printpsql_join_condition(io, node.join.condition, indent(env_right))
 end
 
-function printpsql_join_condition(io::IO, condition, env) 
+function printpsql_join_condition(io::IO, condition, env)
     print(io, indentedline("ON ", env))
     printpsql(io, condition, indent(env))
 end
@@ -354,7 +355,7 @@ function printpsql(io::IO, node::CommonTableExpressionQuery, env)
     for (index, table) in enumerate(node.commontables)
         index == 1 || print(io, ",")
         println(io, cte_env)
-       
+
         # each table has the name of the former in scope
         cte_env = printpsql_commontable(io, table, cte_env)
         print(io, ")")

@@ -83,7 +83,7 @@ JoinableRight = Queryable
 joinable_right(::SelectQuery{UnmergedResult}) = error("cannot right join unmerged results")
 joinable_right(q::SelectQuery) = joinable_right(q, q.from)
 joinable_right(q::SelectQuery, ::JoinItem) = query(q)
-joinable_right(q::SelectQuery, ::TableItem) = isgrouped(q) || ispaged(q) ? query(q) : q
+joinable_right(q::SelectQuery, ::TableItem) = isgrouped(q) || ispaged(q) || isunique(q) ? query(q) : q
 joinable_right(q::Queryable) = joinable_right(convert(SelectQuery, q))
 
 
@@ -205,6 +205,11 @@ end
 
 unique(node::Queryable) = unique(convert(SelectQuery, node))
 unique(q::SelectQuery) = with_unique(q, true)
+unique(f::Function, node::Queryable) = unique(f, convert(SelectQuery, node))
+unique(f::Function, q::SelectQuery) =
+    let values = f(result_args(q.result)...)
+        with_uniquevalues(q, convert_fields(SQLExpression, values) |> nodelist)
+    end
 
 function with(f::Function, commons::Queryable...)
     commontables = map(commontable, commons)

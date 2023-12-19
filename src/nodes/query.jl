@@ -37,14 +37,16 @@ asc(arg::DescOrder) = arg.expr
     order::Tuple
     range::TableRange
     unique::Bool
+    uniquevalues::Tuple
 end
 
-SelectQuery(result::T, from, filter=true, group=(), groupfilter=true, order=(), range=fullrange(), unique=false) where {T} =
-    SelectQuery{T}(result, from, filter, group, groupfilter, order, range, unique)
+SelectQuery(result::T, from, filter=true, group=(), groupfilter=true, order=(), range=fullrange(), unique=false, uniquevalues=()) where {T} =
+    SelectQuery{T}(result, from, filter, group, groupfilter, order, range, unique, uniquevalues)
 
 isgrouped(query::SelectQuery) = !isempty(query.group)
 ispaged(query::SelectQuery) = query.range !== fullrange()
 isordered(query::SelectQuery) = !isempty(query.order)
+isunique(query::SelectQuery) =  query.unique || !isempty(query.uniquevalues)
 result(q::SelectQuery) = q.result
 
 function SelectQuery(table::TableSource)

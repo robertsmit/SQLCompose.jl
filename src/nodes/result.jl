@@ -37,4 +37,4 @@ mapfields(::Function, result, ::NodeStructure; alias) = error("Please implement 
 mapfields(f::Function, result::T; alias=nothing) where {T<:NodeList} = Tuple(mapfields(f, x; alias=join_alias(alias, i)) for (i, x) in pairs(result))
 mapfields(f::Function, result::NamedTuple{K}; alias=nothing) where {K} = NamedTuple{K}(mapfields(f, x; alias=join_alias(alias, i)) for (i, x) in pairs(result))
 
-convert_fields(type, result) = mapfields((f) -> convert(type, f), result; alias=missing)
+convert_fields(type::Type, result) = mapfields((f) -> convert(type, f), result; alias=missing)

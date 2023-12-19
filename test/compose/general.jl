@@ -22,4 +22,16 @@ import SQLCompose: TableSource, ValuesTableItem, TextType, query, Int8Type, Bool
             SELECT * FROM per INNER JOIN q ON true
         """
     end
+    
+    @testset "distinct / distinct on" begin
+        @testsql query(Pagila.Actor) |> unique, "
+            SELECT DISTINCT
+                a.actor_id,
+                a.first_name,
+                a.last_name,
+                a.last_update
+            FROM actor a
+        "
+    end
+
 end
