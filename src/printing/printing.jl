@@ -5,6 +5,7 @@ printpsql(io::IO, node) = printpsql(io, node, PrintEnvironment())
 
 printpsql_field(io, field, env) = printpsql(io, field, env)
 printpsql_field(io::IO, arg::Query, env) = printpsql_parenthesized(io, arg, env)
+printpsql_field(io::IO, arg::SubqueryExpression, env) = printpsql(io, arg, indent(env))
 
 printpsql_alias(io::IO, alias) = print(io, " AS $alias")
 printpsql_fieldalias(io::IO, _, alias) = printpsql_alias(io, alias)

@@ -32,6 +32,24 @@ import SQLCompose: TableSource, ValuesTableItem, TextType, query, Int8Type, Bool
                 a.last_update
             FROM actor a
         "
+
+        @testsql (@query Pagila.Actor begin
+            unique(_) do a
+                (a.first_name, a.last_name)
+            end
+            map(_) do a
+                (;a.first_name, a.last_name, any_actor_id=a.actor_id)
+            end
+        end
+        ), """
+        SELECT DISTINCT ON(
+                    a.first_name, 
+                    a.last_name)
+            a.first_name,
+            a.last_name,
+            a.actor_id AS any_actor_id
+        FROM actor a
+        """
     end
 
 end
